@@ -1,0 +1,5 @@
+tinker==0.33.1
+tinker-cookbook==0.5.7
+python-dotenv
+httpx
+pytest  # tests only
