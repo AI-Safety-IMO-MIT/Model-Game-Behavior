@@ -63,7 +63,7 @@ def build_config(cli: CLIConfig) -> train.Config:
     )
     return train.Config(
         model_name=preset.model_name,
-        recipe_name="spar_altruism_pd",
+        recipe_name="pooled_rewards_pd",
         renderer_name=preset.renderer_name,
         log_path=log_path,
         dataset_builder=dataset_builder,

@@ -1,4 +1,4 @@
-# spar-altruism-rl
+# Pooled-Rewards-Model-Cooperation
 
 Can RL with a hidden pooled reward teach a reasoning model to sacrifice for another agent, and does
 that altruism survive when it meets a *different* model?

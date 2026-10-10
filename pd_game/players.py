@@ -59,7 +59,7 @@ class OpenRouterPlayer:
         self.model, self.max_tokens, self.temperature = model, max_tokens, temperature
         self.reasoning_effort = reasoning_effort
         self.http = httpx.AsyncClient(base_url="https://openrouter.ai/api/v1", timeout=180,
-                                      headers={"Authorization": f"Bearer {key}", "X-Title": "spar-altruism-rl"})
+                                      headers={"Authorization": f"Bearer {key}", "X-Title": "pooled-rewards-cooperation"})
         self.cost_usd = 0.0
 
     async def __call__(self, messages, phase, turn) -> Reply:
