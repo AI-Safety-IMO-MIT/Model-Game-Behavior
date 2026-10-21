@@ -51,9 +51,15 @@ class ClaudeOpus5_5(Agent):
             model=self.model,
             max_tokens=self.max_tokens,
             system=prompt.system,
-            messages=[{"role": message.role, "content": message.content} for message in prompt.messages],
+            messages=[
+                {"role": message.role, "content": message.content}
+                for message in prompt.messages
+            ],
             thinking={"type": "adaptive", "display": "summarized"},
             output_config={"effort": "medium"},  # low | medium | high | xhigh | max
             stop_sequences=["END"],
         )
         return self._extract_response(response)
+
+    def __str__(self) -> str:
+        return "I'm da claude"

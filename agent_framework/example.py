@@ -4,8 +4,8 @@ from agent_framework.dto import Prompt, Message
 SYSTEM = "You are a concise game-theory analyst. Answer in at most three sentences."
 MESSAGES = [
     Message(
-        role = "user",
-        content = "In a one-shot prisoner's dilemma, why is defection the dominant strategy?",
+        role="user",
+        content="In a one-shot prisoner's dilemma, why is defection the dominant strategy?",
     )
 ]
 

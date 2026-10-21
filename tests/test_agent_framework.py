@@ -10,9 +10,10 @@ MESSAGES = [
     )
 ]
 
+
 @pytest.mark.live
 def test_claude_opus_call():
-    
+
     report = ClaudeOpus5_5().call(Prompt(system=SYSTEM, messages=MESSAGES))
 
     assert report.status == "Completed"
@@ -31,18 +32,22 @@ def test_dummy_agent():
     class TrueAgent(Agent):
         def call(self, prompt: Prompt) -> AgentReport:
             return AgentReport(
-                status = "Completed",
-                stop_reason = "This is true",
-                response = [
-                    ContentBlock(kind="thinking",content="I think this is true."),
-                    ContentBlock(kind="text",content="True")
+                status="Completed",
+                stop_reason="This is true",
+                response=[
+                    ContentBlock(kind="thinking", content="I think this is true."),
+                    ContentBlock(kind="text", content="True"),
                 ],
-                input_tokens = 50,
-                completion_tokens = 100,
-                cache_tokens = 20
+                input_tokens=50,
+                completion_tokens=100,
+                cache_tokens=20,
             )
+
+        def __str__(self) -> str:
+            return "True agent. Always think once and return True"
+
     report = TrueAgent().call(Prompt(system=SYSTEM, messages=MESSAGES))
-    
+
     assert report.status == "Completed"
     assert report.stop_reason == "This is true"
     assert report.response is not None
@@ -53,5 +58,3 @@ def test_dummy_agent():
 
     assert report.input_tokens == 50
     assert report.completion_tokens == 100
-    
-

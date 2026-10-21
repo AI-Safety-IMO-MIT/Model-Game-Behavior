@@ -5,8 +5,9 @@ from typing import Literal
 
 @dataclass(frozen=True)
 class Message:
-    role: Literal["user","assistant"]
+    role: Literal["user", "assistant"]
     content: str
+
 
 @dataclass(frozen=True)
 class Prompt:
@@ -34,4 +35,5 @@ class Agent(ABC):
     @abstractmethod
     def call(self, prompt: Prompt) -> AgentReport: ...
 
+    @abstractmethod
     def __str__(self) -> str: ...
