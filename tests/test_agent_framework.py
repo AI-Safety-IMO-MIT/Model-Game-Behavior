@@ -1,6 +1,6 @@
 import pytest
 
-from agent_framework.agents import ClaudeOpus5_5
+from agent_framework.agents import ClaudeModel,ThoughtConfig, OutputConfig
 from agent_framework.dto import Agent, AgentReport, ContentBlock, Message, Prompt
 
 SYSTEM = "You are a calculator. Give answers as a single number to the questions without explanation."
@@ -14,8 +14,14 @@ MESSAGES = [
 
 @pytest.mark.live
 def test_claude_opus_call():
-
-    report = ClaudeOpus5_5().call(Prompt(system=SYSTEM, messages=MESSAGES))
+    agent = ClaudeModel(
+        model = "claude-opus-5",
+        max_tokens = 1000,
+        thought_config = ThoughtConfig(type = "adaptive", display = "summarized"),
+        output_config = OutputConfig(effort = "medium")
+    )
+    
+    report = agent.call(Prompt(system=SYSTEM, messages=MESSAGES))
 
     assert report.status == "Completed"
     assert report.stop_reason == "end_turn"
