@@ -8,27 +8,39 @@ class Message:
     role: Literal["user", "assistant"]
     content: str
 
+    def __str__(self) -> str:
+        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
+
 
 @dataclass(frozen=True)
 class Prompt:
     system: str
     messages: list[Message]
 
+    def __str__(self) -> str:
+        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
+
 
 @dataclass(frozen=True)
 class ContentBlock:
-    kind: Literal["thinking", "text"]
+    type: Literal["thinking", "text"]
     content: str
+
+    def __str__(self) -> str:
+        return f"------{self.type}-----\n{self.content}\n"
 
 
 @dataclass(frozen=True)
 class AgentReport:
     status: Literal["Failed", "Completed"]
-    stop_reason: str
+    stop_reason: str | None
     response: list[ContentBlock] | None
     input_tokens: int | None
     completion_tokens: int | None
     cache_tokens: int | None
+
+    def __str__(self) -> str:
+        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
 
 
 class Agent(ABC):
