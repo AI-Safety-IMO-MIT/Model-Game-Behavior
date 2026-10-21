@@ -13,15 +13,6 @@ class Message:
 
 
 @dataclass(frozen=True)
-class Prompt:
-    system: str
-    messages: list[Message]
-
-    def __str__(self) -> str:
-        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
-
-
-@dataclass(frozen=True)
 class ContentBlock:
     type: Literal["thinking", "text"]
     content: str
@@ -45,7 +36,7 @@ class AgentReport:
 
 class Agent(ABC):
     @abstractmethod
-    def call(self, prompt: Prompt) -> AgentReport: ...
+    def call(self, system_prompt: str,messages: list[Message]) -> AgentReport: ...
 
     @abstractmethod
     def __str__(self) -> str: ...

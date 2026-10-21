@@ -5,7 +5,7 @@ from anthropic import transform_schema
 from pydantic import BaseModel, Field
 
 from agent_framework.claude_agents import ClaudeAgentConfig, ClaudeModel
-from agent_framework.dto import Agent, AgentReport, ContentBlock, Message, Prompt
+from agent_framework.dto import Agent, AgentReport, ContentBlock, Message
 
 
 @pytest.mark.live
@@ -28,7 +28,7 @@ def test_claude_call_no_format():
         )
     )
 
-    report = agent.call(Prompt(system=SYSTEM, messages=MESSAGES))
+    report = agent.call(system_prompt=SYSTEM, messages=MESSAGES)
 
     assert report.status == "Completed"
     assert report.stop_reason == "end_turn"
@@ -73,7 +73,7 @@ def test_claude_call_with_format():
         )
     )
 
-    report = agent.call(Prompt(system=SYSTEM, messages=MESSAGES))
+    report = agent.call(system_prompt=SYSTEM, messages=MESSAGES)
 
     assert report.status == "Completed"
     assert report.stop_reason == "end_turn"
@@ -134,7 +134,7 @@ def test_dummy_agent():
     ]
 
     class TrueAgent(Agent):
-        def call(self, prompt: Prompt) -> AgentReport:
+        def call(self, system_prompt, messages) -> AgentReport:
             return AgentReport(
                 status="Completed",
                 stop_reason="This is true",
@@ -150,7 +150,7 @@ def test_dummy_agent():
         def __str__(self) -> str:
             return "True agent. Always think once and return True"
 
-    report = TrueAgent().call(Prompt(system=SYSTEM, messages=MESSAGES))
+    report = TrueAgent().call(system_prompt=SYSTEM, messages=MESSAGES)
 
     assert report.status == "Completed"
     assert report.stop_reason == "This is true"

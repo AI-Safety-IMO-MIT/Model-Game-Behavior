@@ -2,7 +2,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from agent_framework.claude_agents import ClaudeModel, ClaudeAgentConfig
-from agent_framework.dto import Message, Prompt
+from agent_framework.dto import Message
 
 SYSTEM = (
     "You will play a game with a regular guy. "
@@ -53,10 +53,8 @@ claude_config = ClaudeAgentConfig(
     output_format=RPSFormat,
 )
 
-prompt = Prompt(system=SYSTEM, messages=MESSAGES)
 agent = ClaudeModel(agent_config=claude_config)
-
-report = agent.call(prompt)
+report = agent.call(system_prompt=SYSTEM, messages=MESSAGES)
 
 assert report.response is not None
 for block in report.response:

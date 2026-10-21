@@ -2,13 +2,19 @@ from typing import Literal
 from dataclasses import dataclass
 from anthropic import Anthropic, transform_schema
 from dotenv import load_dotenv
-
-from agent_framework.dto import Agent, AgentReport, ContentBlock, Prompt
+import os
+from agent_framework.dto import Agent, AgentReport, ContentBlock
 from pydantic import BaseModel
 from anthropic.types import Message as APIMessage
 from anthropic.types import OutputConfigParam, ThinkingConfigParam
 
 load_dotenv()
+
+client = Anthropic(
+    timeout=600.0,
+    max_retries=2,
+    api_key=os.environ["ANTHROPIC_API_KEY"]
+)
 
 ClaudeModels = Literal[
     # Fabel
@@ -56,13 +62,6 @@ class ClaudeAgentConfig:
             }
         return output
 
-
-client = Anthropic(
-    timeout=600.0,
-    max_retries=2,
-)
-
-
 class ClaudeModel(Agent):
     def __init__(self, agent_config: ClaudeAgentConfig) -> None:
         self.agent_config = agent_config
@@ -94,14 +93,14 @@ class ClaudeModel(Agent):
             cache_tokens=output.usage.cache_read_input_tokens,
         )
 
-    def call(self, prompt: Prompt) -> AgentReport:
+    def call(self, system_prompt, messages) -> AgentReport:
         response = client.messages.create(
             model=self.agent_config.model,
             max_tokens=self.agent_config.max_tokens,
-            system=prompt.system,
-            messages=[
+            system=system_prompt,
+            messages= [
                 {"role": message.role, "content": message.content}
-                for message in prompt.messages
+                for message in messages
             ],
             thinking=self.agent_config.to_thinking(),
             output_config=self.agent_config.to_output_config(),
