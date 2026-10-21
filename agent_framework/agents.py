@@ -1,12 +1,13 @@
-import os
+from typing import ClassVar
+
 import anthropic
 from dotenv import load_dotenv
+
 from agent_framework.dto import Agent, AgentReport, ContentBlock, Prompt
 
 load_dotenv()
 
-client = anthropic.Anthropic(
-    api_key=os.environ["ANTHROPIC_API_KEY"],
+client = anthropic.Anthropic(  # picks up ANTHROPIC_API_KEY; absent is fine until a call
     timeout=600.0,
     max_retries=2,
 )
@@ -15,9 +16,9 @@ client = anthropic.Anthropic(
 class ClaudeOpus5_5(Agent):
     model = "claude-opus-5-5"
     max_tokens = 16000
-    thinking = {"type": "adaptive", "display": "summarized"}
-    output_config = {"effort": "medium"}
-    stop_sequences = ["END"]
+    thinking: ClassVar[dict] = {"type": "adaptive", "display": "summarized"}
+    output_config: ClassVar[dict] = {"effort": "medium"}
+    stop_sequences: ClassVar[list[str]] = ["END"]
 
     def _extract_response(self, output):
         if output.stop_reason == "refusal":

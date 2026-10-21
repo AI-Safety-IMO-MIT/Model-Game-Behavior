@@ -1,6 +1,7 @@
 import pytest
+
 from agent_framework.agents import ClaudeOpus5_5
-from agent_framework.dto import AgentReport, Message, Prompt, Agent, ContentBlock
+from agent_framework.dto import Agent, AgentReport, ContentBlock, Message, Prompt
 
 SYSTEM = "You are a calculator. Give answers as a single number to the questions without explanation."
 MESSAGES = [

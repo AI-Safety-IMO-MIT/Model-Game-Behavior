@@ -10,9 +10,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/ruff-action@v3
         with:
+          version: "0.15.12"
           args: "check"
       - uses: astral-sh/ruff-action@v3
         with:
+          version: "0.15.12"
           args: "format --check"
   pytest:
     name: Pytest

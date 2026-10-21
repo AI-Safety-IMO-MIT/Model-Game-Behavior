@@ -1,5 +1,5 @@
 from agent_framework.agents import ClaudeOpus5_5
-from agent_framework.dto import Prompt, Message
+from agent_framework.dto import Message, Prompt
 
 SYSTEM = "You are a concise game-theory analyst. Answer in at most three sentences."
 MESSAGES = [
