@@ -6,8 +6,8 @@ from agent_framework.dto import Agent, AgentReport, ContentBlock, Prompt
 load_dotenv()
 
 client = anthropic.Anthropic(
-    api_key=os.environ["ANTHROPIC_API_KEY"],  # SDK only auto-reads ANTHROPIC_API_KEY
-    timeout=600.0,  # seconds
+    api_key=os.environ["ANTHROPIC_API_KEY"],
+    timeout=600.0,
     max_retries=2,
 )
 
@@ -51,7 +51,7 @@ class ClaudeOpus5_5(Agent):
             model=self.model,
             max_tokens=self.max_tokens,
             system=prompt.system,
-            messages=prompt.messages,
+            messages=[{"role": message.role, "content": message.content} for message in prompt.messages],
             thinking={"type": "adaptive", "display": "summarized"},
             output_config={"effort": "medium"},  # low | medium | high | xhigh | max
             stop_sequences=["END"],

@@ -4,9 +4,14 @@ from typing import Literal
 
 
 @dataclass(frozen=True)
+class Message:
+    role: Literal["user","assistant"]
+    content: str
+
+@dataclass(frozen=True)
 class Prompt:
-    system: list[dict[str, str]]
-    messages: list[dict[str, str]]
+    system: str
+    messages: list[Message]
 
 
 @dataclass(frozen=True)
