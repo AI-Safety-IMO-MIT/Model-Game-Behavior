@@ -17,14 +17,17 @@ class Prompt:
 
 @dataclass(frozen=True)
 class ContentBlock:
-    kind: Literal["thinking", "text"]
+    type: Literal["thinking", "text"]
     content: str
+
+    def __str__(self) -> str:
+        return f"------{self.type}-----\n{self.content}\n"
 
 
 @dataclass(frozen=True)
 class AgentReport:
     status: Literal["Failed", "Completed"]
-    stop_reason: str
+    stop_reason: str | None
     response: list[ContentBlock] | None
     input_tokens: int | None
     completion_tokens: int | None
