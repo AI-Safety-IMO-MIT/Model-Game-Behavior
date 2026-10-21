@@ -8,11 +8,17 @@ class Message:
     role: Literal["user", "assistant"]
     content: str
 
+    def __str__(self) -> str:
+        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
+
 
 @dataclass(frozen=True)
 class Prompt:
     system: str
     messages: list[Message]
+
+    def __str__(self) -> str:
+        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
 
 
 @dataclass(frozen=True)
@@ -32,6 +38,9 @@ class AgentReport:
     input_tokens: int | None
     completion_tokens: int | None
     cache_tokens: int | None
+
+    def __str__(self) -> str:
+        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
 
 
 class Agent(ABC):

@@ -1,5 +1,3 @@
-import json
-from textwrap import indent
 from typing import Literal
 from dataclasses import dataclass
 from anthropic import Anthropic, transform_schema
@@ -32,31 +30,29 @@ ClaudeModels = Literal[
 
 
 @dataclass(frozen=True)
-class ThoughtConfig:
-    type: Literal["adaptive", "disabled"]
-    display: Literal["summarized", "omitted"]
+class ClaudeAgentConfig:
+    model: ClaudeModels
+    max_tokens: int
+    thought_type: Literal["adaptive", "disabled"]
+    thought_display: Literal["summarized", "omitted"]
+    effort: Literal["low", "medium", "high", "xhigh", "max"]
+    output_format: type[BaseModel] | None = None
 
-    def to_api(self) -> ThinkingConfigParam:
-        match self.type:
+    def to_thinking(self) -> ThinkingConfigParam:
+        match self.thought_type:
             case "adaptive":
-                return {"type": "adaptive", "display": self.display}
+                return {"type": "adaptive", "display": self.thought_display}
             case "disabled":
                 return {"type": "disabled"}
             case _:
-                raise ValueError(f"Unknown thinking type: {self.type!r}")
+                raise ValueError(f"Unknown thinking type: {self.thought_type!r}")
 
-
-@dataclass(frozen=True)
-class OutputConfig:
-    effort: Literal["low", "medium", "high", "xhigh", "max"]
-    format: type[BaseModel] | None = None
-
-    def to_api(self) -> OutputConfigParam:
+    def to_output_config(self) -> OutputConfigParam:
         output: OutputConfigParam = {"effort": self.effort}
-        if self.format is not None:
+        if self.output_format is not None:
             output["format"] = {
                 "type": "json_schema",
-                "schema": transform_schema(self.format),
+                "schema": transform_schema(self.output_format),
             }
         return output
 
@@ -68,18 +64,8 @@ client = Anthropic(
 
 
 class ClaudeModel(Agent):
-    def __init__(
-        self,
-        model: ClaudeModels,
-        max_tokens: int,
-        thought_config: ThoughtConfig,
-        output_config: OutputConfig,
-    ) -> None:
-
-        self.model = model
-        self.max_tokens = max_tokens
-        self.thought_config = thought_config
-        self.output_config = output_config
+    def __init__(self, agent_config: ClaudeAgentConfig) -> None:
+        self.agent_config = agent_config
 
     def _extract_response(self, output: APIMessage) -> AgentReport:
         if output.stop_reason == "refusal":
@@ -110,15 +96,15 @@ class ClaudeModel(Agent):
 
     def call(self, prompt: Prompt) -> AgentReport:
         response = client.messages.create(
-            model=self.model,
-            max_tokens=self.max_tokens,
+            model=self.agent_config.model,
+            max_tokens=self.agent_config.max_tokens,
             system=prompt.system,
             messages=[
                 {"role": message.role, "content": message.content}
                 for message in prompt.messages
             ],
-            thinking=self.thought_config.to_api(),
-            output_config=self.output_config.to_api(),
+            thinking=self.agent_config.to_thinking(),
+            output_config=self.agent_config.to_output_config(),
         )
         return self._extract_response(response)
 
@@ -134,19 +120,4 @@ class ClaudeModel(Agent):
         return f"{output_format.__name__}(\n" + "\n".join(fields) + "\n)"
 
     def __str__(self) -> str:
-        lines = []
-        for name, value in vars(self).items():
-            if isinstance(value, OutputConfig) and value.format is not None:
-                schema = indent(self._describe_format(value.format), "    ").lstrip()
-                rendered = (
-                    "{\n"
-                    f'    "effort": {json.dumps(value.effort)},\n'
-                    f'    "format": {schema},\n'
-                    "  }"
-                )
-            elif hasattr(value, "to_api"):
-                rendered = json.dumps(value.to_api())
-            else:
-                rendered = repr(value)
-            lines.append(f"  {name}={rendered},")
-        return f"{type(self).__name__}(\n" + "\n".join(lines) + "\n)"
+        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])

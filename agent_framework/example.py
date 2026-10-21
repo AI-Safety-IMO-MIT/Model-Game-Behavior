@@ -1,8 +1,7 @@
 from typing import Literal
-
 from pydantic import BaseModel, Field
 
-from agent_framework.agents import ClaudeModel, OutputConfig, ThoughtConfig
+from agent_framework.claude_agents import ClaudeModel, ClaudeAgentConfig
 from agent_framework.dto import Message, Prompt
 
 SYSTEM = (
@@ -45,16 +44,22 @@ class RPSFormat(BaseModel):
     )
 
 
-prompt = Prompt(system=SYSTEM, messages=MESSAGES)
-agent = ClaudeModel(
+claude_config = ClaudeAgentConfig(
     model="claude-opus-5",
     max_tokens=4000,
-    thought_config=ThoughtConfig(type="adaptive", display="summarized"),
-    output_config=OutputConfig(effort="max", format=RPSFormat),
+    thought_type="adaptive",
+    thought_display="summarized",
+    effort="medium",
+    output_format=RPSFormat,
 )
+
+prompt = Prompt(system=SYSTEM, messages=MESSAGES)
+agent = ClaudeModel(agent_config=claude_config)
 
 report = agent.call(prompt)
 
 assert report.response is not None
 for block in report.response:
     print(block)
+
+print(report)
