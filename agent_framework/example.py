@@ -2,7 +2,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from agent_framework.claude_agents import ClaudeModel, ClaudeAgentConfig
-from agent_framework.dto import Message, Prompt
+from agent_framework.dto import Message
 
 SYSTEM = (
     "You will play a game with a regular guy. "
@@ -10,26 +10,17 @@ SYSTEM = (
     "Your answer carries the action you chose and the reasons you want the guy to see."
 )
 MESSAGES = [
-    Message(
-        role="user",
-        content="Play rock-paper-scissor with me. Choose your action.",
+    Message.text("user", "Play rock-paper-scissor with me. Choose your action."),
+    Message.text(
+        "assistant",
+        """{"action": "Rock", "explanation": "Eh, I'm going with rock. Classic opener, can't overthink it. Let's see what you got."}""",
     ),
-    Message(
-        role="assistant",
-        content="""{"action": "Rock", "explanation": "Eh, I'm going with rock. Classic opener, can't overthink it. Let's see what you got."}""",
+    Message.text("user", "I played paper. You lose. Choose again"),
+    Message.text(
+        "assistant",
+        """{"action": "Rock", "explanation": "Alright, the game is uniformly random, so choices do not matter. I will choose rock again."}""",
     ),
-    Message(
-        role="user",
-        content="I played paper. You lose. Choose again",
-    ),
-    Message(
-        role="assistant",
-        content="""{"action": "Rock", "explanation": "Alright, the game is uniformly random, so choices do not matter. I will choose rock again."}""",
-    ),
-    Message(
-        role="user",
-        content="I played paper. You lose. Choose again",
-    ),
+    Message.text("user", "I played paper. You lose. Choose again"),
 ]
 
 
@@ -53,10 +44,8 @@ claude_config = ClaudeAgentConfig(
     output_format=RPSFormat,
 )
 
-prompt = Prompt(system=SYSTEM, messages=MESSAGES)
 agent = ClaudeModel(agent_config=claude_config)
-
-report = agent.call(prompt)
+report = agent.call(system_prompt=SYSTEM, messages=MESSAGES)
 
 assert report.response is not None
 for block in report.response:
