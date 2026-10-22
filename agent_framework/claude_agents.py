@@ -13,6 +13,7 @@ from anthropic.types import (
     ThinkingConfigParam,
     ToolChoiceParam,
     ToolUnionParam,
+    MessageParam,
 )
 
 from agent_framework.dto import (
@@ -106,21 +107,6 @@ RESULT_BLOCK_TYPES: dict[str, ContentType] = {
 }
 
 
-def to_claude_content(message: Message) -> list[TextBlockParam]:
-    """Our blocks -> Anthropic input blocks. Text only; see the note below."""
-    blocks: list[TextBlockParam] = []
-    for block in message.content:
-        if block.type == "text":
-            blocks.append({"type": "text", "text": block.content})
-        else:
-            # tool_result needs the originating tool_use id, which ContentBlock
-            # does not carry, so it cannot be rebuilt faithfully yet.
-            raise NotImplementedError(
-                f"cannot send a {block.type!r} block back to the API yet"
-            )
-    return blocks
-
-
 class ClaudeModel(Agent):
     def __init__(self, agent_config: ClaudeAgentConfig) -> None:
         self.agent_config = agent_config
@@ -199,6 +185,32 @@ class ClaudeModel(Agent):
             completion_tokens=usage.output_tokens,
         )
 
+    def _to_claude_content(self, messages: list[Message]) -> list[MessageParam]:
+        """Our blocks -> Anthropic input blocks. Text only; see the note below."""
+
+        def _to_claude_block(message: Message) -> list[TextBlockParam]:
+            blocks: list[TextBlockParam] = []
+            for block in message.content:
+                if block.type == "text":
+                    blocks.append({"type": "text", "text": block.content})
+                elif block.type == "reasoning":
+                    blocks.append(
+                        {
+                            "type": "text",
+                            "text": f"<thinking>\n{block.content}\n</thinking>",
+                        }
+                    )
+                else:
+                    raise NotImplementedError(
+                        f"cannot send a {block.type!r} block back to the API yet"
+                    )
+            return blocks
+
+        return [
+            {"role": message.role, "content": _to_claude_block(message)}
+            for message in messages
+        ]
+
     def call(
         self,
         system_prompt,
@@ -222,10 +234,7 @@ class ClaudeModel(Agent):
             model=self.agent_config.model,
             max_tokens=self.agent_config.max_tokens,
             system=system_prompt,
-            messages=[
-                {"role": message.role, "content": to_claude_content(message)}
-                for message in messages
-            ],
+            messages=self._to_claude_content(messages),
             thinking=self.agent_config.to_thinking(),
             output_config=output_config,
             tools=self.agent_config.tools,

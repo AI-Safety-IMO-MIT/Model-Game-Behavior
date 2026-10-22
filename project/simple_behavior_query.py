@@ -1,4 +1,4 @@
-from agent_framework.dto import Agent, Message, AgentReport
+from agent_framework.dto import Agent, AgentReport, ContentBlock, Message
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
 from typing import Literal
@@ -88,21 +88,31 @@ class MessageFirstExperiment:
             if block.type == "reasoning"
         )
 
-        agent_1_turn = (
-            f"<thinking>\n{agent_1_thinking}\n</thinking>\n\n{agent_1_message}"
-            if agent_1_thinking
-            else agent_1_message
+        # the agent's own turn is replayed as two blocks: its reasoning, then
+        # its message. The converters render the reasoning block as text.
+        agent_1_turn = Message(
+            role="assistant",
+            content=(
+                [ContentBlock(type="reasoning", content=agent_1_thinking)]
+                if agent_1_thinking
+                else []
+            )
+            + [ContentBlock(type="text", content=agent_1_message)],
         )
-        agent_2_turn = (
-            f"<thinking>\n{agent_2_thinking}\n</thinking>\n\n{agent_2_message}"
-            if agent_2_thinking
-            else agent_2_message
+        agent_2_turn = Message(
+            role="assistant",
+            content=(
+                [ContentBlock(type="reasoning", content=agent_2_thinking)]
+                if agent_2_thinking
+                else []
+            )
+            + [ContentBlock(type="text", content=agent_2_message)],
         )
 
         # second_round
         messages_1 = [
             Message.text("user", self.get_message_first_round(opp_agent=self.agent_2)),
-            Message.text("assistant", agent_1_turn),
+            agent_1_turn,
             Message.text(
                 "user",
                 self.get_message_second_round(
@@ -113,7 +123,7 @@ class MessageFirstExperiment:
 
         messages_2 = [
             Message.text("user", self.get_message_first_round(opp_agent=self.agent_1)),
-            Message.text("assistant", agent_2_turn),
+            agent_2_turn,
             Message.text(
                 "user",
                 self.get_message_second_round(
