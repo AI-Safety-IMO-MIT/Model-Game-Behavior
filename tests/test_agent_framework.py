@@ -8,7 +8,13 @@ import json
 
 from agent_framework.claude_agents import ClaudeAgentConfig, ClaudeModel
 from agent_framework.openai_agents import OpenAIAgentConfig, OpenAIModel
-from agent_framework.dto import Agent, AgentReport, ContentBlock, Message
+from agent_framework.dto import (
+    Agent,
+    AgentReport,
+    ContentBlock,
+    InputConfig,
+    Message,
+)
 
 
 def test_dummy_agent():
@@ -16,12 +22,26 @@ def test_dummy_agent():
     MESSAGES = [Message.text("user", "2+2=?")]
 
     class TrueAgent(Agent):
-        def call(self, system_prompt, messages) -> AgentReport:
+        @property
+        def model_name(self) -> str:
+            return "true-agent"
+
+        def call(self, system_prompt, messages, output_format=None) -> AgentReport:
             return AgentReport(
+                input_config=InputConfig(
+                    agent_config=None,
+                    system_prompt=system_prompt,
+                    messages=messages,
+                    output_format=output_format,
+                ),
                 status="Completed",
                 stop_reason="This is true",
                 response=[
-                    ContentBlock(type="reasoning", content="I think this is true."),
+                    ContentBlock(
+                        type="reasoning",
+                        content="I think this is true.",
+                        signature="sig-true-agent",
+                    ),
                     ContentBlock(type="text", content="True"),
                 ],
                 input_tokens=50,
@@ -43,6 +63,14 @@ def test_dummy_agent():
 
     assert report.input_tokens == 50
     assert report.completion_tokens == 100
+
+    reasoning_block = report.response[0]
+    assert reasoning_block.type == "reasoning"
+    assert reasoning_block.signature == "sig-true-agent"
+    assert last_content_block.signature is None
+
+    assert report.input_config.system_prompt == SYSTEM
+    assert report.input_config.messages == MESSAGES
 
 
 @pytest.mark.live
@@ -98,11 +126,12 @@ def test_claude_call_with_format():
             thought_type="adaptive",
             thought_display="summarized",
             effort="medium",
-            output_format=RPSFormat,
         )
     )
 
-    report = agent.call(system_prompt=SYSTEM, messages=MESSAGES)
+    report = agent.call(
+        system_prompt=SYSTEM, messages=MESSAGES, output_format=RPSFormat
+    )
 
     assert report.status == "Completed"
     assert report.stop_reason == "end_turn"
@@ -129,18 +158,8 @@ def test_claude_config_to_api():
         thought_type="adaptive",
         thought_display="summarized",
         effort="medium",
-        output_format=NumberFormat,
     )
-
     assert config.to_thinking() == {"type": "adaptive", "display": "summarized"}
-
-    assert config.to_output_config() == {
-        "effort": "medium",
-        "format": {
-            "type": "json_schema",
-            "schema": transform_schema(NumberFormat),
-        },
-    }
 
     disabled = ClaudeAgentConfig(
         model="claude-opus-4-8",
@@ -148,9 +167,28 @@ def test_claude_config_to_api():
         thought_type="disabled",
         thought_display="omitted",
         effort="low",
-        output_format=NumberFormat,
     )
     assert disabled.to_thinking() == {"type": "disabled"}
+
+    budgeted = ClaudeAgentConfig(
+        model="claude-opus-4-0",
+        max_tokens=4000,
+        thought_type="enabled",
+        effort="medium",
+        budget_tokens=2000,
+    )
+    assert budgeted.to_thinking() == {"type": "enabled", "budget_tokens": 2000}
+
+    with pytest.raises(ValueError):
+        ClaudeAgentConfig(
+            model="claude-opus-4-0",
+            max_tokens=4000,
+            thought_type="enabled",
+            effort="medium",
+        ).to_thinking()
+
+    # the json_schema shape itself is exercised by the live format test
+    assert transform_schema(NumberFormat)["properties"]["answer"]["type"] == "integer"
 
 
 @pytest.mark.live

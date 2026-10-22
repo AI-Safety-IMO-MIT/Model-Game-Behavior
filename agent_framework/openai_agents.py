@@ -13,7 +13,14 @@ from openai.lib._pydantic import to_strict_json_schema
 from openai.types.responses.response import Response
 from openai.types.responses.response_text_config_param import ResponseTextConfigParam
 
-from agent_framework.dto import Agent, AgentReport, ContentBlock, ContentType, Message
+from agent_framework.dto import (
+    Agent,
+    AgentReport,
+    ContentBlock,
+    ContentType,
+    Message,
+    InputConfig,
+)
 
 
 load_dotenv()
@@ -74,7 +81,6 @@ class OpenAIAgentConfig:
 
     temperature: Annotated[float, Field(ge=0, le=2)]
 
-    output_format: type[BaseModel] | None = None
     reasoning_summary: Literal["auto", "concise", "detailed"] = "auto"
     tools: tuple[ToolParam, ...] = ()
     tool_choice: ToolChoice = "auto"
@@ -86,19 +92,6 @@ class OpenAIAgentConfig:
             "context": self.reasoning_context,
             "mode": self.reasoning_mode,
         }
-
-    def to_text(self) -> ResponseTextConfigParam:
-        output_format = self.output_format
-        text: ResponseTextConfigParam = {"verbosity": self.output_verbosity}
-        if output_format:
-            text["format"] = {
-                "type": "json_schema",
-                "name": output_format.__name__,
-                "schema": to_strict_json_schema(output_format),
-                "description": output_format.__doc__ or "",
-                "strict": True,
-            }
-        return text
 
 
 # output item .type -> our ContentBlock type
@@ -114,30 +107,21 @@ SERVER_ITEM_TYPES: dict[str, ContentType] = {
 }
 
 
-def to_openai_input(messages: list[Message]) -> ResponseInputParam:
-    """Our turns -> Responses input items, one item per text block."""
-    items: ResponseInputParam = []
-    for message in messages:
-        for block in message.content:
-            if block.type == "text":
-                items.append({"role": message.role, "content": block.content})
-            else:
-                # function_call_output needs the call_id, which ContentBlock
-                # does not carry, so it cannot be rebuilt faithfully yet.
-                raise NotImplementedError(
-                    f"cannot send a {block.type!r} block back to the API yet"
-                )
-    return items
-
-
 class OpenAIModel(Agent):
     def __init__(self, agent_config: OpenAIAgentConfig) -> None:
         self.agent_config = agent_config
 
-    def _extract_response(self, output: Response) -> AgentReport:
+    @property
+    def model_name(self) -> str:
+        return self.agent_config.model
+
+    def _extract_response(
+        self, input_config: InputConfig, output: Response
+    ) -> AgentReport:
         if output.status == "incomplete":
             details = output.incomplete_details
             return AgentReport(
+                input_config=input_config,
                 status="Failed",
                 stop_reason=details.reason if details else None,
                 response=None,
@@ -148,6 +132,7 @@ class OpenAIModel(Agent):
         if output.status == "failed":
             error = output.error
             return AgentReport(
+                input_config=input_config,
                 status="Failed",
                 stop_reason=error.code + ": " + error.message if error else None,
                 response=None,
@@ -158,8 +143,22 @@ class OpenAIModel(Agent):
         response = []
         for item in output.output:
             if item.type == "reasoning":
+                if not item.summary:
+                    response.append(
+                        ContentBlock(
+                            type="reasoning",
+                            content="",
+                            signature=item.encrypted_content,
+                        )
+                    )
                 for part in item.summary:
-                    response.append(ContentBlock(type="reasoning", content=part.text))
+                    response.append(
+                        ContentBlock(
+                            type="reasoning",
+                            content=part.text,
+                            signature=item.encrypted_content,
+                        )
+                    )
 
             elif item.type == "message":
                 for part in item.content:
@@ -195,6 +194,7 @@ class OpenAIModel(Agent):
         assert usage is not None
 
         return AgentReport(
+            input_config=input_config,
             status="Completed",
             stop_reason=None,
             response=response,
@@ -202,20 +202,61 @@ class OpenAIModel(Agent):
             completion_tokens=usage.output_tokens,
         )
 
-    def call(self, system_prompt, messages) -> AgentReport:
+    def _to_openai_input(self, messages: list[Message]) -> ResponseInputParam:
+        """Our turns -> Responses input items, one item per text block."""
+        items: ResponseInputParam = []
+        for message in messages:
+            for block in message.content:
+                if block.type == "text":
+                    items.append({"role": message.role, "content": block.content})
+                elif block.type == "reasoning":
+                    items.append(
+                        {
+                            "role": message.role,
+                            "content": f"<thinking>\n{block.content}\n</thinking>",
+                        }
+                    )
+                else:
+                    raise NotImplementedError(
+                        f"cannot send a {block.type!r} block back to the API yet"
+                    )
+        return items
+
+    def call(
+        self, system_prompt, messages, output_format: type[BaseModel] | None = None
+    ) -> AgentReport:
+        input_config = InputConfig(
+            agent_config=self.agent_config,
+            system_prompt=system_prompt,
+            messages=messages,
+            output_format=output_format,
+        )
+        text: ResponseTextConfigParam = {
+            "verbosity": self.agent_config.output_verbosity
+        }
+        if output_format is not None:
+            text["format"] = {
+                "type": "json_schema",
+                "name": output_format.__name__,
+                "schema": to_strict_json_schema(output_format),
+                "description": output_format.__doc__ or "",
+                "strict": True,
+            }
+
         response = client.responses.create(
             model=self.agent_config.model,
             instructions=system_prompt,
-            input=to_openai_input(messages),
+            input=self._to_openai_input(messages),
             max_output_tokens=self.agent_config.max_output_tokens,
             max_tool_calls=self.agent_config.max_tool_calls,
             reasoning=self.agent_config.to_reasoning(),
-            text=self.agent_config.to_text(),
+            text=text,
             temperature=self.agent_config.temperature,
             tools=self.agent_config.tools,
             tool_choice=self.agent_config.tool_choice,
+            include=["reasoning.encrypted_content"],
         )
-        return self._extract_response(response)
+        return self._extract_response(input_config, response)
 
     def __str__(self) -> str:
         return "\n".join(

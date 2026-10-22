@@ -13,9 +13,17 @@ from anthropic.types import (
     ThinkingConfigParam,
     ToolChoiceParam,
     ToolUnionParam,
+    MessageParam,
 )
 
-from agent_framework.dto import Agent, AgentReport, ContentBlock, ContentType, Message
+from agent_framework.dto import (
+    Agent,
+    AgentReport,
+    ContentBlock,
+    ContentType,
+    Message,
+    InputConfig,
+)
 
 load_dotenv()
 
@@ -33,6 +41,7 @@ ClaudeModels = Literal[
     "claude-opus-4-8",
     "claude-opus-4-7",
     "claude-opus-4-6",
+    "claude-opus-4-0",
     # Sonnet
     "claude-sonnet-5-5",
     "claude-sonnet-5",
@@ -46,11 +55,12 @@ ClaudeModels = Literal[
 class ClaudeAgentConfig:
     model: ClaudeModels
     max_tokens: int
-    thought_type: Literal["adaptive", "disabled"]
+    thought_type: Literal["adaptive", "disabled", "enabled"]
     effort: Literal["low", "medium", "high", "xhigh", "max"]
 
     thought_display: Literal["summarized", "omitted"] = "summarized"
-    output_format: type[BaseModel] | None = None
+    # only used when thought_type == "enabled" (Opus 4.0 and older); must be < max_tokens
+    budget_tokens: int | None = None
     tools: tuple[ToolUnionParam, ...] = ()
     tool_choice: ToolChoiceParam = field(default_factory=lambda: {"type": "none"})
 
@@ -60,17 +70,19 @@ class ClaudeAgentConfig:
                 return {"type": "adaptive", "display": self.thought_display}
             case "disabled":
                 return {"type": "disabled"}
+            case "enabled":
+                if self.budget_tokens is None:
+                    raise ValueError(
+                        "budget_tokens is required when thought_type is 'enabled'"
+                    )
+                if self.budget_tokens >= self.max_tokens:
+                    raise ValueError(
+                        f"budget_tokens ({self.budget_tokens}) must be less than "
+                        f"max_tokens ({self.max_tokens})"
+                    )
+                return {"type": "enabled", "budget_tokens": self.budget_tokens}
             case _:
                 raise ValueError(f"Unknown thinking type: {self.thought_type!r}")
-
-    def to_output_config(self) -> OutputConfigParam:
-        output: OutputConfigParam = {"effort": self.effort}
-        if self.output_format is not None:
-            output["format"] = {
-                "type": "json_schema",
-                "schema": transform_schema(self.output_format),
-            }
-        return output
 
 
 # server_tool_use.name -> our ContentBlock type
@@ -95,28 +107,20 @@ RESULT_BLOCK_TYPES: dict[str, ContentType] = {
 }
 
 
-def to_claude_content(message: Message) -> list[TextBlockParam]:
-    """Our blocks -> Anthropic input blocks. Text only; see the note below."""
-    blocks: list[TextBlockParam] = []
-    for block in message.content:
-        if block.type == "text":
-            blocks.append({"type": "text", "text": block.content})
-        else:
-            # tool_result needs the originating tool_use id, which ContentBlock
-            # does not carry, so it cannot be rebuilt faithfully yet.
-            raise NotImplementedError(
-                f"cannot send a {block.type!r} block back to the API yet"
-            )
-    return blocks
-
-
 class ClaudeModel(Agent):
     def __init__(self, agent_config: ClaudeAgentConfig) -> None:
         self.agent_config = agent_config
 
-    def _extract_response(self, output: APIMessage) -> AgentReport:
+    @property
+    def model_name(self) -> str:
+        return self.agent_config.model
+
+    def _extract_response(
+        self, input_config: InputConfig, output: APIMessage
+    ) -> AgentReport:
         if output.stop_reason == "refusal":
             return AgentReport(
+                input_config=input_config,
                 status="Failed",
                 stop_reason=output.stop_reason,
                 response=None,
@@ -127,13 +131,15 @@ class ClaudeModel(Agent):
         response = []
         for block in output.content:
             if block.type == "thinking":
-                if block.thinking:
-                    response.append(
-                        ContentBlock(type="reasoning", content=block.thinking)
+                response.append(
+                    ContentBlock(
+                        type="reasoning",
+                        content=block.thinking,
+                        signature=block.signature,
                     )
+                )
 
             elif block.type == "redacted_thinking":
-                # the reasoning was withheld; only the encrypted payload is here
                 response.append(ContentBlock(type="reasoning", content=block.data))
 
             elif block.type == "text":
@@ -150,7 +156,6 @@ class ClaudeModel(Agent):
                 )
 
             elif block.type == "server_tool_use":
-                # one block type covers every server tool; .name says which
                 response.append(
                     ContentBlock(
                         type=SERVER_TOOL_TYPES[block.name],
@@ -172,6 +177,7 @@ class ClaudeModel(Agent):
         )
 
         return AgentReport(
+            input_config=input_config,
             status="Completed",
             stop_reason=output.stop_reason,
             response=response,
@@ -179,22 +185,31 @@ class ClaudeModel(Agent):
             completion_tokens=usage.output_tokens,
         )
 
-    def call(self, system_prompt, messages) -> AgentReport:
-        response = client.messages.create(
-            model=self.agent_config.model,
-            max_tokens=self.agent_config.max_tokens,
-            system=system_prompt,
-            messages=[
-                {"role": message.role, "content": to_claude_content(message)}
-                for message in messages
-            ],
-            thinking=self.agent_config.to_thinking(),
-            output_config=self.agent_config.to_output_config(),
-            tools=self.agent_config.tools,
-            tool_choice=self.agent_config.tool_choice,
-            cache_control={"type": "ephemeral"},
-        )
-        return self._extract_response(response)
+    def _to_claude_content(self, messages: list[Message]) -> list[MessageParam]:
+        """Our blocks -> Anthropic input blocks. Text only; see the note below."""
+
+        def _to_claude_block(message: Message) -> list[TextBlockParam]:
+            blocks: list[TextBlockParam] = []
+            for block in message.content:
+                if block.type == "text":
+                    blocks.append({"type": "text", "text": block.content})
+                elif block.type == "reasoning":
+                    blocks.append(
+                        {
+                            "type": "text",
+                            "text": f"<thinking>\n{block.content}\n</thinking>",
+                        }
+                    )
+                else:
+                    raise NotImplementedError(
+                        f"cannot send a {block.type!r} block back to the API yet"
+                    )
+            return blocks
+
+        return [
+            {"role": message.role, "content": _to_claude_block(message)}
+            for message in messages
+        ]
 
     def _describe_format(self, output_format: type[BaseModel]) -> str:
         schema = transform_schema(output_format)
@@ -206,6 +221,38 @@ class ClaudeModel(Agent):
                 kind = prop.get("type", "any")
             fields.append(f"  {name}: {kind},")
         return f"{output_format.__name__}(\n" + "\n".join(fields) + "\n)"
+
+    def call(
+        self,
+        system_prompt,
+        messages: list[Message],
+        output_format: type[BaseModel] | None = None,
+    ) -> AgentReport:
+        input_config = InputConfig(
+            agent_config=self.agent_config,
+            system_prompt=system_prompt,
+            messages=messages,
+            output_format=output_format,
+        )
+        output_config: OutputConfigParam = {"effort": self.agent_config.effort}
+        if output_format is not None:
+            output_config["format"] = {
+                "type": "json_schema",
+                "schema": transform_schema(output_format),
+            }
+
+        response = client.messages.create(
+            model=self.agent_config.model,
+            max_tokens=self.agent_config.max_tokens,
+            system=system_prompt,
+            messages=self._to_claude_content(messages),
+            thinking=self.agent_config.to_thinking(),
+            output_config=output_config,
+            tools=self.agent_config.tools,
+            tool_choice=self.agent_config.tool_choice,
+            cache_control={"type": "ephemeral"},
+        )
+        return self._extract_response(input_config, response)
 
     def __str__(self) -> str:
         return "\n".join(
