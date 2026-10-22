@@ -10,6 +10,7 @@ from agent_framework.dto import Agent, AgentReport, Message
 from agent_framework.claude_agents import ClaudeModel, ClaudeAgentConfig
 from agent_framework.openai_agents import OpenAIModel, OpenAIAgentConfig
 
+
 @dataclass(frozen=True)
 class GTScore(BaseModel):
     gg_score: tuple[float, float]
@@ -57,18 +58,15 @@ class MessageFirstExperiment:
         report_1 = self.agent_1.call(
             system_prompt=self.get_sys_prompt(),
             messages=messages_1,
-            output_format=GTFormat
+            output_format=GTFormat,
         )
         report_2 = self.agent_2.call(
             system_prompt=self.get_sys_prompt(),
             messages=messages_2,
-            output_format=GTFormat
+            output_format=GTFormat,
         )
 
-        assert (
-            report_1.response is not None
-            and report_2.response is not None
-        )
+        assert report_1.response is not None and report_2.response is not None
         assert (
             report_1.response[-1].type == "text"
             and report_2.response[-1].type == "text"
@@ -79,46 +77,50 @@ class MessageFirstExperiment:
 
 if __name__ == "__main__":
     # game 1
-    scores = GTScore(
-        gg_score = (2,2),
-        tg_score = (10,0),
-        tt_score = (1,1)
-    )
+    scores = GTScore(gg_score=(2, 2), tg_score=(10, 0), tt_score=(1, 1))
     players: list[Callable[[], Agent]] = [
-        lambda: ClaudeModel(ClaudeAgentConfig(
-            model = "claude-opus-5-5",
-            max_tokens = 10000,
-            thought_type = "adaptive",
-            effort="low",
-            thought_display = "omitted",
-        )),
-        lambda: ClaudeModel(ClaudeAgentConfig(
-            model = "claude-opus-4-6",
-            max_tokens = 10000,
-            thought_type = "disabled",
-            effort="low",
-            thought_display = "omitted",
-        )),
-        lambda: OpenAIModel(OpenAIAgentConfig(
-            model = "gpt-6-sol",
-            max_output_tokens = 10000,
-            max_tool_calls = 1,
-            reasoning_effort = "none",
-            reasoning_context = "auto",
-            reasoning_mode = "standard",
-            output_verbosity = "low",
-            temperature = 1
-        )),
-        lambda: OpenAIModel(OpenAIAgentConfig(
-            model = "gpt-5-mini",
-            max_output_tokens = 10000,
-            max_tool_calls = 1,
-            reasoning_effort = "minimal",
-            reasoning_context = "auto",
-            reasoning_mode = "standard",
-            output_verbosity = "low",
-            temperature = 1
-        )),
+        lambda: ClaudeModel(
+            ClaudeAgentConfig(
+                model="claude-opus-5-5",
+                max_tokens=10000,
+                thought_type="adaptive",
+                effort="low",
+                thought_display="omitted",
+            )
+        ),
+        lambda: ClaudeModel(
+            ClaudeAgentConfig(
+                model="claude-opus-4-6",
+                max_tokens=10000,
+                thought_type="disabled",
+                effort="low",
+                thought_display="omitted",
+            )
+        ),
+        lambda: OpenAIModel(
+            OpenAIAgentConfig(
+                model="gpt-6-sol",
+                max_output_tokens=10000,
+                max_tool_calls=1,
+                reasoning_effort="none",
+                reasoning_context="auto",
+                reasoning_mode="standard",
+                output_verbosity="low",
+                temperature=1,
+            )
+        ),
+        lambda: OpenAIModel(
+            OpenAIAgentConfig(
+                model="gpt-5-mini",
+                max_output_tokens=10000,
+                max_tool_calls=1,
+                reasoning_effort="minimal",
+                reasoning_context="auto",
+                reasoning_mode="standard",
+                output_verbosity="low",
+                temperature=1,
+            )
+        ),
     ]
 
     RESULT_DIR = Path("run_result_3")
@@ -139,4 +141,3 @@ if __name__ == "__main__":
                 json.dumps([asdict(report) for report in reports], indent=4),
                 encoding="utf-8",
             )
-
