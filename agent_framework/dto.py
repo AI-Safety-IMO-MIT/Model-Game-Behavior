@@ -12,9 +12,21 @@ class Message:
         return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
 
 
+ContentType = Literal[
+    "text",
+    "reasoning",
+    "tool_call",
+    "tool_result",
+    "web_search",
+    "code_execution",
+    "shell",
+    "tool_search",
+]
+
+
 @dataclass(frozen=True)
 class ContentBlock:
-    type: Literal["thinking", "text"]
+    type: ContentType
     content: str
 
     def __str__(self) -> str:
@@ -28,7 +40,6 @@ class AgentReport:
     response: list[ContentBlock] | None
     input_tokens: int | None
     completion_tokens: int | None
-    cache_tokens: int | None
 
     def __str__(self) -> str:
         return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
@@ -36,7 +47,7 @@ class AgentReport:
 
 class Agent(ABC):
     @abstractmethod
-    def call(self, system_prompt: str,messages: list[Message]) -> AgentReport: ...
+    def call(self, system_prompt: str, messages: list[Message]) -> AgentReport: ...
 
     @abstractmethod
     def __str__(self) -> str: ...

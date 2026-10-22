@@ -139,12 +139,11 @@ def test_dummy_agent():
                 status="Completed",
                 stop_reason="This is true",
                 response=[
-                    ContentBlock(type="thinking", content="I think this is true."),
+                    ContentBlock(type="reasoning", content="I think this is true."),
                     ContentBlock(type="text", content="True"),
                 ],
                 input_tokens=50,
                 completion_tokens=100,
-                cache_tokens=20,
             )
 
         def __str__(self) -> str:

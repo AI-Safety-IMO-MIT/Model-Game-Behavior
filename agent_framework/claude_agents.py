@@ -1,19 +1,24 @@
 from typing import Literal
-from dataclasses import dataclass
-from anthropic import Anthropic, transform_schema
+from dataclasses import dataclass, field
 from dotenv import load_dotenv
 import os
-from agent_framework.dto import Agent, AgentReport, ContentBlock
 from pydantic import BaseModel
+
+from anthropic import Anthropic, transform_schema
 from anthropic.types import Message as APIMessage
-from anthropic.types import OutputConfigParam, ThinkingConfigParam
+from anthropic.types import (
+    OutputConfigParam,
+    ThinkingConfigParam,
+    ToolUnionParam,
+    ToolChoiceParam,
+)
+
+from agent_framework.dto import Agent, AgentReport, ContentBlock, ContentType
 
 load_dotenv()
 
 client = Anthropic(
-    timeout=600.0,
-    max_retries=2,
-    api_key=os.environ["ANTHROPIC_API_KEY"]
+    timeout=600.0, max_retries=2, api_key=os.environ.get("ANTHROPIC_API_KEY", "missing")
 )
 
 ClaudeModels = Literal[
@@ -40,9 +45,12 @@ class ClaudeAgentConfig:
     model: ClaudeModels
     max_tokens: int
     thought_type: Literal["adaptive", "disabled"]
-    thought_display: Literal["summarized", "omitted"]
     effort: Literal["low", "medium", "high", "xhigh", "max"]
+    
+    thought_display: Literal["summarized", "omitted"] = "summarized"
     output_format: type[BaseModel] | None = None
+    tools: tuple[ToolUnionParam, ...] = ()
+    tool_choice: ToolChoiceParam = field(default_factory=lambda: {"type": "none"})
 
     def to_thinking(self) -> ThinkingConfigParam:
         match self.thought_type:
@@ -62,6 +70,29 @@ class ClaudeAgentConfig:
             }
         return output
 
+
+# server_tool_use.name -> our ContentBlock type
+SERVER_TOOL_TYPES: dict[str, ContentType] = {
+    "web_search": "web_search",
+    "web_fetch": "web_search",
+    "code_execution": "code_execution",
+    "bash_code_execution": "code_execution",
+    "text_editor_code_execution": "shell",
+    "tool_search_tool_regex": "tool_search",
+    "tool_search_tool_bm25": "tool_search",
+}
+
+# server tool *result* block type -> our ContentBlock type
+RESULT_BLOCK_TYPES: dict[str, ContentType] = {
+    "web_search_tool_result": "web_search",
+    "web_fetch_tool_result": "web_search",
+    "code_execution_tool_result": "code_execution",
+    "bash_code_execution_tool_result": "code_execution",
+    "text_editor_code_execution_tool_result": "shell",
+    "tool_search_tool_result": "tool_search",
+}
+
+
 class ClaudeModel(Agent):
     def __init__(self, agent_config: ClaudeAgentConfig) -> None:
         self.agent_config = agent_config
@@ -74,23 +105,59 @@ class ClaudeModel(Agent):
                 response=None,
                 input_tokens=None,
                 completion_tokens=None,
-                cache_tokens=None,
             )
 
         response = []
         for block in output.content:
-            if block.type == "thinking" and block.thinking:
-                response.append(ContentBlock(type="thinking", content=block.thinking))
+            if block.type == "thinking":
+                if block.thinking:
+                    response.append(
+                        ContentBlock(type="reasoning", content=block.thinking)
+                    )
+
+            elif block.type == "redacted_thinking":
+                # the reasoning was withheld; only the encrypted payload is here
+                response.append(ContentBlock(type="reasoning", content=block.data))
+
             elif block.type == "text":
                 response.append(ContentBlock(type="text", content=block.text))
+
+            elif block.type == "tool_use":
+                response.append(
+                    ContentBlock(
+                        type="tool_call",
+                        content=f"name: {block.name}, input: {block.input}",
+                    )
+                )
+
+            elif block.type == "server_tool_use":
+                # one block type covers every server tool; .name says which
+                response.append(
+                    ContentBlock(
+                        type=SERVER_TOOL_TYPES[block.name],
+                        content=f"name: {block.name}, input: {block.input}",
+                    )
+                )
+
+            elif block.type in RESULT_BLOCK_TYPES:
+                response.append(
+                    ContentBlock(
+                        type=RESULT_BLOCK_TYPES[block.type],
+                        content=block.model_dump_json(),
+                    )
+                )
+
+        usage = output.usage
+        cache_tokens = (usage.cache_read_input_tokens or 0) + (
+            usage.cache_creation_input_tokens or 0
+        )
 
         return AgentReport(
             status="Completed",
             stop_reason=output.stop_reason,
             response=response,
-            input_tokens=output.usage.input_tokens,
-            completion_tokens=output.usage.output_tokens,
-            cache_tokens=output.usage.cache_read_input_tokens,
+            input_tokens=usage.input_tokens + cache_tokens,
+            completion_tokens=usage.output_tokens,
         )
 
     def call(self, system_prompt, messages) -> AgentReport:
@@ -98,23 +165,26 @@ class ClaudeModel(Agent):
             model=self.agent_config.model,
             max_tokens=self.agent_config.max_tokens,
             system=system_prompt,
-            messages= [
+            messages=[
                 {"role": message.role, "content": message.content}
                 for message in messages
             ],
             thinking=self.agent_config.to_thinking(),
             output_config=self.agent_config.to_output_config(),
+            tools=self.agent_config.tools,
+            tool_choice=self.agent_config.tool_choice,
+            cache_control={"type": "ephemeral"},
         )
         return self._extract_response(response)
 
     def _describe_format(self, output_format: type[BaseModel]) -> str:
         schema = transform_schema(output_format)
         fields = []
-        for name, field in schema.get("properties", {}).items():
-            if "enum" in field:
-                kind = "|".join(repr(value) for value in field["enum"])
+        for name, prop in schema.get("properties", {}).items():
+            if "enum" in prop:
+                kind = "|".join(repr(value) for value in prop["enum"])
             else:
-                kind = field.get("type", "any")
+                kind = prop.get("type", "any")
             fields.append(f"  {name}: {kind},")
         return f"{output_format.__name__}(\n" + "\n".join(fields) + "\n)"
 
