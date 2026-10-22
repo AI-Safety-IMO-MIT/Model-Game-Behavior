@@ -159,8 +159,22 @@ class OpenAIModel(Agent):
         response = []
         for item in output.output:
             if item.type == "reasoning":
+                if not item.summary:
+                    response.append(
+                        ContentBlock(
+                            type="reasoning",
+                            content="",
+                            signature=item.encrypted_content,
+                        )
+                    )
                 for part in item.summary:
-                    response.append(ContentBlock(type="reasoning", content=part.text))
+                    response.append(
+                        ContentBlock(
+                            type="reasoning",
+                            content=part.text,
+                            signature=item.encrypted_content,
+                        )
+                    )
 
             elif item.type == "message":
                 for part in item.content:
@@ -236,6 +250,7 @@ class OpenAIModel(Agent):
             temperature=self.agent_config.temperature,
             tools=self.agent_config.tools,
             tool_choice=self.agent_config.tool_choice,
+            include=["reasoning.encrypted_content"],
         )
         return self._extract_response(input_config, response)
 

@@ -145,13 +145,15 @@ class ClaudeModel(Agent):
         response = []
         for block in output.content:
             if block.type == "thinking":
-                if block.thinking:
-                    response.append(
-                        ContentBlock(type="reasoning", content=block.thinking)
+                response.append(
+                    ContentBlock(
+                        type="reasoning",
+                        content=block.thinking,
+                        signature=block.signature,
                     )
+                )
 
             elif block.type == "redacted_thinking":
-                # the reasoning was withheld; only the encrypted payload is here
                 response.append(ContentBlock(type="reasoning", content=block.data))
 
             elif block.type == "text":
@@ -168,7 +170,6 @@ class ClaudeModel(Agent):
                 )
 
             elif block.type == "server_tool_use":
-                # one block type covers every server tool; .name says which
                 response.append(
                     ContentBlock(
                         type=SERVER_TOOL_TYPES[block.name],

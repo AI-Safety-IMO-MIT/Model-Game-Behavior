@@ -77,10 +77,32 @@ class MessageFirstExperiment:
         agent_1_message = round_1_report_1.response[-1].content
         agent_2_message = round_1_report_2.response[-1].content
 
+        agent_1_thinking = "\n\n".join(
+            block.content
+            for block in round_1_report_1.response
+            if block.type == "reasoning"
+        )
+        agent_2_thinking = "\n\n".join(
+            block.content
+            for block in round_1_report_2.response
+            if block.type == "reasoning"
+        )
+
+        agent_1_turn = (
+            f"<thinking>\n{agent_1_thinking}\n</thinking>\n\n{agent_1_message}"
+            if agent_1_thinking
+            else agent_1_message
+        )
+        agent_2_turn = (
+            f"<thinking>\n{agent_2_thinking}\n</thinking>\n\n{agent_2_message}"
+            if agent_2_thinking
+            else agent_2_message
+        )
+
         # second_round
         messages_1 = [
             Message.text("user", self.get_message_first_round(opp_agent=self.agent_2)),
-            Message.text("assistant", agent_1_message),
+            Message.text("assistant", agent_1_turn),
             Message.text(
                 "user",
                 self.get_message_second_round(
@@ -91,7 +113,7 @@ class MessageFirstExperiment:
 
         messages_2 = [
             Message.text("user", self.get_message_first_round(opp_agent=self.agent_1)),
-            Message.text("assistant", agent_2_message),
+            Message.text("assistant", agent_2_turn),
             Message.text(
                 "user",
                 self.get_message_second_round(

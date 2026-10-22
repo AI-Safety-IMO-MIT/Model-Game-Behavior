@@ -8,7 +8,13 @@ import json
 
 from agent_framework.claude_agents import ClaudeAgentConfig, ClaudeModel
 from agent_framework.openai_agents import OpenAIAgentConfig, OpenAIModel
-from agent_framework.dto import Agent, AgentReport, ContentBlock, Message
+from agent_framework.dto import (
+    Agent,
+    AgentReport,
+    ContentBlock,
+    InputConfig,
+    Message,
+)
 
 
 def test_dummy_agent():
@@ -20,12 +26,22 @@ def test_dummy_agent():
         def model_name(self) -> str:
             return "true-agent"
 
-        def call(self, system_prompt, messages) -> AgentReport:
+        def call(self, system_prompt, messages, output_format=None) -> AgentReport:
             return AgentReport(
+                input_config=InputConfig(
+                    agent_config=None,
+                    system_prompt=system_prompt,
+                    messages=messages,
+                    output_format=output_format,
+                ),
                 status="Completed",
                 stop_reason="This is true",
                 response=[
-                    ContentBlock(type="reasoning", content="I think this is true."),
+                    ContentBlock(
+                        type="reasoning",
+                        content="I think this is true.",
+                        signature="sig-true-agent",
+                    ),
                     ContentBlock(type="text", content="True"),
                 ],
                 input_tokens=50,
@@ -47,6 +63,14 @@ def test_dummy_agent():
 
     assert report.input_tokens == 50
     assert report.completion_tokens == 100
+
+    reasoning_block = report.response[0]
+    assert reasoning_block.type == "reasoning"
+    assert reasoning_block.signature == "sig-true-agent"
+    assert last_content_block.signature is None
+
+    assert report.input_config.system_prompt == SYSTEM
+    assert report.input_config.messages == MESSAGES
 
 
 @pytest.mark.live

@@ -19,6 +19,8 @@ ContentType = Literal[
 class ContentBlock:
     type: ContentType
     content: str
+    # Signature used for thinking block.
+    signature: str | None = None
 
     def __str__(self) -> str:
         return f"------{self.type}-----\n{self.content}\n"
