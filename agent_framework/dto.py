@@ -25,14 +25,12 @@ class ContentBlock:
 
 @dataclass(frozen=True)
 class Message:
-    """One conversation turn: the role belongs to the turn, the type to the block."""
-
+    
     role: Literal["user", "assistant"]
     content: list[ContentBlock]
 
     @classmethod
     def text(cls, role: Literal["user", "assistant"], text: str) -> "Message":
-        """Shorthand for a turn that is just text."""
         return cls(role=role, content=[ContentBlock(type="text", content=text)])
 
     def __str__(self) -> str:
