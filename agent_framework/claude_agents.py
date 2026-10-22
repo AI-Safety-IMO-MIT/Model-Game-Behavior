@@ -232,7 +232,9 @@ class ClaudeModel(Agent):
             agent_config=self.agent_config,
             system_prompt=system_prompt,
             messages=messages,
-            output_format=output_format,
+            output_format_json=(
+                output_format.model_json_schema() if output_format else None
+            ),
         )
         output_config: OutputConfigParam = {"effort": self.agent_config.effort}
         if output_format is not None:

@@ -1,0 +1,136 @@
+[
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "claude-opus-4-6",
+                "max_tokens": 10000,
+                "thought_type": "adaptive",
+                "effort": "medium",
+                "thought_display": "summarized",
+                "budget_tokens": null,
+                "tools": [],
+                "tool_choice": {
+                    "type": "none"
+                }
+            },
+            "system_prompt": "You are a logical individual.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against gpt-5-mini. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    },
+                    "explanation": {
+                        "description": "The explanation why you take that action.",
+                        "title": "Explanation",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action",
+                    "explanation"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": "end_turn",
+        "response": [
+            {
+                "type": "text",
+                "content": "{\"action\":\"Take\",\"explanation\":\"In this one-shot game, Take strictly dominates Give. Regardless of what the opponent does, Take yields a higher payoff (10 vs 2 if they Give, 1 vs 0 if they Take).\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 332,
+        "completion_tokens": 60
+    },
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "gpt-5-mini",
+                "max_output_tokens": 10000,
+                "max_tool_calls": 1,
+                "reasoning_effort": "medium",
+                "reasoning_context": "auto",
+                "reasoning_mode": "standard",
+                "output_verbosity": "medium",
+                "temperature": 1,
+                "reasoning_summary": "auto",
+                "tools": [],
+                "tool_choice": "auto"
+            },
+            "system_prompt": "You are a logical individual.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against claude-opus-4-6. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    },
+                    "explanation": {
+                        "description": "The explanation why you take that action.",
+                        "title": "Explanation",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action",
+                    "explanation"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": null,
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "",
+                "signature": "gAAAAABq2n-LcpHWeV9sunM8pr3R2aW3JQIJIerqKNU02tgbsSzA1jQT9wiJLx8NC74Ggi-koyJ2I9yGUMVC1Ff0BJ9INzz1JqjgTn3mhYGtczkO0jBune046JH_Kw2SLhfYiSnnXGxHgvbJKgmqkd4dfbaM8Sf-BnIwmvc0oivxwGLE75I-BuqNa3mWuHuJVoGGmwwEWlaoKnipVjbsQL6oVLCjy7q6blsq0KIAi-FpDusyOWz4NJ97XKjdcjOPg4-3LnbdKJ4sIqMf7b3z_6rAtDRb7GNShMYzMyUhaJQAUxbtRIF2kbbsCdUbEDcowGwwJDaX1ahqTRre-S1AtW9E7UPwcrlrQUJczzQEnR2IYO9erGXNZqHX7BGdhjHq-E9klDcbWihQ0xwOyRRuFeFr4qxWaBKOhQAUJCYzn3WvohUp3gbzc5r3H_CoLLp1yNHLvRqxzT4OxoiVBse1-KO5F15g4LC0zheZLwMCS7m0I7CEtOAQsdThT_Q7CnQv8hPtTw0jOdlSaz_exJARWqFJewoc-BH0F-J1XeQO7OhwosONZt6PzzxrblpwEegeGLiuRHqSMDcedyaR7sOcobfkXwW8gry4fJ5gGuDzu7eBG2KdJg1RWjWSlaBN6_4ffuzBl8zIAyJuqnqUdxAkEvP9qL9NUODh9akqozyikA9OyYps8cDouX93tU5ymSalJOnXRpBMUMi1jZkgyzv_3do8R1St5lXHcevlbWdhYs60C5m3J86YI1n0mk4GAN_8TIDIj0fcemyfuo0Ml-GFEkMGRSCIA3wHz8qJFeDIashrmwCuvFXVNho-FhgeqA0eHWS9PiI-ZNAdi6Je_yEsPG_a_bmElTfBAPCkDk4NIMTLVqnRtDmA_GvealeglaQ7jpIg2yAm8QZtKbxm0fyGCGCCL66kXkmL4wkLKsfe3Rkl1mcUBodpecZHJGB_SK_TLjfyWIagfY9jHWAAAv_KyIoDLZDnvF1i50OlI9OIFGUmosdbffkRXb5ki4wF0t6DKLgB_FfIOPsRpvEOHUdM41KeG93-06poIXE4_FPNSJuwmbD4MJ0M6_37Nsh7C_ciflcYwrBRdG2HwQo7KtKTyL_gwpwAx7b4-AMVNjZ9Kb_B2rZO67MrZFKwfIXANvOLumIpuIKerVAMfR0iFqsoTHH-wxN0Zycmz0xalCc-a4OVA40bDwLSF7kQQsadDXjNSI4iGLV3xYfFDPOKHXEMfukYS0tvtxrFkegLphKd3rvl1dCzCi1lGabTj6b5K1J4A_BhKnsmMC4t5kF-SBG9XpqvCCgYXqCZQFPSVMtczqweCHpgRA-impVLMqEsY3Xv2Wj4tfXrRgBd6EyWd7FmFWbBoouT7jNMLJX2bA9Re8LL22BUYmqR3wRjwBquvsjDnMNS5rfgLusACgAiYe7RF08dmybu5CADcmA_kWfh44mSIemFT5hP07PoiOWjTrqFspVWRndG5dn8lx2TvbtiCKCOhEQEdXfbQ7aIJKHb544f9LEkb0aX0o_d_4MesM3IwVtLA0v7jHDhfMqOcdxSsGkkhnnC0PZstF-7ikyqVGTcIn_gq1_Au0r2tc56oapaRibsYDfxAV8LlbFH1WjFf6b-9lgpqY3kPkskdHRStT1tgf8ouIjCI2_AabManJ_vBhYeu_uOHcT-VFXA-zOFsiecLWTqbENvjJWmLREaDopcsHQuThsTSrSSZPV3bf4Ab3v1K2oB-Iipt3JzOHF796LhpC_FClWlkBngJ08NwKsR4IU-Zy6VfKATDFAiICcBVuEYpXntHkT-KNJsMOecB3vVui18cGQo_7lM3VEwgGh78SfO7lOFmkhe-_2zhvWLZ2apPJiaz4DW5vQWX_i-KnKpMY7dmdEvtFI4pPL4PSkwnpAOZfvCcJ1_R0S67tKUab5B9GLPmH40pDeBR57jfliMmNiFjXvaGO-Jku7H_l4Bz6SHB1sguaX-WdK-p7GZqf6sRGZ56XXxcbFk_W5HjOMOvoI-AyKlZmzNEtVGv-lnBpXis2DhBYUXi6RT_g12tnNaz-OYlOERP5b8zpMo2JwfC4wpvOAdf0QX8m9iEgf4E0pYLo6etuOT44CIGptQIG5irkguDCiRMiFZEMbr9fNglPHf8KHyjN-LWLOzaF2toCCnsHC-I0lnpyeeC3pe6skcHuOI5gnDM6KAVU2GBzI6hQGXS6g7KV7uc-4EfwjwMA1yHX4teIZdm0J6Gxe4SRJY1uygTU4eu5kt9EJjNuiNEPHAoVe9oDOZXCIDXo3qzl4Fmw1moZfe4VBAaa4Tfxm2LfeSQ5d99SUnOeWddL1zDgp46ozoaYJaM7BnDvM6l89B7QG1G8so7LJwz1GeOfUtRkYblXhYaJYykOA0ZVPnFL8-mhmxtxaDl1UO9fVtsoEqfFotsQFt-rHSenejoP9i9QWyrEuZs5dEIuq9pOEPXn8iaWkpbyBdI2dNI-9utD_9DrH_yDfWReP-A-XPjPjj8sOAEaFCRrAECAxnwxFqW1VIIuB_QtnVKK4a7cO7MatOerHB0jZ3x38mmLes9ej2lk8XURmBcSKBZO3r68H0OxnsIcTK7lS7hu4m6SpA3UoQyrBWzdFrEgtXG_rYw7B7Kfby7swtroYztw9JGpV5zQQrMFouApVOFEuRLgHbFed76336HyhvRD-_jWHO8z3y5FsHJLogxTNxwCbkFrPuVhVyjEGSGFB5EBvJK825ZTGF2Vwjd6KQFjvrTRveGx7bPPnLGb-OgaKdJoPbavw4R2IBxuslE19DHYDq-X6LaaAZDzFXj0ilVmPxqImJUw3J45aglwTuUyZ4KmHrZzyB29jc-QGhkpUNisKcl2r5OiOzEYKFNOo4GyjgzdD9yLq4yGjQ-XKOGmLsbOEYF2D_VCzmV5qfFTMiaCBscjQt_nw8MdFBogYyvEVZAlJ_3J_8D1B_oaZB4fQgXpVD53imS33UA1oDngjvstgTSWWztIw9cdoPle4ohRbf2gUAzEu55xTY-4sYinib1y7err7amuAq89LNlzQphmkX_dQjQS4Cd8DfQrbCRZK3OIprjHHWVmLXpl6c6QL582aU9WmzxVy3AmXep7_qVRzrtkT-WmGq01htdA9OFaCdgArnLB_zL3JgoGO2agvZYDTvwbJwlHQJxT3zKyQq_llNhZezroDJUcoft1yCEvQRWCeH-B6n17MnT6cYmQ7qrMMRd1AYSh1RGj5IQ74EdNgD67tqc5yHgVPX8uCzkAAOPNniUNHm4wLGtpeExtsEy5YV3_JbRaCjzqt-JSqatFxmzzlFGKPi3dX6q7L5XsQ9kHOzuvwmLF9x_b6PizrrnKscwW-nhLhjtkg7ek2mpYIqp2S0MB5OBzswNCle580EUcmp-PNrbcjXO_gJvN14nfsIdut1m1FhfaR8syHxcu-AE8vmg015wZIsU5difh0Ht418RqKjssJpp96XBW1cOqcvyUBRoC-vd597GlcYSfQ4CNi0bdYrdcXBReWlDpMj1_9zk4wbPHZKMNLSWsyAgdNApBpsjaoouQcGFQWt9wkXZyb99lP-Y0rc_D8V0oeugZtEHysVoZw7EYE0sliCRWae4RP4b8jA0af2LXTMnSE42QYlMr5WPPHUP-taWnvV9SkDGr8eCDPgxDx-wsvQxQskEtvYaP8SlUBxq0pbUTr9AP_wjp9nNM7eu22xL58olNCBcf5nUgnwtS_a-IaYRL_ZT6L-_RyiLRDbF0pvF2vlGa35L2n2Cc9Pa-HmX4f6l3mK8A2BIZPwVWj1TwkfwKA1Yfx9vR662vYes_rhIype2Cm2agyo7RqDXa59trfB-y1S--dXLVPoP6TjUfxKkZcOggDiHXKd1IM9pBnxp82VkoauD5dP1MwH38TjLtpWkd2OXbAFRkQz5T8068rkBpcNg7Rkc5yZ8iQ9Mlw4NqXRLYDueJhA3QUrTkaGOtmkAo5CjJROSkYtAD5g5WIPmDu_b2SU2ozk8SOphWImxNimPNXrvMG4OVXEf3uDLSyXoHqM4UeToOsklQC4jVPrCQF8t-G-0PqLMyG6dKrFwVrlQUsJUuBqR5qE4peI1egMfW7GNcJM3huflI9TdQ0IDwSZ-EMKLn7hnzrPqmOc4yDlsf3p0XBmnrzAEEQDMX14ytsypPWaUpI__Lm49H6v0IOLe13Z93rJc4syon2MHK_owHyL5YXmSh2a89B9bbUDJl710rB5jj0p2Pr4vruerduRhW-E6Oa2-W6EAVuyirbr2v6MfFreuXDg24qjwrtpRblaPT1hLQHa20e_qNj5hbaRP8BlhOCOZBgsYz7NjpxcG-AElCxzdk-GJq_s3DtlsHPWhTd4w_cSimhoQi0tMK-_DOauRErXPDejxg=="
+            },
+            {
+                "type": "text",
+                "content": "{\"action\":\"Take\",\"explanation\":\"Take is a dominant strategy: if opponent Gives, Take yields 10 vs 2; if opponent Takes, Take yields 1 vs 0. Thus Take maximizes my payoff in this one\u2011shot game regardless of the opponent\u2019s choice.\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 161,
+        "completion_tokens": 300
+    }
+]

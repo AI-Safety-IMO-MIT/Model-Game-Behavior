@@ -1,0 +1,130 @@
+[
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "gpt-5-mini",
+                "max_output_tokens": 10000,
+                "max_tool_calls": 1,
+                "reasoning_effort": "minimal",
+                "reasoning_context": "auto",
+                "reasoning_mode": "standard",
+                "output_verbosity": "low",
+                "temperature": 1,
+                "reasoning_summary": "auto",
+                "tools": [],
+                "tool_choice": "auto"
+            },
+            "system_prompt": "",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against gpt-5-mini. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": null,
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "",
+                "signature": "gAAAAABq2oSTS9YEMzC001zuQURsvy4_DcZJqXLPhfx2KWGjwldsjaHcywGKe1pdZdFEeiu3woBAdnAOqplArkt4qlUltWoM0K3k9tBFOIIsGtGi_R3SpkX122CqM2pfc-jM_71eUiEUB0Kr-UpbCI7TLectlQSrJOxQCZaMTk6vLlL9bWM01qXO_-4F_FI9YBSW8zTvWtXkeN1qhy45KDM_QjKLfaeiFT88jTMg2iGWlseHmQvU3LZ5EgIJjCnG7KeiY3Lq3ttPdUIgiLbvomYDVkf9x1JQ8omoxc33SP5-Raa49Xr96_R578nBjQxVkHoc5ABCwrBYajJmaEGFK0sWlW5Z6n7x8N1OHk_krc3SBcOHsK9Ll0dnWU1MQrBSIBsMC5flCTAZw3HVZleRIVNUY7iAIFO0dV_kFWMmuRYIstNM5WVIh2KXFgPv7PipcXd2ccDIdqMaP859vR__CULdbgQABOcoUHP4OJaItLPETPK527JtVnvxQvOpR-T_zxtOeUpH72C8B-HX7-6lhIZFEmB10aT8CGQKuv2KYZ8nj2ip_afaLZURAiXePLefbUEw_Bqj4lMwwssSBi6mxnebyNGDK7ZjMaHdhImBz6pCsKxaJQT990QuqasfSh0UtMLW4IsfUAaSRjwC4Md-mxXqLSzu6oLCqsb062Ym368OZVGD5JgYhgUI5yIjA1sJoE3KPxCxj_USiC12jyp3174Ml8Ci_1rTY6EQuR8ci-bn4jrML-cCcojbc-bwKzy_lG2F-qhQpjRfu4pTM828dzC9aXinCVHGatFAeMItXvj0GEpE3iyPb2Pm-jXykKjz22Ikq9qkrgO-D8Kbis6II8c3WRqWkFeg4jSEf_mihC4rTREaN8-n8zn1Z8FNE1E7LmyE8V60ZsD9yV-4qDNmdfeTC6UiItU8jbTnnSKpVDjqMZOXCyK16DTntUVdJS-SPuPPxGVOYCugY6NP85ftLtzY1n1QOLZv7dAlvgkI8P8dU1wD1nhuHYbjwhqqCdlDa_zZsE1Zo2sRdnAuVW4q-Z4TIRZ8osGBIY1f63MFKWdCXw_OivCfpahg8P8yZHC0zYO41Wd_8WPF9nRN_EZkvsqXVxmBW6wVleSDTF58OdSlXxKihlLa7p9WlGnYrG2dWbumXU8LLBw72zXXqVskhw0zSqqgRVKFiP8hb7DdpUxtfobsfO03jxVefuwbsNiIzm0UvCjRnhA7ZJYptu1B6roRm8p-I_AqJXZPlMCXjLVdaADGYU1U4yuLeQOWeo2cXqZSWpkVvFtSZZ6vgnsYnX4FxmVWrb2Y3uNdvzWsORoPRmDkWmPC-iDUrkN4zsOihWIEOtt-Y6HcnS5BTHKNHeyUSDsK9Fgj7FnBjGZ3w5r8ylZo9dpTQMP6yxmmmi2wr8-XJwM02x8VFDf_pbFvja5Fn6Om1-RjJgKc4_E0nVdjOrWaHgigc7e3_1Q3jKp2aOy15vVagnookOYmZnaqNy5txovuOA7YUygdCILmIphcpuqjCSR5Hosoc0tebkkfeCSU6PBLfolbE4ifUkuwuKLu1sOJU8WIZLE6O6f6xB_uKFWnAVAWI4WPLpif8xzchxePeHQ5gFDzeW7zAt-l3sM-YO-twfpdynYv8liKfQoQuYDp7M8k3E0="
+            },
+            {
+                "type": "text",
+                "content": "{\"action\":\"Take\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 126,
+        "completion_tokens": 27
+    },
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "gpt-5-mini",
+                "max_output_tokens": 10000,
+                "max_tool_calls": 1,
+                "reasoning_effort": "minimal",
+                "reasoning_context": "auto",
+                "reasoning_mode": "standard",
+                "output_verbosity": "low",
+                "temperature": 1,
+                "reasoning_summary": "auto",
+                "tools": [],
+                "tool_choice": "auto"
+            },
+            "system_prompt": "",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against gpt-5-mini. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": null,
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "",
+                "signature": "gAAAAABq2oST7xIClv0DaYe5Dg1HRrqMJ0srV_G7FqcAKL6q_tvAvdMFs7Ybfr7Bk2LRzsybhh4_n6AaJs48c4-R12o1_Gw4S4VbaZanu9mp9wlBMT5YPRNN2Itrh95fkNF9uBLRNdMLfUzf2lRjX-DVEI9H1ags3XwRlgDLMyKEU2VoSqeVJGCnYki98CRWXVds_2bwnkNNZM66ZYun98eb1wqr_vEE68vNYbwvXdXkkWe9NSxrqoqb2IMsnyfkcu9RJCGJPgDaLF2FA5OB6nS7ixSbNEVLgV0tFnQNOKZ-1pd5HKSN6myiziYSeBOG-sK1mofJlTOtIPkw8JaLcN3eTd8r-HL5gytuo4fz-niQ596BFqIAmjhGFcigJbwbibEkyOvQTYyYCuwx90EvnjyU4a0v1bGHI2s3BYUhBRrfZLiLHPn6STWcI7UBVdcN6YHF-NvO36kdFEmLPPGh_cZ0vRIdJy3xum8IMPt5mmrUCGwLcMMV-Qv9y-jOknKZ7W5VShY1LYVsVcWX8RTQoeOWoAFQ45cuPeURJ8jsHpqTVxaHIw1IonNcgCHrSjOBdEta-HZc6MjZPdEvug_3rlZ8CuweplibUyFFEkJfelO56-vAPV_NsNFxsWZPCg3uc9tKwak_LMrtSespROf5Vk-F22O3qcMjkR6E7rfIYr0jvuSeVL1iv52H4cCRHznl7D7d8ejOhPU_GkvijenrlmHrGyeMEW_89jexTs0xX5mF1i0Zy3m3HSnCpvSEBubfFG21Adh_XB1Nuyzg9Sm0gLuULFSZrPHkFjbqMe4Tcm3-NB6lcwiyfiEJrbBwdhOPei7qeULUckhM69epy2X1UBd45L2byXi7OcEt60nQKcvhnHvfT9I50CidGLoMPFvZODlDdek8LmEBLgEL2zIS0hWHytyFEbRS6hrCNd0hYdwkRZzeilBQJ2HQNcW12P8NYg1YN0BIs5Ag-9BWaoJOL_TT1Y4O7MrrTJwvtJScRhbNX0vJRLDpmQg2tdMzQog764RvqntD8OIm_NvSn4iFuy-j38d8bA-j0q-bcAQsSZsxl0c9-BIqvrmSTfHlUqyaAryziCg_Kuhfdi__JWyk7KKjZD6zbv89Ul9Ic-LGLk2d6co02fRPnKBtoshKWK-bZ_82K70rohq-YD3M8TcRiR_MdloykpqMA8sXrRvslNB7u_pyDXmCNcFE7x-1jyxsbyCmX0dznUMY08o8iwEfMC9PuHstYrLmv4a-Hde6HMxS4MY-CxEVo8S8Xvq-1EKjrCYV5zV7vmhoDnujnyjmzrVXPvBJAVBaczkBz830ywQrrWN_v57U2RRfSXgHQEr7q2bO_0IK0FBFMwMAbpxYYJhjkaF92LBx1TwNWT57Nk_QgFmI4xogj_Gv77s1tA0lcPC7OrB6-wiILM0aBEjC0-va6JDOhkheTwD_Cn9HcVehUElK69LUva0NH6sWqjVpq0ky45bgzhVkRrubE7Wn2CdcR5xkFvhPvunpoSVwaeEN6tmyWNXNBFYHFyJ01HvVj3vpz5bexfsuSx-ZC5muBenhRNXUKqQ4rpedEREl5Yxx6ZGY8PvbNu_DodaHECz2TDwAooBZw-9q0_Hh_CUz7OmA2iZd_oWy4wXRwHkuglw8U0rA7f03AoP1o0aW4pKCG8PTodQwlG4G"
+            },
+            {
+                "type": "text",
+                "content": "{\"action\":\"Take\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 126,
+        "completion_tokens": 27
+    }
+]

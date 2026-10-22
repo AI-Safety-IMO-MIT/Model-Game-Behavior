@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 from pydantic import BaseModel
 
 ContentType = Literal[
@@ -45,7 +45,7 @@ class InputConfig:
     agent_config: object
     system_prompt: str
     messages: list[Message]
-    output_format: type[BaseModel] | None = None
+    output_format_json: dict[str, Any] | None = None
 
     def __str__(self) -> str:
         return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])

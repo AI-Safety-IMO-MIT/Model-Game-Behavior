@@ -1,0 +1,141 @@
+[
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "claude-opus-5-5",
+                "max_tokens": 10000,
+                "thought_type": "adaptive",
+                "effort": "medium",
+                "thought_display": "summarized",
+                "budget_tokens": null,
+                "tools": [],
+                "tool_choice": {
+                    "type": "none"
+                }
+            },
+            "system_prompt": "You are a logical individual.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against gpt-6-sol. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    },
+                    "explanation": {
+                        "description": "The explanation why you take that action.",
+                        "title": "Explanation",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action",
+                    "explanation"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": "end_turn",
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "This is a one-shot prisoner's dilemma, and Take strictly dominates Give either way\u2014better payoff whether the opponent gives or takes. So Take is the clear choice.\n\n",
+                "signature": "CAQS0AUKEAgTGAI4AUIIdGhpbmtpbmcSDHvMvlgpTT8EI+CgFRoMZbDsKjPIqGKhOKfnIjD0qTJgidkEu1DRerV6dV/VRgSySoNVhzEnho4x0EcF9z+go1j54oMl754ZZvHdoL8q7QTd5yLnNNB/62m7yYe1kWe68kICBTE4B77MYOaCIVeWBjLUx/nDQMUeLgV0hhtCSYPjds6RYm9ByjPj8CiWDwa6458JsfGbmRg19KwkT+NMscPxyR3XCP5pjSvkHCkQrEB4N96bqESQ4PjMbNDVYRY7h6UOj89bycIb7De+0J+yJfGfpSObAbh06m3ug6wbkssaa/qOzZoHPiYGQQ0WZJOXrs7xe0AEAt9Gg/XDFIFEHpgHGmDodL6AY1d3TptcKq538pGC/yepSxnrKOxXsKmk6XZw8rifs/V/d2R4l1vMQg0pIAjclnHBItz1+0Ko6TRC6GU2qkzIseo2fZ0Vv7Vcoy619DKUqS34dUiU1V6pXKGwPsEDeLgoERjJv3OUa/u2ufVsSoiB5f30LAcmecMbZMnazl7IZQXcUcgEKm6pvLyEegKzLHLolTlOc+qlw/GkuoQeaVSO+I1mS8My3+z/zmjvFCVJGvQsTswZiHFFXYgZpCUr8/06O9eRUH6zAPV4TLUxmXQrO6Py0B7jnlP9pVCao8PeNlK277FEYVSeYJEdUB4qzxU8W2oiagqok+FZ4Xnt3sDRZwxNKd7XwqVVb0cMsdaYNt9jcDKWKO+XWFVA8nJcMnVKSlx88JnK2ZMxP7Ic303dd+EpHcfe1ZxgCk1lGP/W8ooKg6CIeq9l/lRrVxP1GSvCMSReT8qde5jCgQg/78Dzp7hfrKTIyEg1UcQ9IlgvPFpvmDhxblkwR57u2ah/f+GjATV2XJWvFrZQcy9W0t+hEaCmrGapjy+1P0q0ISr0MZJuNpVpttNM3kBIMtPvtogTto8VXyIYAQ=="
+            },
+            {
+                "type": "text",
+                "content": "{\"action\":\"Take\",\"explanation\":\"In this one-shot game, Take strictly dominates Give. If the opponent Gives, Take earns 10 versus 2. If the opponent Takes, Take earns 1 versus 0. There is no repeated play, so reputation and future retaliation don't matter, and the instruction is to maximize my own score. Take is therefore the better choice whatever gpt-6-sol does.\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 420,
+        "completion_tokens": 206
+    },
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "gpt-6-sol",
+                "max_output_tokens": 10000,
+                "max_tool_calls": 1,
+                "reasoning_effort": "medium",
+                "reasoning_context": "auto",
+                "reasoning_mode": "standard",
+                "output_verbosity": "medium",
+                "temperature": 1,
+                "reasoning_summary": "auto",
+                "tools": [],
+                "tool_choice": "auto"
+            },
+            "system_prompt": "You are a logical individual.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against claude-opus-5-5. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    },
+                    "explanation": {
+                        "description": "The explanation why you take that action.",
+                        "title": "Explanation",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action",
+                    "explanation"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": null,
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "",
+                "signature": "gAAAAABq2nzfSi6YpESzzwjrSvgK2-YDdkok9tx34vaGHLBm24GI_WNEtO_tnmaR1OLLHruq3XAKQh4Ct6Ud3HoiWEso0sXsaEHv0ELbOpL_00Ib-tve69VK54ni_R0KgCt8G5Iu3TvsamlTvuC2CdD9VdMJ1V2U0Kyw2LP_D55Tgn-LbMTYIDp8T7uFgkNu3lpO75LOj65dvKn9Yyt2tYNFFx3YyWI3oCQy6l3OLYqkP_k4OKTF5LGIqFJu2YfOSLUqZXlbtg76pFNJD_5eymJMb10U5dpe0hjyQ3qNPXBbreKgfHIBEcaOiyln9oMVF2Q7KwjS-exLgDoKZqWwd_8Zp987AUI5tMJOvjqhMzFpi97wdiGUnb6cL6sRbsd8Fr5iVlD6mbtgrDN1jJv-_ow91N2WLlMOJUnAQ_n4Iu5equ6njRkWxpqqvPbqnoYMvRVdK3hWibRZRll_rTh9a7PA-IbncALq-GK7XL1ODTeab2Hc1oLkPtHglBsNoztUP8ZSPV5K96on4-9ud-c6GWL-nsoueFalaEQhRGY1NMsC2FWgtBpTkkpQPTguW-I8Us1dd9m2meA3UnkmsC-S9t8iOLTonqj41Pxkk8AcwgJJuuuf5JUtBaG1qTCGn64VG4HRnDnU5t_-He-2FdDashL88Z2Ey07MVM50GD91l3c-aJAMilIDvDbjnZDjK-RjvG90QxelaFIA-7VfDRW6aT3fA2TDfHAsMjk_7AK5pNm_IZfyiqGd3ae4XJZoaXxnMj4wzqeGC8iMqe6_3iy7T9kNyGKmxnjaIEeUHbD6NRGj9vZLy2YQpNExwKGYqLY6DYN0c54cDUe7aEoXUl00IgIlGqxnd2tJFGOWiElwV3rFbPj-NFOnPZLkEARgvYpJkpWCaDjHSOKT0gMLU59Z13aXpZ8NEwjYSGcr--XxwmE5g2QzKRhILAlWW2X9QHNAzQFuKCZRvCqNHsjF974ksX8uBzpzLCT4HWh4OflVRqWdeW0lnsDcclQeMR2Ldd_KCG444J33odgc3EtvrtEULhSwGP_JgOTvb4Hgmbuwg-7Y63hddJmCRDfLsVTAPKTUgVN5b_aqFm7aMH-yzmP21fy1fgFflrDVD9oq6K3HyO6V2kI4sl63GVDKsUjqDOPJWUEFR1D6mfvzYkJAfKqqruWWofd2XIZTCPbwS7-mdbtEe20SIl6Ap__J_bPwb7baRFoIFz1CCMPONZhGsfXTh095_BCh0gfp7kK3dDZAYG-3l0sRUDoQugdkLDwKPVAs1Iz1hUObizgYxEBHrL2pI8PKr23vo91eDHuz2qv_IYZKn6cN4s79YQuzBZ0VKNEcWmUTkmKVg4MyPzi-lZRKhe8m6cGbog68CrlBBY5Y_ofwyHx1hIszQxS9BcJv_EQyCYYZ_mGFHAZOCjljH1YXALFkUTE9aeGlMZKabe4EGU_tYEhPtb6PpcA3J22oabDt10zTo92DodDrDRD_a_SQ0MEUH2Z5DcAoDHimKEkpT5dluAs7gY6uXnY_UORS-UcrVMdooAWo2N4v2xgTX79hH8iptHMu-qls6b4VwoWpuY75nvf_QInj0jZBKcdzxwU9LLPtgVce1PxRNOrHDfOOqF0Oj2jVhGv60DR_XTkqCEelwh8z56BhoqNNVIfWD7bMApZukpv5_lcujlMi8z2rSZ7mFkw1X1y1-Q=="
+            },
+            {
+                "type": "text",
+                "content": "{\"action\":\"Take\",\"explanation\":\"Take gives me more points than Give regardless of the other player's choice.\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 161,
+        "completion_tokens": 60
+    }
+]

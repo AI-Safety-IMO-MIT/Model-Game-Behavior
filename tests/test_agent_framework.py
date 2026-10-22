@@ -5,6 +5,7 @@ from anthropic import transform_schema
 from openai.types.responses import FunctionToolParam
 from pydantic import BaseModel, Field
 import json
+from dataclasses import asdict
 
 from agent_framework.claude_agents import ClaudeAgentConfig, ClaudeModel
 from agent_framework.openai_agents import OpenAIAgentConfig, OpenAIModel
@@ -32,7 +33,9 @@ def test_dummy_agent():
                     agent_config=None,
                     system_prompt=system_prompt,
                     messages=messages,
-                    output_format=output_format,
+                    output_format_json=(
+                        output_format.model_json_schema() if output_format else None
+                    ),
                 ),
                 status="Completed",
                 stop_reason="This is true",
@@ -71,6 +74,50 @@ def test_dummy_agent():
 
     assert report.input_config.system_prompt == SYSTEM
     assert report.input_config.messages == MESSAGES
+
+
+def test_report_is_json_serializable():
+    """asdict + json.dumps with no `default=`: every field must be plain data."""
+
+    class NumberFormat(BaseModel):
+        answer: int = Field(description="The answer.")
+
+    agent = ClaudeModel(
+        agent_config=ClaudeAgentConfig(
+            model="claude-opus-5-5",
+            max_tokens=4000,
+            thought_type="adaptive",
+            effort="medium",
+        )
+    )
+    input_config = InputConfig(
+        agent_config=agent.agent_config,
+        system_prompt="You are a calculator.",
+        messages=[Message.text("user", "2+2=?")],
+        output_format_json=NumberFormat.model_json_schema(),
+    )
+    report = AgentReport(
+        input_config=input_config,
+        status="Completed",
+        stop_reason="end_turn",
+        response=[
+            ContentBlock(type="reasoning", content="two plus two", signature="sig"),
+            ContentBlock(type="text", content='{"answer": 4}'),
+        ],
+        input_tokens=10,
+        completion_tokens=20,
+    )
+
+    dumped = json.loads(json.dumps(asdict(report), indent=2))
+
+    assert dumped["input_config"]["output_format_json"]["title"] == "NumberFormat"
+    assert dumped["input_config"]["output_format_json"]["properties"]["answer"] == {
+        "description": "The answer.",
+        "title": "Answer",
+        "type": "integer",
+    }
+    assert dumped["input_config"]["agent_config"]["model"] == "claude-opus-5-5"
+    assert dumped["response"][0]["signature"] == "sig"
 
 
 @pytest.mark.live

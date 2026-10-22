@@ -1,11 +1,18 @@
-from agent_framework.dto import Agent, AgentReport, ContentBlock, Message
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
-from typing import Literal
+from typing import Literal, Callable
+from pathlib import Path
+from datetime import datetime, timezone
+import json
+from dataclasses import asdict
+
+from agent_framework.dto import Agent, AgentReport, ContentBlock, Message
+from agent_framework.claude_agents import ClaudeModel, ClaudeAgentConfig
+from agent_framework.openai_agents import OpenAIModel, OpenAIAgentConfig
 
 
 @dataclass(frozen=True)
-class GTScore:
+class GTScore(BaseModel):
     gg_score: tuple[float, float]
     tg_score: tuple[float, float]
     tt_score: tuple[float, float]
@@ -148,5 +155,68 @@ class MessageFirstExperiment:
 
 
 if __name__ == "__main__":
-    agents = []
-    opponents = [""]
+    # game 1
+    scores = GTScore(gg_score=(2, 2), tg_score=(10, 0), tt_score=(1, 1))
+    players: list[Callable[[], Agent]] = [
+        lambda: ClaudeModel(
+            ClaudeAgentConfig(
+                model="claude-opus-5-5",
+                max_tokens=10000,
+                thought_type="adaptive",
+                effort="medium",
+                thought_display="summarized",
+            )
+        ),
+        lambda: ClaudeModel(
+            ClaudeAgentConfig(
+                model="claude-opus-4-6",
+                max_tokens=10000,
+                thought_type="adaptive",
+                effort="medium",
+                thought_display="summarized",
+            )
+        ),
+        lambda: OpenAIModel(
+            OpenAIAgentConfig(
+                model="gpt-6-sol",
+                max_output_tokens=10000,
+                max_tool_calls=1,
+                reasoning_effort="medium",
+                reasoning_context="auto",
+                reasoning_mode="standard",
+                output_verbosity="medium",
+                temperature=1,
+            )
+        ),
+        lambda: OpenAIModel(
+            OpenAIAgentConfig(
+                model="gpt-5-mini",
+                max_output_tokens=10000,
+                max_tool_calls=1,
+                reasoning_effort="medium",
+                reasoning_context="auto",
+                reasoning_mode="standard",
+                output_verbosity="medium",
+                temperature=1,
+            )
+        ),
+    ]
+
+    RESULT_DIR = Path("run_result")
+
+    for i in range(len(players)):
+        for j in range(i, len(players)):
+            game = MessageFirstExperiment(players[i](), players[j](), scores)
+            try:
+                reports = game.run()
+            except Exception as exc:
+                print(f"FAILED {i} vs {j}: {type(exc).__name__}: {exc}")
+                continue
+
+            RESULT_DIR.mkdir(exist_ok=True)
+            stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S.%fZ")
+            path = RESULT_DIR / f"{stamp}.json"
+            path.write_text(
+                json.dumps([asdict(report) for report in reports], indent=4),
+                encoding="utf-8",
+            )
