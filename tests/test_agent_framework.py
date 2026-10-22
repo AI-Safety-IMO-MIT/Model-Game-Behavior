@@ -16,6 +16,10 @@ def test_dummy_agent():
     MESSAGES = [Message.text("user", "2+2=?")]
 
     class TrueAgent(Agent):
+        @property
+        def model_name(self) -> str:
+            return "true-agent"
+
         def call(self, system_prompt, messages) -> AgentReport:
             return AgentReport(
                 status="Completed",
@@ -98,11 +102,12 @@ def test_claude_call_with_format():
             thought_type="adaptive",
             thought_display="summarized",
             effort="medium",
-            output_format=RPSFormat,
         )
     )
 
-    report = agent.call(system_prompt=SYSTEM, messages=MESSAGES)
+    report = agent.call(
+        system_prompt=SYSTEM, messages=MESSAGES, output_format=RPSFormat
+    )
 
     assert report.status == "Completed"
     assert report.stop_reason == "end_turn"
@@ -129,18 +134,8 @@ def test_claude_config_to_api():
         thought_type="adaptive",
         thought_display="summarized",
         effort="medium",
-        output_format=NumberFormat,
     )
-
     assert config.to_thinking() == {"type": "adaptive", "display": "summarized"}
-
-    assert config.to_output_config() == {
-        "effort": "medium",
-        "format": {
-            "type": "json_schema",
-            "schema": transform_schema(NumberFormat),
-        },
-    }
 
     disabled = ClaudeAgentConfig(
         model="claude-opus-4-8",
@@ -148,9 +143,28 @@ def test_claude_config_to_api():
         thought_type="disabled",
         thought_display="omitted",
         effort="low",
-        output_format=NumberFormat,
     )
     assert disabled.to_thinking() == {"type": "disabled"}
+
+    budgeted = ClaudeAgentConfig(
+        model="claude-opus-4-0",
+        max_tokens=4000,
+        thought_type="enabled",
+        effort="medium",
+        budget_tokens=2000,
+    )
+    assert budgeted.to_thinking() == {"type": "enabled", "budget_tokens": 2000}
+
+    with pytest.raises(ValueError):
+        ClaudeAgentConfig(
+            model="claude-opus-4-0",
+            max_tokens=4000,
+            thought_type="enabled",
+            effort="medium",
+        ).to_thinking()
+
+    # the json_schema shape itself is exercised by the live format test
+    assert transform_schema(NumberFormat)["properties"]["answer"]["type"] == "integer"
 
 
 @pytest.mark.live

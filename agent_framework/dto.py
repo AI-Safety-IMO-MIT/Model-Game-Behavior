@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Literal
+from pydantic import BaseModel
 
 ContentType = Literal[
     "text",
@@ -38,7 +39,19 @@ class Message:
 
 
 @dataclass(frozen=True)
+class InputConfig:
+    agent_config: object
+    system_prompt: str
+    messages: list[Message]
+    output_format: type[BaseModel] | None = None
+
+    def __str__(self) -> str:
+        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
+
+
+@dataclass(frozen=True)
 class AgentReport:
+    input_config: InputConfig
     status: Literal["Failed", "Completed"]
     stop_reason: str | None
     response: list[ContentBlock] | None
@@ -50,8 +63,17 @@ class AgentReport:
 
 
 class Agent(ABC):
+    @property
     @abstractmethod
-    def call(self, system_prompt: str, messages: list[Message]) -> AgentReport: ...
+    def model_name(self) -> str: ...
+
+    @abstractmethod
+    def call(
+        self,
+        system_prompt: str,
+        messages: list[Message],
+        output_format: type[BaseModel] | None = None,
+    ) -> AgentReport: ...
 
     @abstractmethod
     def __str__(self) -> str: ...

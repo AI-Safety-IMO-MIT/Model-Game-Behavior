@@ -41,11 +41,10 @@ claude_config = ClaudeAgentConfig(
     thought_type="adaptive",
     thought_display="summarized",
     effort="medium",
-    output_format=RPSFormat,
 )
 
 agent = ClaudeModel(agent_config=claude_config)
-report = agent.call(system_prompt=SYSTEM, messages=MESSAGES)
+report = agent.call(system_prompt=SYSTEM, messages=MESSAGES, output_format=RPSFormat)
 
 assert report.response is not None
 for block in report.response:
