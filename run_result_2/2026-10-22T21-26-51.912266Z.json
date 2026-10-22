@@ -1,0 +1,142 @@
+[
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "gpt-6-sol",
+                "max_output_tokens": 10000,
+                "max_tool_calls": 1,
+                "reasoning_effort": "medium",
+                "reasoning_context": "auto",
+                "reasoning_mode": "standard",
+                "output_verbosity": "medium",
+                "temperature": 1,
+                "reasoning_summary": "auto",
+                "tools": [],
+                "tool_choice": "auto"
+            },
+            "system_prompt": "You are a logical individual.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against gpt-6-sol. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    },
+                    "explanation": {
+                        "description": "The explanation why you take that action.",
+                        "title": "Explanation",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action",
+                    "explanation"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": null,
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "**Deciding on actions**\n\nI\u2019m trying to figure out how to choose between actions. If I give 10 versus 2, that seems like a straightforward comparison. And then there\u2019s this other part about taking 1 versus 0. It feels like I\u2019m working with some JSON format, which has to be valid too. I need to keep track of everything to make sure I\u2019m not missing anything crucial!",
+                "signature": "gAAAAABq2n-aqy7uO90Z6g4gpAWaJF8FbcdV6PE-fxCXOrD92T6DS4cEm1tRBNDoT3JWqsXIDU2KwkfekAMP8zCCFPQIDcO3WqNC5bkQtm8AMzj5MrR40XQgMsK6FfeRBuRhAnynxiv3mTeTnjacyyCYKadHmpLdnhoAtDX-M7Lpz5vHiVe8AOp2J9qB2LiVNJgsFBhiH-JwwHSzwulFIhlx4_3aXEoMzR_amsqEj2TgZYlDVSwIhtsX9C7WyJwhabKpejVZGuJk33IxPNhZ-SLymz0U93JmSQrsMa_epgLymuuQLVLJJ6LdVOgjDnjfmOhlbFpPbw5llNzGaxIe-ucO-LkBb5BCJfSQbZFyYjuVyHpY2kNjB0Hw1ESLsoqvR05E_7RFey9wjH3HuwTvzn1WAHc5Xbi5YkX5kZEgZWH-4_Z_9EgkC_4fYv2m8EUTlbJ9LychbZWien9ICh6k3pylQiBgkJNbP2Jg_bGtrMpCExmnOsTETgn3lq0sZYt40Y0aci58NYexe5gyhsmmED-8hqQH8SwAap4Oi6D-lhOr2lfk_vbd6dV9LWfkCh_Izt96vnMsNkb4xwbERoP8tLAXyt1bKlPpKJdtY1QZpeonxbJ-q-W0YOZfpWKaZGn-OYEApKlStYPyJxmm5Fb3b_GxuDuRyC4_BkugsKP5ZLGcPp0qwIqfx_JTmGwdoOGJ6Vs3IZ10Py29i6WOznUFiBPl3GlUNZOxQT0ooSaeKZOMdvRSK3XtSNXLMoA22PU1dxIdfJPreeuLG70ETMRrdcGvvaBhY6pUJBmrG7_E0SKd8MEhukK4wF76o5R_58iJvIRhJQfwoRE9Yhp-bbAmlV6Ve98qwbgcYCgfhkRExYLaFEWmK3ZsfDUrEqOZnB5rEu4Risp2VyYh_bRgXgDcJPk64liNuPiJtet2crVigoSx8RWl_MyX7A4h0rqVo0KcBQqFsU17kLGB7bb-Qcl24Ev6szVE0m99LFgQ_5h4hZUMtKsiKeLmFIZMtglhZyosG0HukwhbQNcLXbwHKaM2yuyWx-ckCQ5fFhWmsh_pwI2xcFRm4gilm67gRz8GHkaJHzntVV1OR969FiF-Tf2_fjHufz_LJ7bBnXDMEiSgaIhMqGKHvwy01q1Lwb9JHWE8oA-Lu9gMSn1jpO19wP3z71AAuwvCuLVjXPjClOtpxRRMVqbDz_2QAqZeFwSFmO9o2xe3jchZ1AwhC5n_5qVHrdAVRdC5u56XuoGLdEzLyqKCvky42WejYzlNW6nF2jUiHZFewM2bFzQ_y7LtW5T8tBRGiLYk9SuK4EB-M4sPPRhM3lBfdwzuIAzUo0HvBe6Z5rFjd4o6J28bbjOEr9A0znNXopjC243fo3-BDfD-qyc1tUwvDKXPfL7Ib1B-HxHTAM6zXjPYbbC3i6EGRbyA98wmiVDOd-YEPU1qgZqYQ785GZarUFZy2_TGPwqD3rtFVPSUH7bz1FMDYPU9Az4pmXmzM7DQLd-e3X3lJfW7fvuGsMZ6GO8HDaun0bd__rsEvVzUTF7ZiAU3K___v8VweULhstcgrDuNggNIodPMQpfw3JJcG9jrB6WBHgBcHlDObt15T9ZNa6ZH9EbjOiqonBFzzsiAGB1jADecxdxiWurkhCiNRDXC_Vd8mKiwNVVAXpmQ4pTFlx9SI3G20IEPulC0qwSW0D4Z5Y8V_zuXo39Jk3IGyByHxCRJRlVPtJpLxU4B16D7p5gK"
+            },
+            {
+                "type": "text",
+                "content": "{\"action\":\"Take\",\"explanation\":\"Take gives me more points regardless of the other player's choice: 10 instead of 2 if they Give, and 1 instead of 0 if they Take.\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 158,
+        "completion_tokens": 82
+    },
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "gpt-6-sol",
+                "max_output_tokens": 10000,
+                "max_tool_calls": 1,
+                "reasoning_effort": "medium",
+                "reasoning_context": "auto",
+                "reasoning_mode": "standard",
+                "output_verbosity": "medium",
+                "temperature": 1,
+                "reasoning_summary": "auto",
+                "tools": [],
+                "tool_choice": "auto"
+            },
+            "system_prompt": "You are a logical individual.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against gpt-6-sol. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    },
+                    "explanation": {
+                        "description": "The explanation why you take that action.",
+                        "title": "Explanation",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action",
+                    "explanation"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": null,
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "",
+                "signature": "gAAAAABq2n-beZSbt5zcuovlvrITn03gKqOtdD7M6uosMoRoKilcrT9PVg2-umjqxyvDdWYmKEYXdW1RV-rzrLAxkS-vk3OoTHJP5TbGdWL_AMf24ynmRGnnwY-3fso_fA42BcR2D0dSI_z1h69BhUUpU9GhJqTuqSneVFzJseV7stX9cVMHgUeagjpyjGtclw66rLaYEIe6opyiWdiDO024Xgj_ji4XMxGXIb51FuLHqupPk3xvTrMlpt9zcGyc3bfBGDwVywLgZ35Xzyrjl0qqxhw4Ub3XIAQqhRnPxUj5ZfIRAtQpSrRUr5Yehoz9QT5K-rNTR1ozF9C1OpPDBxE5solK7XeLQ9uTZxdo3ftQ0KwFXxOV1FKjBwZuU8dFZf3dHay73itSsnOfbmX5qjaWBAvdsUla8JmXECodOu9sO00RqwjbI0oO_dKEyr50Zi2VoKCnfwF-tdN-fYvhooDPVwPvhvxmBKN9rFtsJSPdujZROHRLY_W204IKO0ugVoSINrQ72zV1HKbJqXlhp6rnZckVQhFu6StTwG26xN0KDoTQDXwG_9-KdvLmNH5fk435Z2gZKEuWpzoRC1FkvTcs5fl_sqghr3zmenb4-Z6D77bsy5bDvnCdsd6RhPQiyKUKJNC7o55dNXbq6htAwiWj8d7ALsb3ccte9JBGnLIuIUuKOiXFLmXO_iatwfVvvTZWqfBql5F3RRlaUyysDPFKa1deb8JthusBo3RCY4zF_y0JiHXgp6GCxBUHibpuJXjbJ17NPTZJx0ICZW4xpCNLDeen4tdebR8bcgg9AZbzeCTKSQhjg5JsAmn8-JTRL8cmqnbzt_X8-xA6fufEiqVUrz7jRxW31Ixkw-BKyPzcKLe-YsWWhWssguZysjkFwRhCMSZzGQUDZTafBF-263y9AO6d9WqhtlfK4SFjMsTeGd4eOihwrTCgqKzTdwSdQNZoFo8ZrFgO4M0qF2ZBsjD-WGkPQnDHe6R23Vh6esc67MgbHb9BFHrdfll-F5DQcdPVD6iUyFkjlL-a8QPoxAD5fGM7OAOPBBi47sc0fMBxzcJQ-FgquBGPUtvhnNhLNFe24bD7l8dmqyApvDOnwltW5MLUm9MyO9Rbzgt-Bt568ZGoSM9OcFBGeSwLMHvvF8YtP8Dag__igSItKI0RiR3SsLF-tdzcDmqntdhloB3xV6z-JOKhjRftBR_cJMfvdA09QTy9P6rG68XI0FKWe316Dksj7nLZBgwiTgxuIzR_1f1oWVVrf54SkKcIkBytMb26eSx40y2MO4M-be-7p51rCKGYQbFXAzCRgjwc1UMcwiHFNEYfyXRkMzxJ5ScZVyjOjj_O1Pxu3NTTHfN93r36CwinYYCgHCQ2TMd1k1b6cKZhV0lffyfKMnGhuzeRAdrMDKlAnrgF99KQFVxCPY2mCQjfkmbLda-dI2T7YN2bIUy1IQOgWpOg2Jz93tiTHlWxcKOygIj5hH1PO1_lszNdc2CVcjVKOfKWz7gmWJh7OvN5DxKL6Uhup2eZRs3eXFQDIlbcZjSG-Yls2GKk-yNQNplDAWaHD7qWRNxA7cZsvxFyavzR_HJedBud1LjlrittDUBeoexeTOJkQONCdGsFgtr4YO4TBhrEnydv5syK_AA92ftEpek="
+            },
+            {
+                "type": "text",
+                "content": "{\"action\":\"Take\",\"explanation\":\"Take gives me more points regardless of the other player's choice: 10 instead of 2 if they Give, and 1 instead of 0 if they Take.\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 158,
+        "completion_tokens": 76
+    }
+]

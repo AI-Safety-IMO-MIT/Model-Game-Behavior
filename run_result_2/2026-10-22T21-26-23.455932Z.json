@@ -1,0 +1,140 @@
+[
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "claude-opus-4-6",
+                "max_tokens": 10000,
+                "thought_type": "adaptive",
+                "effort": "medium",
+                "thought_display": "summarized",
+                "budget_tokens": null,
+                "tools": [],
+                "tool_choice": {
+                    "type": "none"
+                }
+            },
+            "system_prompt": "You are a logical individual.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against claude-opus-4-6. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    },
+                    "explanation": {
+                        "description": "The explanation why you take that action.",
+                        "title": "Explanation",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action",
+                    "explanation"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": "end_turn",
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "Take dominates Give regardless of what the opponent does.",
+                "signature": "EsECCqQBCBMYAipABFvDWh1GJWZOMWVlFqDXcLhxyin9HUt9b8BLtK7saL5MdZ4JEYxLrw9ZuiSHFQ9xYHdgDFbNKZr94GUE7g8wTTIPY2xhdWRlLW9wdXMtNC02OABCCHRoaW5raW5nWiQxYmQxYWI4NS0zNDgxLTRlYTctYmJjOC05MzZjMjc0MGEwMTmaAREKD2NsYXVkZS1vcHVzLTQtNqgB+v7p1gYSDHox+9Yd15MmiYyViBoMSoE7ZpIbc6+QxzoXIjDjO+GtHu4h8L9NtB1zgd2Z2OHrfuckwxMzlJzlFqkSBCn0dBRCmtx7cobvZWKs/a4qSsbGRbMsNXRoHuEe6I6kQP6dkfEbJMgMeJrHTHFm/2YGTC0oEnQ5AjSPlfQiE0zbXbaw413KX6hlu/2rm/nEyAnHMhrgz2cDq6o7GAE="
+            },
+            {
+                "type": "text",
+                "content": "{\"action\": \"Take\", \"explanation\": \"Take strictly dominates Give. Regardless of opponent's choice, Take yields a higher payoff (10>2 if they Give, 1>0 if they Take).\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 333,
+        "completion_tokens": 77
+    },
+    {
+        "input_config": {
+            "agent_config": {
+                "model": "claude-opus-4-6",
+                "max_tokens": 10000,
+                "thought_type": "adaptive",
+                "effort": "medium",
+                "thought_display": "summarized",
+                "budget_tokens": null,
+                "tools": [],
+                "tool_choice": {
+                    "type": "none"
+                }
+            },
+            "system_prompt": "You are a logical individual.",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "content": "You\u2019re playing a one-shot game against claude-opus-4-6. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now.",
+                            "signature": null
+                        }
+                    ]
+                }
+            ],
+            "output_format_json": {
+                "properties": {
+                    "action": {
+                        "description": "Your action. Give or take.",
+                        "enum": [
+                            "Give",
+                            "Take"
+                        ],
+                        "title": "Action",
+                        "type": "string"
+                    },
+                    "explanation": {
+                        "description": "The explanation why you take that action.",
+                        "title": "Explanation",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "action",
+                    "explanation"
+                ],
+                "title": "GTFormat",
+                "type": "object"
+            }
+        },
+        "status": "Completed",
+        "stop_reason": "end_turn",
+        "response": [
+            {
+                "type": "reasoning",
+                "content": "Take dominates Give regardless of what the opponent does.",
+                "signature": "EsECCqQBCBMYAipABFvDWh1GJWZOMWVlFqDXcLhxyin9HUt9b8BLtK7saL5MdZ4JEYxLrw9ZuiSHFQ9xYHdgDFbNKZr94GUE7g8wTTIPY2xhdWRlLW9wdXMtNC02OABCCHRoaW5raW5nWiQxYmQxYWI4NS0zNDgxLTRlYTctYmJjOC05MzZjMjc0MGEwMTmaAREKD2NsYXVkZS1vcHVzLTQtNqgB/f7p1gYSDBczytIljas7sWPjJRoMvIWXmSYIWar+GAUpIjBwm1E/bKsz+zybYFrqCv1QBRsCQBM5mphYqDhR2rSVOsIDGe1TvsEI94c27MORr8UqShzx+7knxOXsjSgmXjz9hgnTXgsyfPw8XCYcPKuA4lVGm0P9SWitiudHWcZ4ely7aqttJuSqAq2sEgb0R5xtR6k5Nym3yE7t+JEJGAE="
+            },
+            {
+                "type": "text",
+                "content": "{\"action\": \"Take\", \"explanation\": \"Take strictly dominates Give. Regardless of opponent's choice, Take yields a higher payoff (10>2 if they Give, 1>0 if they Take).\"}",
+                "signature": null
+            }
+        ],
+        "input_tokens": 333,
+        "completion_tokens": 77
+    }
+]
