@@ -2,16 +2,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Literal
 
-
-@dataclass(frozen=True)
-class Message:
-    role: Literal["user", "assistant"]
-    content: str
-
-    def __str__(self) -> str:
-        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
-
-
 ContentType = Literal[
     "text",
     "reasoning",
@@ -31,6 +21,23 @@ class ContentBlock:
 
     def __str__(self) -> str:
         return f"------{self.type}-----\n{self.content}\n"
+
+
+@dataclass(frozen=True)
+class Message:
+    """One conversation turn: the role belongs to the turn, the type to the block."""
+
+    role: Literal["user", "assistant"]
+    content: list[ContentBlock]
+
+    @classmethod
+    def text(cls, role: Literal["user", "assistant"], text: str) -> "Message":
+        """Shorthand for a turn that is just text."""
+        return cls(role=role, content=[ContentBlock(type="text", content=text)])
+
+    def __str__(self) -> str:
+        blocks = "".join(str(block) for block in self.content)
+        return f"=== {self.role} ===\n{blocks}"
 
 
 @dataclass(frozen=True)

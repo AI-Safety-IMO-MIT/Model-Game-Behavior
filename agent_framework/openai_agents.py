@@ -3,16 +3,17 @@ from dataclasses import dataclass
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 import os
+import json
 
 from openai import OpenAI
 from openai.types.shared_params import Reasoning
-from openai.types.responses import ToolParam
+from openai.types.responses import ResponseInputParam, ToolParam
 from openai.types.responses.response_create_params import ToolChoice
 from openai.lib._pydantic import to_strict_json_schema
 from openai.types.responses.response import Response
-
-from agent_framework.dto import Agent, AgentReport, ContentBlock, ContentType
 from openai.types.responses.response_text_config_param import ResponseTextConfigParam
+
+from agent_framework.dto import Agent, AgentReport, ContentBlock, ContentType, Message
 
 
 load_dotenv()
@@ -70,12 +71,10 @@ class OpenAIAgentConfig:
     reasoning_mode: Literal["standard", "pro"]
 
     output_verbosity: Literal["low", "medium", "high"]
-    output_format: type[BaseModel]
 
-    temperature: Annotated[float, Field(ge=0, le=2)]  # default = 1
-    top_p: Annotated[float, Field(ge=0, le=1)]  # default = 1
-    top_logprobs: Annotated[int, Field(ge=0, le=20)]  # default = 0
+    temperature: Annotated[float, Field(ge=0, le=2)]
 
+    output_format: type[BaseModel] | None = None
     reasoning_summary: Literal["auto", "concise", "detailed"] = "auto"
     tools: tuple[ToolParam, ...] = ()
     tool_choice: ToolChoice = "auto"
@@ -90,16 +89,16 @@ class OpenAIAgentConfig:
 
     def to_text(self) -> ResponseTextConfigParam:
         output_format = self.output_format
-        return {
-            "verbosity": self.output_verbosity,
-            "format": {
+        text: ResponseTextConfigParam = {"verbosity": self.output_verbosity}
+        if output_format:
+            text["format"] = {
                 "type": "json_schema",
                 "name": output_format.__name__,
                 "schema": to_strict_json_schema(output_format),
                 "description": output_format.__doc__ or "",
                 "strict": True,
-            },
-        }
+            }
+        return text
 
 
 # output item .type -> our ContentBlock type
@@ -113,6 +112,22 @@ SERVER_ITEM_TYPES: dict[str, ContentType] = {
     "tool_search_call": "tool_search",
     "tool_search_output": "tool_search",
 }
+
+
+def to_openai_input(messages: list[Message]) -> ResponseInputParam:
+    """Our turns -> Responses input items, one item per text block."""
+    items: ResponseInputParam = []
+    for message in messages:
+        for block in message.content:
+            if block.type == "text":
+                items.append({"role": message.role, "content": block.content})
+            else:
+                # function_call_output needs the call_id, which ContentBlock
+                # does not carry, so it cannot be rebuilt faithfully yet.
+                raise NotImplementedError(
+                    f"cannot send a {block.type!r} block back to the API yet"
+                )
+    return items
 
 
 class OpenAIModel(Agent):
@@ -157,7 +172,9 @@ class OpenAIModel(Agent):
                 response.append(
                     ContentBlock(
                         type="tool_call",
-                        content=f"name: {item.name}, arguments: {item.arguments}",
+                        content=json.dumps(
+                            {"name": item.name, "arguments": json.loads(item.arguments)}
+                        ),
                     )
                 )
 
@@ -189,21 +206,18 @@ class OpenAIModel(Agent):
         response = client.responses.create(
             model=self.agent_config.model,
             instructions=system_prompt,
-            input=[
-                {"role": message.role, "content": message.content}
-                for message in messages
-            ],
+            input=to_openai_input(messages),
             max_output_tokens=self.agent_config.max_output_tokens,
             max_tool_calls=self.agent_config.max_tool_calls,
             reasoning=self.agent_config.to_reasoning(),
             text=self.agent_config.to_text(),
             temperature=self.agent_config.temperature,
-            top_p=self.agent_config.top_p,
-            top_logprobs=self.agent_config.top_logprobs,
             tools=self.agent_config.tools,
             tool_choice=self.agent_config.tool_choice,
         )
         return self._extract_response(response)
 
     def __str__(self) -> str:
-        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
+        return "\n".join(
+            [f"{name}: {value}" for name, value in vars(self.agent_config).items()]
+        )

@@ -2,18 +2,20 @@ from typing import Literal
 from dataclasses import dataclass, field
 from dotenv import load_dotenv
 import os
+import json
 from pydantic import BaseModel
 
 from anthropic import Anthropic, transform_schema
 from anthropic.types import Message as APIMessage
 from anthropic.types import (
     OutputConfigParam,
+    TextBlockParam,
     ThinkingConfigParam,
-    ToolUnionParam,
     ToolChoiceParam,
+    ToolUnionParam,
 )
 
-from agent_framework.dto import Agent, AgentReport, ContentBlock, ContentType
+from agent_framework.dto import Agent, AgentReport, ContentBlock, ContentType, Message
 
 load_dotenv()
 
@@ -46,7 +48,7 @@ class ClaudeAgentConfig:
     max_tokens: int
     thought_type: Literal["adaptive", "disabled"]
     effort: Literal["low", "medium", "high", "xhigh", "max"]
-    
+
     thought_display: Literal["summarized", "omitted"] = "summarized"
     output_format: type[BaseModel] | None = None
     tools: tuple[ToolUnionParam, ...] = ()
@@ -93,6 +95,21 @@ RESULT_BLOCK_TYPES: dict[str, ContentType] = {
 }
 
 
+def to_claude_content(message: Message) -> list[TextBlockParam]:
+    """Our blocks -> Anthropic input blocks. Text only; see the note below."""
+    blocks: list[TextBlockParam] = []
+    for block in message.content:
+        if block.type == "text":
+            blocks.append({"type": "text", "text": block.content})
+        else:
+            # tool_result needs the originating tool_use id, which ContentBlock
+            # does not carry, so it cannot be rebuilt faithfully yet.
+            raise NotImplementedError(
+                f"cannot send a {block.type!r} block back to the API yet"
+            )
+    return blocks
+
+
 class ClaudeModel(Agent):
     def __init__(self, agent_config: ClaudeAgentConfig) -> None:
         self.agent_config = agent_config
@@ -126,7 +143,9 @@ class ClaudeModel(Agent):
                 response.append(
                     ContentBlock(
                         type="tool_call",
-                        content=f"name: {block.name}, input: {block.input}",
+                        content=json.dumps(
+                            {"name": block.name, "arguments": block.input}
+                        ),
                     )
                 )
 
@@ -166,7 +185,7 @@ class ClaudeModel(Agent):
             max_tokens=self.agent_config.max_tokens,
             system=system_prompt,
             messages=[
-                {"role": message.role, "content": message.content}
+                {"role": message.role, "content": to_claude_content(message)}
                 for message in messages
             ],
             thinking=self.agent_config.to_thinking(),
@@ -189,4 +208,6 @@ class ClaudeModel(Agent):
         return f"{output_format.__name__}(\n" + "\n".join(fields) + "\n)"
 
     def __str__(self) -> str:
-        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
+        return "\n".join(
+            [f"{name}: {value}" for name, value in vars(self.agent_config).items()]
+        )
