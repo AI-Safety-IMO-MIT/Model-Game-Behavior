@@ -211,6 +211,17 @@ class ClaudeModel(Agent):
             for message in messages
         ]
 
+    def _describe_format(self, output_format: type[BaseModel]) -> str:
+        schema = transform_schema(output_format)
+        fields = []
+        for name, prop in schema.get("properties", {}).items():
+            if "enum" in prop:
+                kind = "|".join(repr(value) for value in prop["enum"])
+            else:
+                kind = prop.get("type", "any")
+            fields.append(f"  {name}: {kind},")
+        return f"{output_format.__name__}(\n" + "\n".join(fields) + "\n)"
+
     def call(
         self,
         system_prompt,
@@ -242,17 +253,6 @@ class ClaudeModel(Agent):
             cache_control={"type": "ephemeral"},
         )
         return self._extract_response(input_config, response)
-
-    def _describe_format(self, output_format: type[BaseModel]) -> str:
-        schema = transform_schema(output_format)
-        fields = []
-        for name, prop in schema.get("properties", {}).items():
-            if "enum" in prop:
-                kind = "|".join(repr(value) for value in prop["enum"])
-            else:
-                kind = prop.get("type", "any")
-            fields.append(f"  {name}: {kind},")
-        return f"{output_format.__name__}(\n" + "\n".join(fields) + "\n)"
 
     def __str__(self) -> str:
         return "\n".join(
