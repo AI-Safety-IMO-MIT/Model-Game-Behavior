@@ -43,7 +43,7 @@ report_3 = agent.call(user_text=round_3, output_format=RPSFormat)
 print(report_3.response)
 
 print("<messages>")
-for message in agent.get_history():
+for message in agent.get_trace().messages:
     print(message)
 
 print("<get chat>")

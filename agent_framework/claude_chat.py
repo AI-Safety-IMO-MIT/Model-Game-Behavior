@@ -21,6 +21,7 @@ from agent_framework.dto import (
     ContentBlock,
     ContentType,
     Message,
+    ChatTrace,
 )
 
 load_dotenv()
@@ -245,8 +246,13 @@ class ClaudeChat(AgenticChat):
                     )
         return Message(role=role, content=content_blocks)
 
-    def get_history(self) -> list[Message]:
-        return [self._to_message(message_param) for message_param in self._raw_history]
+    def get_trace(self) -> ChatTrace:
+        return ChatTrace(
+            agent_config=self.agent_config,
+            messages=[
+                self._to_message(message_param) for message_param in self._raw_history
+            ]
+        )
 
     def clear_history(self) -> None:
         self._raw_history.clear()

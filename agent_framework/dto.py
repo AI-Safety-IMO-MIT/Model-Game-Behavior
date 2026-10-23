@@ -18,7 +18,7 @@ ContentType = Literal[
 
 
 @dataclass(frozen=True)
-class ContentBlock:
+class ContentBlock(BaseModel):
     type: ContentType
     content: str
 
@@ -27,7 +27,7 @@ class ContentBlock:
 
 
 @dataclass(frozen=True)
-class Message:
+class Message(BaseModel):
     role: Literal["user", "assistant", "system"]
     content: list[ContentBlock]
 
@@ -41,7 +41,13 @@ class Message:
 
 
 @dataclass(frozen=True)
-class AgentReport:
+class ChatTrace(BaseModel):
+    agent_config: object
+    messages: list[Message]
+
+
+@dataclass(frozen=True)
+class AgentReport(BaseModel):
     agent_config: object
     response: Message
     status: Literal["Failed", "Completed"]
@@ -64,14 +70,14 @@ class AgenticChat(ABC):
     ) -> AgentReport: ...
 
     @abstractmethod
-    def get_history(self) -> list[Message]: ...
+    def get_trace(self) -> ChatTrace: ...
 
     @abstractmethod
     def __str__(self) -> str: ...
 
     def get_chat(self) -> str:
         stdout: list[str] = []
-        for message in self.get_history():
+        for message in self.get_trace().messages:
             stdout.append(f"[{message.role}]")
             stdout.append(message.content[-1].content)
             stdout.append("")
