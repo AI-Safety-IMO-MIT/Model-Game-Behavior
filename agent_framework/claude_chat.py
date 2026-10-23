@@ -119,11 +119,12 @@ class ClaudeChat(AgenticChat):
 
     def call(
         self,
-        user_message: Message,
+        user_text: str,
         output_format: type[BaseModel] | None = None,
     ) -> AgentReport:
-        if user_message.role != "user":
-            raise RuntimeError(f"Call input must be from user, not {user_message.role}")
+        user_message = Message(
+            role="user", content=[ContentBlock(type="text", content=user_text)]
+        )
 
         def to_claude_message(message: Message) -> MessageParam:
             blocks: list[TextBlockParam] = []
@@ -157,9 +158,8 @@ class ClaudeChat(AgenticChat):
         )
 
         usage = response.usage
-        cache_tokens = (usage.cache_read_input_tokens or 0) + (
-            usage.cache_creation_input_tokens or 0
-        )
+        cache_read = usage.cache_read_input_tokens or 0
+        cache_total = cache_read + (usage.cache_creation_input_tokens or 0)
 
         if not response.content:
             return AgentReport(
@@ -169,8 +169,9 @@ class ClaudeChat(AgenticChat):
                 response=self._to_message(
                     {"role": "assistant", "content": response.content}
                 ),
-                input_tokens=usage.input_tokens + cache_tokens,
+                input_tokens=usage.input_tokens + cache_total,
                 completion_tokens=usage.output_tokens,
+                cache_tokens=cache_read,
             )
 
         self._raw_history.append(pending_user_msg_param)
@@ -183,8 +184,9 @@ class ClaudeChat(AgenticChat):
             response=self._to_message(
                 {"role": "assistant", "content": response.content}
             ),
-            input_tokens=usage.input_tokens + cache_tokens,
+            input_tokens=usage.input_tokens + cache_total,
             completion_tokens=usage.output_tokens,
+            cache_tokens=cache_read,
         )
 
     def get_raw_history(self) -> list[MessageParam]:
@@ -245,6 +247,9 @@ class ClaudeChat(AgenticChat):
 
     def get_history(self) -> list[Message]:
         return [self._to_message(message_param) for message_param in self._raw_history]
+
+    def clear_history(self) -> None:
+        self._raw_history.clear()
 
     def __str__(self) -> str:
         return str(self.agent_config)

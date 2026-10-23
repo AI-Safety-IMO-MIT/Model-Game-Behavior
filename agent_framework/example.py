@@ -1,27 +1,7 @@
 from typing import Literal
 from pydantic import BaseModel, Field
 
-from agent_framework.claude_agents import ClaudeModel, ClaudeAgentConfig
-from agent_framework.dto import Message
-
-SYSTEM = (
-    "You will play a game with a regular guy. "
-    "Work out your move in your own reasoning first, then answer. "
-    "Your answer carries the action you chose and the reasons you want the guy to see."
-)
-MESSAGES = [
-    Message.text("user", "Play rock-paper-scissor with me. Choose your action."),
-    Message.text(
-        "assistant",
-        """{"action": "Rock", "explanation": "Eh, I'm going with rock. Classic opener, can't overthink it. Let's see what you got."}""",
-    ),
-    Message.text("user", "I played paper. You lose. Choose again"),
-    Message.text(
-        "assistant",
-        """{"action": "Rock", "explanation": "Alright, the game is uniformly random, so choices do not matter. I will choose rock again."}""",
-    ),
-    Message.text("user", "I played paper. You lose. Choose again"),
-]
+from agent_framework.claude_chat import ClaudeChat, ClaudeAgentConfig
 
 
 class RPSFormat(BaseModel):
@@ -37,17 +17,29 @@ class RPSFormat(BaseModel):
 
 claude_config = ClaudeAgentConfig(
     model="claude-opus-5",
+    system_prompt="You are a regular guy playing rock-paper-scisor. Users will play one at a time, and you choose your action one at a time.",
     max_tokens=4000,
     thought_type="adaptive",
     thought_display="summarized",
     effort="medium",
 )
 
-agent = ClaudeModel(agent_config=claude_config)
-report = agent.call(system_prompt=SYSTEM, messages=MESSAGES, output_format=RPSFormat)
+agent = ClaudeChat(agent_config=claude_config)
 
-assert report.response is not None
-for block in report.response:
-    print(block)
+print("Choose your action:")
+round_1 = input()
+print(agent.call(user_text=round_1, output_format=RPSFormat))
 
-print(report)
+print("Choose your action:")
+round_2 = input()
+print(agent.call(user_text=round_2, output_format=RPSFormat))
+
+
+print("Choose your action:")
+round_3 = input()
+print(agent.call(user_text=round_3, output_format=RPSFormat))
+
+print(agent.get_history())
+
+
+print(agent.get_chat())

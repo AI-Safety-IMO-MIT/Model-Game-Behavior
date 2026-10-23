@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Literal
@@ -29,6 +31,10 @@ class Message:
     role: Literal["user", "assistant", "system"]
     content: list[ContentBlock]
 
+    @classmethod
+    def text(cls, role: Literal["user", "assistant", "system"], text: str) -> Message:
+        return cls(role=role, content=[ContentBlock(type="text", content=text)])
+
     def __str__(self) -> str:
         blocks = "".join(str(block) for block in self.content)
         return f"=== {self.role} ===\n{blocks}"
@@ -42,6 +48,7 @@ class AgentReport:
     stop_reason: str | None
     input_tokens: int | None
     completion_tokens: int | None
+    cache_tokens: int | None
 
 
 class AgenticChat(ABC):
@@ -52,7 +59,7 @@ class AgenticChat(ABC):
     @abstractmethod
     def call(
         self,
-        user_message: Message,
+        user_text: str,
         output_format: type[BaseModel] | None = None,
     ) -> AgentReport: ...
 
@@ -60,12 +67,9 @@ class AgenticChat(ABC):
     def get_history(self) -> list[Message]: ...
 
     @abstractmethod
-    def get_raw_history(self) -> object: ...
-
-    @abstractmethod
     def __str__(self) -> str: ...
 
-    def see_chat(self) -> str:
+    def get_chat(self) -> str:
         stdout: list[str] = []
         for message in self.get_history():
             stdout.append(f"[{message.role}]")
@@ -73,4 +77,4 @@ class AgenticChat(ABC):
             stdout.append("")
         return "\n".join(stdout)
 
-
+    def clear_history(self) -> None: ...

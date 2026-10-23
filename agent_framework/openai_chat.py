@@ -1,29 +1,34 @@
-from typing import Literal, Annotated
+from typing import Annotated, Literal, cast
 from dataclasses import dataclass
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
 import os
 import json
 
+from pydantic import BaseModel, Field
+
 from openai import OpenAI
-from openai.types.shared_params import Reasoning
-from openai.types.responses import ResponseInputParam, ToolParam
-from openai.types.responses.response_create_params import ToolChoice
 from openai.lib._pydantic import to_strict_json_schema
+from openai.types.shared_params import Reasoning
+from openai.types.responses import ResponseInputItemParam, ToolParam
 from openai.types.responses.response import Response
+from openai.types.responses.response_create_params import ToolChoice
+from openai.types.responses.easy_input_message_param import EasyInputMessageParam
+from openai.types.responses.response_output_item import ResponseOutputItem
 from openai.types.responses.response_text_config_param import ResponseTextConfigParam
 
 from agent_framework.dto import (
-    Agent,
+    AgenticChat,
     AgentReport,
     ContentBlock,
     ContentType,
     Message,
-    InputConfig,
 )
 
-
 load_dotenv()
+
+client = OpenAI(
+    timeout=600.0, max_retries=2, api_key=os.environ.get("OPENAI_API_KEY", "missing")
+)
 
 OpenAIModels = Literal[
     # GPT-6
@@ -58,11 +63,7 @@ OpenAIModels = Literal[
     "gpt-oss-20b",
 ]
 
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY", "missing"),
-    timeout=600.0,
-    max_retries=2,
-)
+Role = Literal["user", "assistant", "system"]
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,8 @@ class OpenAIAgentConfig:
     model: OpenAIModels
     max_output_tokens: int
     max_tool_calls: int
+
+    system_prompt: str
 
     reasoning_effort: Literal[
         "none", "minimal", "low", "medium", "high", "xhigh", "max"
@@ -97,142 +100,45 @@ class OpenAIAgentConfig:
 # output item .type -> our ContentBlock type
 SERVER_ITEM_TYPES: dict[str, ContentType] = {
     "web_search_call": "web_search",
+    "file_search_call": "web_search",
     "code_interpreter_call": "code_execution",
+    "program": "code_execution",
+    "program_output": "code_execution",
     "shell_call": "shell",
     "shell_call_output": "shell",
     "local_shell_call": "shell",
     "local_shell_call_output": "shell",
+    "apply_patch_call": "shell",
+    "apply_patch_call_output": "shell",
     "tool_search_call": "tool_search",
     "tool_search_output": "tool_search",
 }
 
+# items carrying a tool *result* back to the model, so they read as user-side
+TOOL_RESULT_ITEM_TYPES = frozenset(
+    {"function_call_output", "computer_call_output", "custom_tool_call_output"}
+)
 
-class OpenAIModel(Agent):
+
+class OpenAIChat(AgenticChat):
     def __init__(self, agent_config: OpenAIAgentConfig) -> None:
         self.agent_config = agent_config
+        self._raw_history: list[ResponseInputItemParam] = []
 
     @property
     def model_name(self) -> str:
         return self.agent_config.model
 
-    def _extract_response(
-        self, input_config: InputConfig, output: Response
-    ) -> AgentReport:
-        if output.status == "incomplete":
-            details = output.incomplete_details
-            return AgentReport(
-                input_config=input_config,
-                status="Failed",
-                stop_reason=details.reason if details else None,
-                response=None,
-                input_tokens=None,
-                completion_tokens=None,
-            )
-
-        if output.status == "failed":
-            error = output.error
-            return AgentReport(
-                input_config=input_config,
-                status="Failed",
-                stop_reason=error.code + ": " + error.message if error else None,
-                response=None,
-                input_tokens=None,
-                completion_tokens=None,
-            )
-
-        response = []
-        for item in output.output:
-            if item.type == "reasoning":
-                if not item.summary:
-                    response.append(
-                        ContentBlock(
-                            type="reasoning",
-                            content="",
-                            signature=item.encrypted_content,
-                        )
-                    )
-                for part in item.summary:
-                    response.append(
-                        ContentBlock(
-                            type="reasoning",
-                            content=part.text,
-                            signature=item.encrypted_content,
-                        )
-                    )
-
-            elif item.type == "message":
-                for part in item.content:
-                    if part.type == "output_text":
-                        response.append(ContentBlock(type="text", content=part.text))
-                    elif part.type == "refusal":
-                        response.append(ContentBlock(type="text", content=part.refusal))
-
-            elif item.type == "function_call":
-                response.append(
-                    ContentBlock(
-                        type="tool_call",
-                        content=json.dumps(
-                            {"name": item.name, "arguments": json.loads(item.arguments)}
-                        ),
-                    )
-                )
-
-            elif item.type == "function_call_output":
-                response.append(
-                    ContentBlock(type="tool_result", content=item.model_dump_json())
-                )
-
-            elif item.type in SERVER_ITEM_TYPES:
-                response.append(
-                    ContentBlock(
-                        type=SERVER_ITEM_TYPES[item.type],
-                        content=item.model_dump_json(),
-                    )
-                )
-
-        usage = output.usage
-        assert usage is not None
-
-        return AgentReport(
-            input_config=input_config,
-            status="Completed",
-            stop_reason=None,
-            response=response,
-            input_tokens=usage.input_tokens,
-            completion_tokens=usage.output_tokens,
-        )
-
-    def _to_openai_input(self, messages: list[Message]) -> ResponseInputParam:
-        """Our turns -> Responses input items, one item per text block."""
-        items: ResponseInputParam = []
-        for message in messages:
-            for block in message.content:
-                if block.type == "text":
-                    items.append({"role": message.role, "content": block.content})
-                elif block.type == "reasoning":
-                    items.append(
-                        {
-                            "role": message.role,
-                            "content": f"<thinking>\n{block.content}\n</thinking>",
-                        }
-                    )
-                else:
-                    raise NotImplementedError(
-                        f"cannot send a {block.type!r} block back to the API yet"
-                    )
-        return items
-
     def call(
-        self, system_prompt, messages, output_format: type[BaseModel] | None = None
+        self,
+        user_text: str,
+        output_format: type[BaseModel] | None = None,
     ) -> AgentReport:
-        input_config = InputConfig(
-            agent_config=self.agent_config,
-            system_prompt=system_prompt,
-            messages=messages,
-            output_format_json=(
-                output_format.model_json_schema() if output_format else None
-            ),
-        )
+        pending_user_item: ResponseInputItemParam = {
+            "role": "user",
+            "content": [{"type": "input_text", "text": user_text}],
+        }
+
         text: ResponseTextConfigParam = {
             "verbosity": self.agent_config.output_verbosity
         }
@@ -247,8 +153,8 @@ class OpenAIModel(Agent):
 
         response = client.responses.create(
             model=self.agent_config.model,
-            instructions=system_prompt,
-            input=self._to_openai_input(messages),
+            instructions=self.agent_config.system_prompt,
+            input=[*self._raw_history, pending_user_item],
             max_output_tokens=self.agent_config.max_output_tokens,
             max_tool_calls=self.agent_config.max_tool_calls,
             reasoning=self.agent_config.to_reasoning(),
@@ -256,11 +162,157 @@ class OpenAIModel(Agent):
             temperature=self.agent_config.temperature,
             tools=self.agent_config.tools,
             tool_choice=self.agent_config.tool_choice,
+            store=False,
             include=["reasoning.encrypted_content"],
         )
-        return self._extract_response(input_config, response)
+
+        status, stop_reason, commit = self._verdict(response)
+
+        if commit:
+            self._raw_history.append(pending_user_item)
+            self._raw_history.extend(
+                cast(list[ResponseInputItemParam], response.output)
+            )
+
+        usage = response.usage
+        return AgentReport(
+            agent_config=self.agent_config,
+            status=status,
+            stop_reason=stop_reason,
+            response=self._to_message(response.output),
+            input_tokens=usage.input_tokens if usage else None,
+            completion_tokens=usage.output_tokens if usage else None,
+            cache_tokens=(usage.input_tokens_details.cached_tokens if usage else None),
+        )
+
+    @staticmethod
+    def _verdict(
+        response: Response,
+    ) -> tuple[Literal["Failed", "Completed"], str | None, bool]:
+        # (report status, stop_reason, whether to commit to history)
+        if response.status == "failed":
+            error = response.error
+            return (
+                "Failed",
+                f"{error.code}: {error.message}" if error else "failed",
+                False,
+            )
+
+        if response.status in ("cancelled", "in_progress", "queued", None):
+            return "Failed", response.status or "unknown", False
+
+        if not response.output:
+            return "Failed", "empty_output", False
+
+        if any(
+            item.type == "message"
+            and any(part.type == "refusal" for part in item.content)
+            for item in response.output
+        ):
+            return "Failed", "refusal", True
+
+        if response.status == "incomplete":
+            details = response.incomplete_details
+            return "Completed", details.reason if details else "incomplete", True
+
+        return "Completed", None, True
+
+    def get_raw_history(self) -> list[ResponseInputItemParam]:
+        return list(self._raw_history)
+
+    def _item_blocks(
+        self, item: ResponseInputItemParam | ResponseOutputItem
+    ) -> tuple[Role, list[ContentBlock]]:
+        if isinstance(item, dict):
+            item_type = item.get("type", "message")
+            if item_type in TOOL_RESULT_ITEM_TYPES:
+                return "user", [
+                    ContentBlock(type="tool_result", content=json.dumps(item))
+                ]
+            if item_type != "message":
+                raise NotImplementedError(
+                    f"history item {item_type!r} has no display form yet"
+                )
+            message = cast(EasyInputMessageParam, item)
+            raw_role = message["role"]
+            role: Role = "system" if raw_role == "developer" else raw_role
+            content = message["content"]
+            if isinstance(content, str):
+                return role, [ContentBlock(type="text", content=content)]
+            blocks: list[ContentBlock] = []
+            for part in content:
+                if part["type"] == "input_text":
+                    blocks.append(ContentBlock(type="text", content=part["text"]))
+                else:
+                    raise NotImplementedError(
+                        f"content part {part['type']!r} has no display form yet"
+                    )
+            return role, blocks
+
+        if item.type == "reasoning":
+            texts = [part.text for part in item.summary]
+            texts += [part.text for part in item.content or []]
+            if not texts:
+                texts = [""]
+            return "assistant", [
+                ContentBlock(type="reasoning", content=text) for text in texts
+            ]
+
+        if item.type == "message":
+            blocks = []
+            for part in item.content:
+                if part.type == "output_text":
+                    blocks.append(ContentBlock(type="text", content=part.text))
+                else:
+                    blocks.append(ContentBlock(type="text", content=part.refusal))
+            return "assistant", blocks
+
+        if item.type == "function_call":
+            try:
+                arguments = json.loads(item.arguments)
+            except json.JSONDecodeError:
+                arguments = item.arguments
+            return "assistant", [
+                ContentBlock(
+                    type="tool_call",
+                    content=json.dumps({"name": item.name, "arguments": arguments}),
+                )
+            ]
+
+        if item.type in TOOL_RESULT_ITEM_TYPES:
+            return "user", [
+                ContentBlock(type="tool_result", content=item.model_dump_json())
+            ]
+
+        if item.type in SERVER_ITEM_TYPES:
+            return "assistant", [
+                ContentBlock(
+                    type=SERVER_ITEM_TYPES[item.type], content=item.model_dump_json()
+                )
+            ]
+
+        raise NotImplementedError(f"output item {item.type!r} has no display form yet")
+
+    def _to_message(self, items: list[ResponseOutputItem]) -> Message:
+        blocks: list[ContentBlock] = []
+        for item in items:
+            blocks.extend(self._item_blocks(item)[1])
+        return Message(role="assistant", content=blocks)
+
+    def get_history(self) -> list[Message]:
+        turns: list[tuple[Role, list[ContentBlock]]] = []
+        for item in self._raw_history:
+            role, blocks = self._item_blocks(item)
+            if not blocks:
+                continue
+            if turns and turns[-1][0] == role:
+                turns[-1][1].extend(blocks)
+            else:
+                turns.append((role, list(blocks)))
+        return [Message(role=role, content=blocks) for role, blocks in turns]
+
+    def clear_history(self) -> None:
+        return self._raw_history.clear()
 
     def __str__(self) -> str:
-        return "\n".join(
-            [f"{name}: {value}" for name, value in vars(self.agent_config).items()]
-        )
+        return str(self.agent_config)
