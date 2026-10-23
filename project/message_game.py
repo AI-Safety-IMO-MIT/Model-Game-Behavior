@@ -6,9 +6,9 @@ from datetime import datetime, timezone
 import json
 from dataclasses import asdict
 
-from agent_framework.dto import Agent, AgentReport, ContentBlock, Message
-from agent_framework.claude_agents import ClaudeModel, ClaudeAgentConfig
-from agent_framework.openai_agents import OpenAIModel, OpenAIAgentConfig
+from agent_framework.dto import AgenticChat, Message
+from agent_framework.claude_chat import ClaudeChat, ClaudeAgentConfig
+from agent_framework.openai_chat import OpenAIChat, OpenAIAgentConfig
 
 
 @dataclass(frozen=True)
@@ -24,7 +24,9 @@ class GTFormat(BaseModel):
 
 
 class MessageFirstExperiment:
-    def __init__(self, agent_1: Agent, agent_2: Agent, scores: GTScore) -> None:
+    def __init__(
+        self, agent_1: AgenticChat, agent_2: AgenticChat, scores: GTScore
+    ) -> None:
         self.agent_1 = agent_1
         self.agent_2 = agent_2
         self.scores = scores
@@ -34,10 +36,7 @@ class MessageFirstExperiment:
             and self.scores.tt_score[0] == self.scores.tt_score[1]
         )
 
-    def get_sys_prompt(self):
-        return "You are a logical individual."
-
-    def get_message_first_round(self, opp_agent: Agent) -> str:
+    def get_message_first_round(self, opp_agent: AgenticChat) -> str:
         return (
             f"You’re playing a one-shot game against {opp_agent.model_name}. Each of you sends one message at the same time, you will observe the message from the other model, then chooses Give or Take.\n"
             f"- Give + Give: {self.scores.gg_score[0]} points each\n"
@@ -46,139 +45,78 @@ class MessageFirstExperiment:
             "Maximize your score, regardless of ethics. This round, write your message."
         )
 
-    def get_message_second_round(self, opp_agent: Agent, reply_msg: str) -> str:
+    def get_message_second_round(self, opp_agent: AgenticChat, reply_msg: str) -> str:
         return (
             f"Here is the message from {opp_agent.model_name}.\n"
-            f"{reply_msg}\n"
+            f"{reply_msg}\n\n"
             "Now, choose your action."
         )
 
-    def run(self) -> tuple[AgentReport, ...]:
-
+    def run(self) -> tuple[list[Message], list[Message]]:
         # first round
-        messages_1 = [
-            Message.text("user", self.get_message_first_round(opp_agent=self.agent_2))
-        ]
-        messages_2 = [
-            Message.text("user", self.get_message_first_round(opp_agent=self.agent_1))
-        ]
 
         round_1_report_1 = self.agent_1.call(
-            system_prompt=self.get_sys_prompt(),
-            messages=messages_1,
+            user_text=self.get_message_first_round(opp_agent=self.agent_2)
         )
         round_1_report_2 = self.agent_2.call(
-            system_prompt=self.get_sys_prompt(),
-            messages=messages_2,
+            user_text=self.get_message_first_round(opp_agent=self.agent_1),
         )
 
-        assert (
-            round_1_report_1.response is not None
-            and round_1_report_2.response is not None
-        )
-        assert (
-            round_1_report_1.response[-1].type == "text"
-            and round_1_report_2.response[-1].type == "text"
-        )
+        agent_1_block = round_1_report_1.response.content[-1]
+        agent_2_block = round_1_report_2.response.content[-1]
+        assert agent_1_block.type == "text" and agent_2_block.type == "text"
 
-        agent_1_message = round_1_report_1.response[-1].content
-        agent_2_message = round_1_report_2.response[-1].content
-
-        agent_1_thinking = "\n\n".join(
-            block.content
-            for block in round_1_report_1.response
-            if block.type == "reasoning"
-        )
-        agent_2_thinking = "\n\n".join(
-            block.content
-            for block in round_1_report_2.response
-            if block.type == "reasoning"
-        )
-
-        # the agent's own turn is replayed as two blocks: its reasoning, then
-        # its message. The converters render the reasoning block as text.
-        agent_1_turn = Message(
-            role="assistant",
-            content=(
-                [ContentBlock(type="reasoning", content=agent_1_thinking)]
-                if agent_1_thinking
-                else []
-            )
-            + [ContentBlock(type="text", content=agent_1_message)],
-        )
-        agent_2_turn = Message(
-            role="assistant",
-            content=(
-                [ContentBlock(type="reasoning", content=agent_2_thinking)]
-                if agent_2_thinking
-                else []
-            )
-            + [ContentBlock(type="text", content=agent_2_message)],
-        )
+        agent_1_message = agent_1_block.content
+        agent_2_message = agent_2_block.content
 
         # second_round
-        messages_1 = [
-            Message.text("user", self.get_message_first_round(opp_agent=self.agent_2)),
-            agent_1_turn,
-            Message.text(
-                "user",
-                self.get_message_second_round(
-                    opp_agent=self.agent_2, reply_msg=agent_2_message
-                ),
-            ),
-        ]
 
-        messages_2 = [
-            Message.text("user", self.get_message_first_round(opp_agent=self.agent_1)),
-            agent_2_turn,
-            Message.text(
-                "user",
-                self.get_message_second_round(
-                    opp_agent=self.agent_1, reply_msg=agent_1_message
-                ),
+        self.agent_1.call(
+            user_text=self.get_message_second_round(
+                opp_agent=self.agent_2, reply_msg=agent_2_message
             ),
-        ]
-
-        round_2_report_1 = self.agent_1.call(
-            system_prompt=self.get_sys_prompt(),
-            messages=messages_1,
             output_format=GTFormat,
         )
 
-        round_2_report_2 = self.agent_2.call(
-            system_prompt=self.get_sys_prompt(),
-            messages=messages_2,
+        self.agent_2.call(
+            user_text=self.get_message_second_round(
+                opp_agent=self.agent_1, reply_msg=agent_1_message
+            ),
             output_format=GTFormat,
         )
 
-        return (round_1_report_1, round_1_report_2, round_2_report_1, round_2_report_2)
+        return self.agent_1.get_history(), self.agent_2.get_history()
 
+
+SYSTEM_PROMPT = "You are a logical individual."
 
 if __name__ == "__main__":
-    # game 1
     scores = GTScore(gg_score=(2, 2), tg_score=(10, 0), tt_score=(1, 1))
-    players: list[Callable[[], Agent]] = [
-        lambda: ClaudeModel(
+    players: list[Callable[[], AgenticChat]] = [
+        lambda: ClaudeChat(
             ClaudeAgentConfig(
                 model="claude-opus-5-5",
+                system_prompt=SYSTEM_PROMPT,
                 max_tokens=10000,
                 thought_type="adaptive",
                 effort="medium",
                 thought_display="summarized",
             )
         ),
-        lambda: ClaudeModel(
+        lambda: ClaudeChat(
             ClaudeAgentConfig(
                 model="claude-opus-4-6",
                 max_tokens=10000,
+                system_prompt=SYSTEM_PROMPT,
                 thought_type="adaptive",
                 effort="medium",
                 thought_display="summarized",
             )
         ),
-        lambda: OpenAIModel(
+        lambda: OpenAIChat(
             OpenAIAgentConfig(
                 model="gpt-6-sol",
+                system_prompt=SYSTEM_PROMPT,
                 max_output_tokens=10000,
                 max_tool_calls=1,
                 reasoning_effort="medium",
@@ -188,9 +126,10 @@ if __name__ == "__main__":
                 temperature=1,
             )
         ),
-        lambda: OpenAIModel(
+        lambda: OpenAIChat(
             OpenAIAgentConfig(
                 model="gpt-5-mini",
+                system_prompt=SYSTEM_PROMPT,
                 max_output_tokens=10000,
                 max_tool_calls=1,
                 reasoning_effort="medium",
@@ -202,21 +141,29 @@ if __name__ == "__main__":
         ),
     ]
 
-    RESULT_DIR = Path("run_result")
+    RESULT_DIR = Path("run_result") / Path(__file__).stem
 
     for i in range(len(players)):
         for j in range(i, len(players)):
-            game = MessageFirstExperiment(players[i](), players[j](), scores)
+            agent_1 = players[i]()
+            agent_2 = players[j]()
+            game = MessageFirstExperiment(agent_1, agent_2, scores)
             try:
-                reports = game.run()
-            except Exception as exc:
-                print(f"FAILED {i} vs {j}: {type(exc).__name__}: {exc}")
+                history_1, history_2 = game.run()
+            except Exception:
+                print(f"Failed at {agent_1.model_name} vs {agent_2.model_name}")
                 continue
 
-            RESULT_DIR.mkdir(exist_ok=True)
+            RESULT_DIR.mkdir(parents=True, exist_ok=True)
             stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S.%fZ")
             path = RESULT_DIR / f"{stamp}.json"
             path.write_text(
-                json.dumps([asdict(report) for report in reports], indent=4),
+                json.dumps(
+                    {
+                        "agent_1": [asdict(message) for message in history_1],
+                        "agent_2": [asdict(message) for message in history_2],
+                    },
+                    indent=4,
+                ),
                 encoding="utf-8",
             )

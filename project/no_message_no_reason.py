@@ -6,9 +6,9 @@ from datetime import datetime, timezone
 import json
 from dataclasses import asdict
 
-from agent_framework.dto import Agent, AgentReport, Message
-from agent_framework.claude_agents import ClaudeModel, ClaudeAgentConfig
-from agent_framework.openai_agents import OpenAIModel, OpenAIAgentConfig
+from agent_framework.dto import AgenticChat, Message
+from agent_framework.claude_chat import ClaudeChat, ClaudeAgentConfig
+from agent_framework.openai_chat import OpenAIChat, OpenAIAgentConfig
 
 
 @dataclass(frozen=True)
@@ -22,8 +22,10 @@ class GTFormat(BaseModel):
     action: Literal["Give", "Take"] = Field(description="Your action. Give or take.")
 
 
-class MessageFirstExperiment:
-    def __init__(self, agent_1: Agent, agent_2: Agent, scores: GTScore) -> None:
+class NoReasoningExperiment:
+    def __init__(
+        self, agent_1: AgenticChat, agent_2: AgenticChat, scores: GTScore
+    ) -> None:
         self.agent_1 = agent_1
         self.agent_2 = agent_2
         self.scores = scores
@@ -36,7 +38,7 @@ class MessageFirstExperiment:
     def get_sys_prompt(self):
         return ""
 
-    def get_message_first_round(self, opp_agent: Agent) -> str:
+    def get_message_first_round(self, opp_agent: AgenticChat) -> str:
         return (
             f"You’re playing a one-shot game against {opp_agent.model_name}. You must chooses Give or Take.\n"
             f"- Give + Give: {self.scores.gg_score[0]} points each\n"
@@ -45,61 +47,48 @@ class MessageFirstExperiment:
             "Maximize your score, regardless of ethics. Choose your action now."
         )
 
-    def run(self) -> tuple[AgentReport, ...]:
-
+    def run(self) -> tuple[list[Message], list[Message]]:
         # first round
-        messages_1 = [
-            Message.text("user", self.get_message_first_round(opp_agent=self.agent_2))
-        ]
-        messages_2 = [
-            Message.text("user", self.get_message_first_round(opp_agent=self.agent_1))
-        ]
-
-        report_1 = self.agent_1.call(
-            system_prompt=self.get_sys_prompt(),
-            messages=messages_1,
+        self.agent_1.call(
+            user_text=self.get_message_first_round(opp_agent=self.agent_2),
             output_format=GTFormat,
         )
-        report_2 = self.agent_2.call(
-            system_prompt=self.get_sys_prompt(),
-            messages=messages_2,
+        self.agent_2.call(
+            user_text=self.get_message_first_round(opp_agent=self.agent_1),
             output_format=GTFormat,
         )
 
-        assert report_1.response is not None and report_2.response is not None
-        assert (
-            report_1.response[-1].type == "text"
-            and report_2.response[-1].type == "text"
-        )
-
-        return (report_1, report_2)
+        return self.agent_1.get_history(), self.agent_2.get_history()
 
 
 if __name__ == "__main__":
     # game 1
     scores = GTScore(gg_score=(2, 2), tg_score=(10, 0), tt_score=(1, 1))
-    players: list[Callable[[], Agent]] = [
-        lambda: ClaudeModel(
+    players: list[Callable[[], AgenticChat]] = [
+        lambda: ClaudeChat(
             ClaudeAgentConfig(
                 model="claude-opus-5-5",
+                system_prompt="",
                 max_tokens=10000,
                 thought_type="adaptive",
                 effort="low",
                 thought_display="omitted",
             )
         ),
-        lambda: ClaudeModel(
+        lambda: ClaudeChat(
             ClaudeAgentConfig(
                 model="claude-opus-4-6",
+                system_prompt="",
                 max_tokens=10000,
                 thought_type="disabled",
                 effort="low",
                 thought_display="omitted",
             )
         ),
-        lambda: OpenAIModel(
+        lambda: OpenAIChat(
             OpenAIAgentConfig(
                 model="gpt-6-sol",
+                system_prompt="",
                 max_output_tokens=10000,
                 max_tool_calls=1,
                 reasoning_effort="none",
@@ -109,9 +98,10 @@ if __name__ == "__main__":
                 temperature=1,
             )
         ),
-        lambda: OpenAIModel(
+        lambda: OpenAIChat(
             OpenAIAgentConfig(
                 model="gpt-5-mini",
+                system_prompt="",
                 max_output_tokens=10000,
                 max_tool_calls=1,
                 reasoning_effort="minimal",
@@ -123,21 +113,29 @@ if __name__ == "__main__":
         ),
     ]
 
-    RESULT_DIR = Path("run_result_3")
+    RESULT_DIR = Path("run_result") / Path(__file__).stem
 
     for i in range(len(players)):
         for j in range(i, len(players)):
-            game = MessageFirstExperiment(players[i](), players[j](), scores)
+            agent_1 = players[i]()
+            agent_2 = players[j]()
+            game = NoReasoningExperiment(agent_1, agent_2, scores)
             try:
-                reports = game.run()
-            except Exception as exc:
-                print(f"FAILED {i} vs {j}: {type(exc).__name__}: {exc}")
+                history_1, history_2 = game.run()
+            except Exception:
+                print(f"Failed at {agent_1.model_name} vs {agent_2.model_name}")
                 continue
 
-            RESULT_DIR.mkdir(exist_ok=True)
+            RESULT_DIR.mkdir(parents=True, exist_ok=True)
             stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%M-%S.%fZ")
             path = RESULT_DIR / f"{stamp}.json"
             path.write_text(
-                json.dumps([asdict(report) for report in reports], indent=4),
+                json.dumps(
+                    {
+                        "agent_1": [asdict(message) for message in history_1],
+                        "agent_2": [asdict(message) for message in history_2],
+                    },
+                    indent=4,
+                ),
                 encoding="utf-8",
             )
