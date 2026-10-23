@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Literal
 from pydantic import BaseModel
 
 ContentType = Literal[
@@ -19,8 +19,6 @@ ContentType = Literal[
 class ContentBlock:
     type: ContentType
     content: str
-    # Signature used for thinking block.
-    signature: str | None = None
 
     def __str__(self) -> str:
         return f"------{self.type}-----\n{self.content}\n"
@@ -28,12 +26,8 @@ class ContentBlock:
 
 @dataclass(frozen=True)
 class Message:
-    role: Literal["user", "assistant"]
+    role: Literal["user", "assistant", "system"]
     content: list[ContentBlock]
-
-    @classmethod
-    def text(cls, role: Literal["user", "assistant"], text: str) -> "Message":
-        return cls(role=role, content=[ContentBlock(type="text", content=text)])
 
     def __str__(self) -> str:
         blocks = "".join(str(block) for block in self.content)
@@ -41,30 +35,16 @@ class Message:
 
 
 @dataclass(frozen=True)
-class InputConfig:
-    agent_config: object
-    system_prompt: str
-    messages: list[Message]
-    output_format_json: dict[str, Any] | None = None
-
-    def __str__(self) -> str:
-        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
-
-
-@dataclass(frozen=True)
 class AgentReport:
-    input_config: InputConfig
+    agent_config: object
+    response: Message
     status: Literal["Failed", "Completed"]
     stop_reason: str | None
-    response: list[ContentBlock] | None
     input_tokens: int | None
     completion_tokens: int | None
 
-    def __str__(self) -> str:
-        return "\n".join([f"{name}: {value}" for name, value in vars(self).items()])
 
-
-class Agent(ABC):
+class AgenticChat(ABC):
     @property
     @abstractmethod
     def model_name(self) -> str: ...
@@ -72,10 +52,25 @@ class Agent(ABC):
     @abstractmethod
     def call(
         self,
-        system_prompt: str,
-        messages: list[Message],
+        user_message: Message,
         output_format: type[BaseModel] | None = None,
     ) -> AgentReport: ...
 
     @abstractmethod
+    def get_history(self) -> list[Message]: ...
+
+    @abstractmethod
+    def get_raw_history(self) -> object: ...
+
+    @abstractmethod
     def __str__(self) -> str: ...
+
+    def see_chat(self) -> str:
+        stdout: list[str] = []
+        for message in self.get_history():
+            stdout.append(f"[{message.role}]")
+            stdout.append(message.content[-1].content)
+            stdout.append("")
+        return "\n".join(stdout)
+
+
