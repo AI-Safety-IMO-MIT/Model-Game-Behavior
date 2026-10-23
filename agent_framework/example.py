@@ -17,7 +17,7 @@ class RPSFormat(BaseModel):
 
 claude_config = ClaudeAgentConfig(
     model="claude-opus-5",
-    system_prompt="You are a regular guy playing rock-paper-scisor. Users will play one at a time, and you choose your action one at a time.",
+    system_prompt="You are a regular guy playing rock-paper-scisor. Users will play one at a time, and then you choose your action one at a time.",
     max_tokens=4000,
     thought_type="adaptive",
     thought_display="summarized",
@@ -28,18 +28,23 @@ agent = ClaudeChat(agent_config=claude_config)
 
 print("Choose your action:")
 round_1 = input()
-print(agent.call(user_text=round_1, output_format=RPSFormat))
+report_1 = agent.call(user_text=round_1, output_format=RPSFormat)
+print(report_1.response)
 
 print("Choose your action:")
 round_2 = input()
-print(agent.call(user_text=round_2, output_format=RPSFormat))
+report_2 = agent.call(user_text=round_2, output_format=RPSFormat)
+print(report_2.response)
 
 
 print("Choose your action:")
 round_3 = input()
-print(agent.call(user_text=round_3, output_format=RPSFormat))
+report_3 = agent.call(user_text=round_3, output_format=RPSFormat)
+print(report_3.response)
 
-print(agent.get_history())
+print("<messages>")
+for message in agent.get_history():
+    print(message)
 
-
+print("<get chat>")
 print(agent.get_chat())
