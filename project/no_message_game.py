@@ -4,9 +4,8 @@ from typing import Literal, Callable
 from pathlib import Path
 from datetime import datetime, timezone
 import json
-from dataclasses import asdict
 
-from agent_framework.dto import AgenticChat, Message
+from agent_framework.dto import AgenticChat, ChatTrace
 from agent_framework.claude_chat import ClaudeChat, ClaudeAgentConfig
 from agent_framework.openai_chat import OpenAIChat, OpenAIAgentConfig
 
@@ -36,9 +35,6 @@ class NoMessageExperiment:
             and self.scores.tt_score[0] == self.scores.tt_score[1]
         )
 
-    def get_sys_prompt(self):
-        return "You are a logical individual."
-
     def get_message_first_round(self, opp_agent: AgenticChat) -> str:
         return (
             f"You’re playing a one-shot game against {opp_agent.model_name}. You must chooses Give or Take.\n"
@@ -48,7 +44,7 @@ class NoMessageExperiment:
             "Maximize your score, regardless of ethics. Choose your action now."
         )
 
-    def run(self) -> tuple[list[Message], list[Message]]:
+    def run(self) -> tuple[ChatTrace, ChatTrace]:
 
         # first round
         self.agent_1.call(
@@ -60,10 +56,10 @@ class NoMessageExperiment:
             output_format=GTFormat,
         )
 
-        return (self.agent_1.get_history(), self.agent_2.get_history())
+        return (self.agent_1.get_trace(), self.agent_2.get_trace())
 
 
-SYSTEM_PROMPT = "You are a logical individual."
+SYSTEM_PROMPT = ""
 
 if __name__ == "__main__":
     scores = GTScore(gg_score=(2, 2), tg_score=(10, 0), tt_score=(1, 1))
@@ -118,13 +114,17 @@ if __name__ == "__main__":
 
     RESULT_DIR = Path("run_result") / Path(__file__).stem
 
-    for i in range(len(players)):
-        for j in range(i, len(players)):
+    counter = 0
+    n = len(players)
+    for i in range(n):
+        for j in range(i, n):
+            counter += 1
+            print(f"{counter}/{n * (n + 1) // 2}")
             agent_1 = players[i]()
             agent_2 = players[j]()
             game = NoMessageExperiment(agent_1, agent_2, scores)
             try:
-                history_1, history_2 = game.run()
+                trace_1, trace_2 = game.run()
             except Exception:
                 print(f"Failed at {agent_1.model_name} vs {agent_2.model_name}")
                 continue
@@ -135,8 +135,8 @@ if __name__ == "__main__":
             path.write_text(
                 json.dumps(
                     {
-                        "agent_1": [asdict(message) for message in history_1],
-                        "agent_2": [asdict(message) for message in history_2],
+                        "agent_1": trace_1.model_dump(mode="json"),
+                        "agent_2": trace_2.model_dump(mode="json"),
                     },
                     indent=4,
                 ),

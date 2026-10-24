@@ -22,6 +22,7 @@ from agent_framework.dto import (
     ContentBlock,
     ContentType,
     Message,
+    ChatTrace,
 )
 
 load_dotenv()
@@ -299,7 +300,7 @@ class OpenAIChat(AgenticChat):
             blocks.extend(self._item_blocks(item)[1])
         return Message(role="assistant", content=blocks)
 
-    def get_history(self) -> list[Message]:
+    def get_trace(self) -> ChatTrace:
         turns: list[tuple[Role, list[ContentBlock]]] = []
         for item in self._raw_history:
             role, blocks = self._item_blocks(item)
@@ -309,7 +310,10 @@ class OpenAIChat(AgenticChat):
                 turns[-1][1].extend(blocks)
             else:
                 turns.append((role, list(blocks)))
-        return [Message(role=role, content=blocks) for role, blocks in turns]
+        return ChatTrace(
+            agent_config=self.agent_config,
+            messages=[Message(role=role, content=blocks) for role, blocks in turns],
+        )
 
     def clear_history(self) -> None:
         return self._raw_history.clear()

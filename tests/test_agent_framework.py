@@ -11,6 +11,7 @@ from agent_framework.claude_chat import ClaudeAgentConfig, ClaudeChat
 from agent_framework.dto import (
     AgenticChat,
     AgentReport,
+    ChatTrace,
     ContentBlock,
     Message,
 )
@@ -34,8 +35,11 @@ def test_dummy_agent():
                 cache_tokens=20,
             )
 
-        def get_history(self) -> list[Message]:
-            return [Message.text("assistant", "I forgor")]
+        def get_trace(self) -> ChatTrace:
+            return ChatTrace(
+                agent_config="so true",
+                messages=[Message.text("assistant", "I forgor")],
+            )
 
         def __str__(self) -> str:
             return "True agent. Always think once and return True"
@@ -190,7 +194,7 @@ def test_claude_history_starts_empty():
         )
     )
     assert agent.model_name == "claude-opus-5-5"
-    assert agent.get_history() == []
+    assert agent.get_trace().messages == []
     assert agent.get_raw_history() == []
     assert agent.get_chat() == ""
 
@@ -225,8 +229,8 @@ def test_claude_call_no_format():
     assert report.completion_tokens is not None and report.completion_tokens > 0
 
     # the user turn and the assistant turn are both committed
-    history = agent.get_history()
-    assert [message.role for message in history] == ["user", "assistant"]
+    trace = agent.get_trace()
+    assert [message.role for message in trace.messages] == ["user", "assistant"]
 
 
 @pytest.mark.live

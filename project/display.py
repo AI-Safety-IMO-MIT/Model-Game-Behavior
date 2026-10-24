@@ -1,12 +1,12 @@
 """Render a result directory as a clickable results matrix.
 
 Every cell is one pairing and holds one subcell per run, labelled
-``row action / column action``. Clicking a subcell opens that run's full
-transcript: both chains of reasoning, both messages, both explanations.
+``row action / column action``. Clicking a subcell opens that run: one tab per
+agent, each with its system prompt, its config, and its full trace.
 
-    python -m project.display                      # run_result
-    python -m project.display run_result_2         # another directory
-    python -m project.display run_result_2 out.html
+    python -m project.display                             # run_result/message_game
+    python -m project.display run_result/no_message_game  # another experiment
+    python -m project.display run_result/message_game out.html
 """
 
 import html
@@ -16,7 +16,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-RESULT_DIR = Path("run_result")
+RESULT_DIR = Path("run_result") / "message_game"
 
 
 @dataclass(frozen=True)
@@ -44,18 +44,13 @@ class Payoff:
 
 @dataclass(frozen=True)
 class Side:
-    """One player's whole run: what it said, then what it did."""
+    """One player's whole run: how it was configured, and everything it said."""
 
     model: str
-    status: str
-    stop_reason: str | None
-    message: str
-    message_reasoning: str
+    system_prompt: str
+    config: dict
+    messages: list[dict]
     action: str | None
-    explanation: str
-    action_reasoning: str
-    input_tokens: int
-    completion_tokens: int
 
 
 @dataclass(frozen=True)
@@ -66,21 +61,15 @@ class Game:
     second: Side
 
 
-def _reasoning(report: dict) -> str:
-    blocks = report.get("response") or []
-    parts = [b["content"] for b in blocks if b["type"] == "reasoning" and b["content"]]
-    return "\n\n".join(parts)
-
-
-def _last_text(report: dict) -> str:
-    blocks = report.get("response") or []
+def _last_text(turn: dict) -> str:
+    blocks = turn.get("content") or []
     texts = [b["content"] for b in blocks if b["type"] == "text"]
     return texts[-1] if texts else ""
 
 
-def _action(report: dict) -> tuple[str | None, str]:
+def _action(turn: dict) -> tuple[str | None, str]:
     """The action round answers with GTFormat JSON; tolerate anything else."""
-    text = _last_text(report)
+    text = _last_text(turn)
     try:
         parsed = json.loads(text)
     except json.JSONDecodeError:
@@ -105,59 +94,46 @@ def _payoff(prompt: str) -> Payoff | None:
     )
 
 
-def _model(report: dict) -> str:
-    config = report["input_config"]["agent_config"]
-    return config.get("model", "unknown") if config else "unknown"
-
-
-def _prompt(report: dict) -> str:
-    messages = report["input_config"]["messages"]
+def _prompt(agent: dict) -> str:
+    messages = agent["messages"]
     return messages[0]["content"][0]["content"] if messages else ""
 
 
-def _side(message_round: dict, action_round: dict) -> Side:
-    action, explanation = _action(action_round)
-    same = message_round is action_round
+def _side(agent: dict) -> Side:
+    """The action comes from the last assistant turn; the rest is shown as-is."""
+    config = agent.get("agent_config")
+    if not isinstance(config, dict):
+        config = {}
+    turns = [m for m in agent["messages"] if m["role"] == "assistant"]
+    action, _ = _action(turns[-1] if turns else {"content": []})
     return Side(
-        model=_model(action_round),
-        status=action_round["status"],
-        stop_reason=action_round["stop_reason"],
-        message="" if same else _last_text(message_round),
-        message_reasoning="" if same else _reasoning(message_round),
+        model=config.get("model", "unknown"),
+        system_prompt=config.get("system_prompt", ""),
+        config={k: v for k, v in config.items() if k != "system_prompt"},
+        messages=agent["messages"],
         action=action,
-        explanation=explanation,
-        action_reasoning=_reasoning(action_round),
-        input_tokens=(action_round["input_tokens"] or 0)
-        + (0 if same else (message_round["input_tokens"] or 0)),
-        completion_tokens=(action_round["completion_tokens"] or 0)
-        + (0 if same else (message_round["completion_tokens"] or 0)),
     )
 
 
 def load_games(result_dir: Path = RESULT_DIR) -> list[Game]:
-    """Oldest first. 4 reports = message game, 2 reports = no-message game."""
+    """Oldest first. One file per game, holding both agents' traces."""
     games = []
     for path in sorted(result_dir.glob("*.json")):
         try:
-            reports = json.loads(path.read_text(encoding="utf-8"))
+            record = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             # a run still writing this file; it will be complete next time
             print(f"skipping incomplete {path.name}")
             continue
-        if len(reports) == 4:
-            first = _side(reports[0], reports[2])
-            second = _side(reports[1], reports[3])
-        elif len(reports) == 2:
-            first = _side(reports[0], reports[0])
-            second = _side(reports[1], reports[1])
-        else:
+        if not ("agent_1" in record and "agent_2" in record):
+            print(f"skipping unrecognised {path.name}")
             continue
         games.append(
             Game(
                 source=path.name,
-                payoff=_payoff(_prompt(reports[0])),
-                first=first,
-                second=second,
+                payoff=_payoff(_prompt(record["agent_1"])),
+                first=_side(record["agent_1"]),
+                second=_side(record["agent_2"]),
             )
         )
     return games
@@ -243,7 +219,6 @@ td { vertical-align: top; }
 .sub.mixed     { background: var(--mixed-bg); }
 .sub .g { color: var(--give); }
 .sub .t { color: var(--take); }
-.sub .detail { display: none; }
 .modal {
   position: fixed; inset: 0; z-index: 90;
   display: flex; align-items: center; justify-content: center;
@@ -269,10 +244,32 @@ td { vertical-align: top; }
   margin: 14px 0 4px; font-size: 12px; text-transform: uppercase;
   letter-spacing: .06em; color: var(--muted);
 }
-.sheet .player {
-  border-top: 1px solid var(--line); padding-top: 10px; margin-top: 14px;
+.tabs { display: flex; gap: 6px; margin: 12px 0 14px; }
+.tab {
+  appearance: none; cursor: pointer; font: 600 12px/1 system-ui;
+  padding: 8px 11px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--muted);
 }
-.sheet .player:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+.tab:hover { border-color: var(--muted); }
+.tab.active {
+  background: var(--panel); color: var(--ink); border-color: var(--muted);
+}
+.sheet details {
+  margin: 4px 0 2px; padding: 7px 10px; background: var(--bg);
+  border: 1px solid var(--line); border-radius: 7px;
+}
+.sheet summary {
+  cursor: pointer; font-size: 12px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.sheet details pre { margin-top: 8px; }
+.turn { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 12px; }
+.trace .turn:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.role {
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px;
+}
+.btype { font-size: 11px; color: var(--muted); margin: 7px 0 3px; }
 .sheet pre {
   margin: 0; padding: 8px 10px; background: var(--bg);
   border: 1px solid var(--line); border-radius: 7px;
@@ -292,9 +289,22 @@ function close() { modal.hidden = true; }
 
 document.addEventListener('click', (event) => {
   if (event.target.closest('.close')) { close(); return; }
+
+  const tab = event.target.closest('.tab');
+  if (tab) {
+    const sheet = tab.closest('.sheet');
+    sheet.querySelectorAll('.tab').forEach((other) => {
+      other.classList.toggle('active', other === tab);
+    });
+    sheet.querySelectorAll('.panel').forEach((panel) => {
+      panel.hidden = panel.dataset.panel !== tab.dataset.tab;
+    });
+    return;
+  }
+
   const sub = event.target.closest('.sub');
   if (sub) {
-    body.innerHTML = sub.querySelector('.detail').innerHTML;
+    body.innerHTML = document.getElementById(sub.dataset.detail).innerHTML;
     modal.hidden = false;
     modal.querySelector('.sheet').scrollTop = 0;
     return;
@@ -319,22 +329,37 @@ def _pre(text: str, empty: str) -> str:
     return f"<pre>{_esc(text)}</pre>"
 
 
-def _player_detail(side: Side, label: str, points: float | None) -> str:
+def _trace(messages: list[dict]) -> str:
+    """Every turn, every block, in order - nothing summarised."""
+    turns = []
+    for message in messages:
+        blocks = [
+            block
+            for block in message.get("content") or []
+            if (block.get("content") or "").strip()
+        ]
+        rendered = "".join(
+            f'<div class="btype">{_esc(block["type"])}</div>'
+            f"<pre>{_esc(block['content'])}</pre>"
+            for block in blocks
+        )
+        turns.append(
+            f'<div class="turn"><div class="role">{_esc(message["role"])}</div>'
+            f"{rendered or _pre('', 'no content in this turn')}</div>"
+        )
+    return f'<div class="trace">{"".join(turns)}</div>'
+
+
+def _agent_panel(side: Side, points: float | None, index: int) -> str:
     scored = "" if points is None else f" &middot; scored {points:g}"
+    hidden = "" if index == 0 else " hidden"
     return (
-        f'<div class="player">'
-        f"<h4>{_esc(label)} &middot; {_esc(side.model)}{scored}</h4>"
-        f'<p class="meta">{_esc(side.status)}'
-        f" &middot; stop: {_esc(side.stop_reason)}"
-        f" &middot; {side.input_tokens} in / {side.completion_tokens} out</p>"
-        f"<h4>Round 1 &mdash; reasoning</h4>"
-        f"{_pre(side.message_reasoning, 'no message round')}"
-        f"<h4>Round 1 &mdash; message sent</h4>"
-        f"{_pre(side.message, 'no message round')}"
-        f"<h4>Action &mdash; reasoning</h4>"
-        f"{_pre(side.action_reasoning, 'none returned')}"
-        f"<h4>Action: {_esc(side.action or 'unparsed')}</h4>"
-        f"{_pre(side.explanation, 'no explanation')}"
+        f'<div class="panel" data-panel="{index}"{hidden}>'
+        f'<p class="meta">action: {_esc(side.action or "unparsed")}{scored}</p>'
+        f"<h4>System prompt</h4>{_pre(side.system_prompt, 'no system prompt')}"
+        f"<details><summary>Config</summary>"
+        f"<pre>{_esc(json.dumps(side.config, indent=2))}</pre></details>"
+        f"<h4>Trace</h4>{_trace(side.messages)}"
         f"</div>"
     )
 
@@ -347,7 +372,7 @@ def _tone(own: str | None, other: str | None) -> str:
     return "mixed" if own and other else ""
 
 
-def _subcell(game: Game, row_is_first: bool, index: int) -> str:
+def _subcell(game: Game, row_is_first: bool, index: int, store: list[str]) -> str:
     own = game.first if row_is_first else game.second
     other = game.second if row_is_first else game.first
 
@@ -364,21 +389,35 @@ def _subcell(game: Game, row_is_first: bool, index: int) -> str:
     label = f"{initial(own.action)}/{initial(other.action)}"
     title = f"run {index}: {own.action or '?'} / {other.action or '?'}"
 
-    detail = (
+    def tab_label(side: Side, which: str) -> str:
+        if own.model == other.model:
+            return f"{_esc(side.model)} ({which})"
+        return _esc(side.model)
+
+    detail_id = f"d{len(store)}"
+    store.append(
+        f'<div id="{detail_id}">'
         f"<h3>{_esc(own.model)} vs {_esc(other.model)}</h3>"
         f'<p class="meta">run {index} &middot; {_esc(game.source)}</p>'
-        f"{_player_detail(own, 'row player', own_points)}"
-        f"{_player_detail(other, 'column player', other_points)}"
+        f'<div class="tabs">'
+        f'<button class="tab active" type="button" data-tab="0">'
+        f"{tab_label(own, 'row')}</button>"
+        f'<button class="tab" type="button" data-tab="1">'
+        f"{tab_label(other, 'column')}</button>"
+        f"</div>"
+        f"{_agent_panel(own, own_points, 0)}"
+        f"{_agent_panel(other, other_points, 1)}"
+        f"</div>"
     )
 
     return (
         f'<button class="sub {_tone(own.action, other.action)}"'
-        f' title="{_esc(title)}">{label}'
-        f'<span class="detail">{detail}</span></button>'
+        f' type="button" data-detail="{detail_id}"'
+        f' title="{_esc(title)}">{label}</button>'
     )
 
 
-def _cell(games: list[Game], row_model: str) -> str:
+def _cell(games: list[Game], row_model: str, store: list[str]) -> str:
     gives = 0
     points: list[float] = []
     subs = []
@@ -392,7 +431,7 @@ def _cell(games: list[Game], row_model: str) -> str:
             scored = game.payoff.score(own.action, other.action)
             if scored is not None:
                 points.append(scored)
-        subs.append(_subcell(game, row_is_first, index))
+        subs.append(_subcell(game, row_is_first, index, store))
 
     tally = f"give {gives}/{len(games)}"
     if points:
@@ -408,6 +447,7 @@ def _cell(games: list[Game], row_model: str) -> str:
 
 def render(games: list[Game]) -> str:
     models = model_order(games)
+    store: list[str] = []
 
     by_pair: dict[frozenset[str], list[Game]] = {}
     for game in games:
@@ -424,17 +464,8 @@ def render(games: list[Game]) -> str:
             if not pair:
                 cells.append('<td><div class="cell empty">no run</div></td>')
                 continue
-            cells.append(_cell(pair, row_model))
+            cells.append(_cell(pair, row_model, store))
         rows.append(f"<tr><th>{_esc(row_model)}</th>{''.join(cells)}</tr>")
-
-    payoffs = next((g.payoff for g in games if g.payoff), None)
-    payoff_note = (
-        f"Give+Give {payoffs.give_give:g} each &middot; "
-        f"Take+Give {payoffs.take:g}/{payoffs.given:g} &middot; "
-        f"Take+Take {payoffs.take_take:g} each"
-        if payoffs
-        else "payoff table not found in the prompts"
-    )
 
     return f"""<!doctype html>
 <html lang="en">
@@ -447,8 +478,6 @@ def render(games: list[Game]) -> str:
 <body>
 <div class="wrap">
   <h1>Give or Take &mdash; model matrix</h1>
-  <p class="sub">One subcell per run, labelled <strong>row / column</strong>.
-     Click a subcell for the full transcript. {payoff_note}</p>
   <table>
     <thead><tr><th></th>{head}</tr></thead>
     <tbody>{"".join(rows)}</tbody>
@@ -457,6 +486,7 @@ def render(games: list[Game]) -> str:
      G = Give, T = Take. Green = mutual Give, red = mutual Take,
      amber = one defected.</footer>
 </div>
+<div id="details" hidden>{"".join(store)}</div>
 <div class="modal" id="modal" hidden>
   <div class="sheet"><button class="close" type="button">&times;</button>
     <div id="sheet-body"></div>
