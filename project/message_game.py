@@ -145,9 +145,9 @@ if __name__ == "__main__":
     counter = 0
     n = len(players)
     for i in range(n):
-        for j in range(i,n):
+        for j in range(i, n):
             counter += 1
-            print(f"{counter}/{n*(n+1)//2}")
+            print(f"{counter}/{n * (n + 1) // 2}")
             agent_1 = players[i]()
             agent_2 = players[j]()
             game = MessageFirstExperiment(agent_1, agent_2, scores)

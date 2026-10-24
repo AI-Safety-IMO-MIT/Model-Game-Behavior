@@ -251,7 +251,7 @@ class ClaudeChat(AgenticChat):
             agent_config=self.agent_config,
             messages=[
                 self._to_message(message_param) for message_param in self._raw_history
-            ]
+            ],
         )
 
     def clear_history(self) -> None:

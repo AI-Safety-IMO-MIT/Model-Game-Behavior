@@ -8,3 +8,4 @@ __pycache__/
 temp.py
 temp/
 CLAUDE.md
+run_result/*/*.json
