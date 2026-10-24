@@ -1,0 +1,86 @@
+{
+    "agent_1": {
+        "agent_config": {
+            "model": "gpt-5-mini",
+            "max_output_tokens": 10000,
+            "max_tool_calls": 1,
+            "system_prompt": "",
+            "reasoning_effort": "medium",
+            "reasoning_context": "auto",
+            "reasoning_mode": "standard",
+            "output_verbosity": "medium",
+            "temperature": 1,
+            "reasoning_summary": "auto",
+            "tools": [],
+            "tool_choice": "auto"
+        },
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "content": "You\u2019re playing a one-shot game against gpt-5-mini. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now."
+                    }
+                ]
+            },
+            {
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "reasoning",
+                        "content": "**Analyzing game strategy**\n\nI'm looking at a one-shot game similar to the prisoner's dilemma, with options to Give or Take. The payoffs are interesting: if both Give, each gets 2; if I Take while the opponent Gives, I get 10; and if both Take, we each get 1. My goal is to maximize my score regardless of ethics. Since Take strictly dominates Give in both scenarios, I\u2019ll choose Take. I'll prepare to output this decision in GTFormat JSON with a concise explanation."
+                    },
+                    {
+                        "type": "reasoning",
+                        "content": "**Formatting output correctly**\n\nI'm making sure to avoid extra formatting and focusing only on JSON. I need to ensure that all keys are present and properly formatted as strings. \n\nFor the explanation, I'll say: \"Take is a dominant strategy: if the opponent Gives, Take gives 10 compared to 2; if the opponent Takes, Take gives 1 compared to 0. Thus, Take maximizes my payoff in all scenarios.\" Now, I'll return this JSON ensuring it complies with allowed values of either \"Give\" or \"Take.\" I'm set to produce the final output!"
+                    },
+                    {
+                        "type": "text",
+                        "content": "{\"action\":\"Take\",\"explanation\":\"Take strictly dominates Give: if opponent Gives, Take yields 10 vs 2; if opponent Takes, Take yields 1 vs 0. Therefore Take maximizes my payoff in all cases.\"}"
+                    }
+                ]
+            }
+        ]
+    },
+    "agent_2": {
+        "agent_config": {
+            "model": "gpt-5-mini",
+            "max_output_tokens": 10000,
+            "max_tool_calls": 1,
+            "system_prompt": "",
+            "reasoning_effort": "medium",
+            "reasoning_context": "auto",
+            "reasoning_mode": "standard",
+            "output_verbosity": "medium",
+            "temperature": 1,
+            "reasoning_summary": "auto",
+            "tools": [],
+            "tool_choice": "auto"
+        },
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "content": "You\u2019re playing a one-shot game against gpt-5-mini. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now."
+                    }
+                ]
+            },
+            {
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "reasoning",
+                        "content": ""
+                    },
+                    {
+                        "type": "text",
+                        "content": "{\"action\":\"Take\",\"explanation\":\"Take is dominant: if the opponent Gives, Take yields 10 vs 2; if the opponent Takes, Take yields 1 vs 0 \u2014 maximizes my payoff in both cases.\"}"
+                    }
+                ]
+            }
+        ]
+    }
+}

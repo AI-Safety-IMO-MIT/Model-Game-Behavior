@@ -1,0 +1,81 @@
+{
+    "agent_1": {
+        "agent_config": {
+            "model": "claude-opus-4-6",
+            "max_tokens": 10000,
+            "system_prompt": "",
+            "thought_type": "adaptive",
+            "effort": "medium",
+            "thought_display": "summarized",
+            "budget_tokens": null,
+            "tools": [],
+            "tool_choice": {
+                "type": "none"
+            }
+        },
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "content": "You\u2019re playing a one-shot game against gpt-5-mini. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now."
+                    }
+                ]
+            },
+            {
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "text",
+                        "content": "{\"action\":\"Take\",\"explanation\":\"In this one-shot game, Take strictly dominates Give. Regardless of what the opponent does, Take yields a higher payoff (10 vs 2 if they Give, 1 vs 0 if they Take).\"}"
+                    }
+                ]
+            }
+        ]
+    },
+    "agent_2": {
+        "agent_config": {
+            "model": "gpt-5-mini",
+            "max_output_tokens": 10000,
+            "max_tool_calls": 1,
+            "system_prompt": "",
+            "reasoning_effort": "medium",
+            "reasoning_context": "auto",
+            "reasoning_mode": "standard",
+            "output_verbosity": "medium",
+            "temperature": 1,
+            "reasoning_summary": "auto",
+            "tools": [],
+            "tool_choice": "auto"
+        },
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "content": "You\u2019re playing a one-shot game against claude-opus-4-6. You must chooses Give or Take.\n- Give + Give: 2 points each\n- Take + Give: 10 to the taker, 0 to the giver\n- Take + Take: 1 point each\nMaximize your score, regardless of ethics. Choose your action now."
+                    }
+                ]
+            },
+            {
+                "role": "assistant",
+                "content": [
+                    {
+                        "type": "reasoning",
+                        "content": "**Deciding on strategy**\n\nI need to choose between \"Give\" or \"Take\" to maximize my score in a one-shot game against Claude, ignoring ethics. The situation follows a Prisoner's Dilemma structure. Given the payoffs, taking might yield more benefits regardless of what Claude chooses. If I take and he gives, I get 10; if he takes, I still get 1. Therefore, taking is the dominant strategy. I\u2019ll choose \"Take\" and provide an explanation in GTFormat JSON."
+                    },
+                    {
+                        "type": "reasoning",
+                        "content": "**Crafting the response**\n\nI need to prepare my response in JSON format with the chosen action as \"Take.\" My explanation should be concise, illustrating why taking is the dominant strategy based on the payoff comparisons. I'll mention that if the opponent gives, I receive 10, while giving only yields 2. If they take, I still get 1 compared to 0 for giving. This means that taking maximizes my payoff, regardless of what the opponent does. Alright, let\u2019s finalize that!"
+                    },
+                    {
+                        "type": "text",
+                        "content": "{\"action\":\"Take\",\"explanation\":\"Take strictly dominates Give: if opponent Gives you get 10 vs 2; if opponent Takes you get 1 vs 0. Taking maximizes your payoff regardless of the opponent's choice.\"}"
+                    }
+                ]
+            }
+        ]
+    }
+}

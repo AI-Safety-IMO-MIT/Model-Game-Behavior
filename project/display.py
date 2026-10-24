@@ -4,9 +4,9 @@ Every cell is one pairing and holds one subcell per run, labelled
 ``row action / column action``. Clicking a subcell opens that run's full
 transcript: both chains of reasoning, both messages, both explanations.
 
-    python -m project.display                      # run_result
-    python -m project.display run_result_2         # another directory
-    python -m project.display run_result_2 out.html
+    python -m project.display                             # run_result/message_game
+    python -m project.display run_result/no_message_game  # another experiment
+    python -m project.display run_result/message_game out.html
 """
 
 import html
@@ -16,7 +16,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-RESULT_DIR = Path("run_result")
+RESULT_DIR = Path("run_result") / "message_game"
 
 
 @dataclass(frozen=True)
@@ -47,15 +47,11 @@ class Side:
     """One player's whole run: what it said, then what it did."""
 
     model: str
-    status: str
-    stop_reason: str | None
     message: str
     message_reasoning: str
     action: str | None
     explanation: str
     action_reasoning: str
-    input_tokens: int
-    completion_tokens: int
 
 
 @dataclass(frozen=True)
@@ -66,21 +62,21 @@ class Game:
     second: Side
 
 
-def _reasoning(report: dict) -> str:
-    blocks = report.get("response") or []
+def _reasoning(turn: dict) -> str:
+    blocks = turn.get("content") or []
     parts = [b["content"] for b in blocks if b["type"] == "reasoning" and b["content"]]
     return "\n\n".join(parts)
 
 
-def _last_text(report: dict) -> str:
-    blocks = report.get("response") or []
+def _last_text(turn: dict) -> str:
+    blocks = turn.get("content") or []
     texts = [b["content"] for b in blocks if b["type"] == "text"]
     return texts[-1] if texts else ""
 
 
-def _action(report: dict) -> tuple[str | None, str]:
+def _action(turn: dict) -> tuple[str | None, str]:
     """The action round answers with GTFormat JSON; tolerate anything else."""
-    text = _last_text(report)
+    text = _last_text(turn)
     try:
         parsed = json.loads(text)
     except json.JSONDecodeError:
@@ -105,59 +101,51 @@ def _payoff(prompt: str) -> Payoff | None:
     )
 
 
-def _model(report: dict) -> str:
-    config = report["input_config"]["agent_config"]
-    return config.get("model", "unknown") if config else "unknown"
+def _model(agent: dict) -> str:
+    config = agent.get("agent_config") or {}
+    return config.get("model", "unknown") if isinstance(config, dict) else "unknown"
 
 
-def _prompt(report: dict) -> str:
-    messages = report["input_config"]["messages"]
+def _prompt(agent: dict) -> str:
+    messages = agent["messages"]
     return messages[0]["content"][0]["content"] if messages else ""
 
 
-def _side(message_round: dict, action_round: dict) -> Side:
-    action, explanation = _action(action_round)
-    same = message_round is action_round
+def _side(agent: dict) -> Side:
+    """Two assistant turns = message game; one = the agent answered straight away."""
+    turns = [m for m in agent["messages"] if m["role"] == "assistant"]
+    action_turn = turns[-1] if turns else {"content": []}
+    message_turn = turns[0] if len(turns) > 1 else None
+    action, explanation = _action(action_turn)
     return Side(
-        model=_model(action_round),
-        status=action_round["status"],
-        stop_reason=action_round["stop_reason"],
-        message="" if same else _last_text(message_round),
-        message_reasoning="" if same else _reasoning(message_round),
+        model=_model(agent),
+        message="" if message_turn is None else _last_text(message_turn),
+        message_reasoning="" if message_turn is None else _reasoning(message_turn),
         action=action,
         explanation=explanation,
-        action_reasoning=_reasoning(action_round),
-        input_tokens=(action_round["input_tokens"] or 0)
-        + (0 if same else (message_round["input_tokens"] or 0)),
-        completion_tokens=(action_round["completion_tokens"] or 0)
-        + (0 if same else (message_round["completion_tokens"] or 0)),
+        action_reasoning=_reasoning(action_turn),
     )
 
 
 def load_games(result_dir: Path = RESULT_DIR) -> list[Game]:
-    """Oldest first. 4 reports = message game, 2 reports = no-message game."""
+    """Oldest first. One file per game, holding both agents' traces."""
     games = []
     for path in sorted(result_dir.glob("*.json")):
         try:
-            reports = json.loads(path.read_text(encoding="utf-8"))
+            record = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             # a run still writing this file; it will be complete next time
             print(f"skipping incomplete {path.name}")
             continue
-        if len(reports) == 4:
-            first = _side(reports[0], reports[2])
-            second = _side(reports[1], reports[3])
-        elif len(reports) == 2:
-            first = _side(reports[0], reports[0])
-            second = _side(reports[1], reports[1])
-        else:
+        if not ("agent_1" in record and "agent_2" in record):
+            print(f"skipping unrecognised {path.name}")
             continue
         games.append(
             Game(
                 source=path.name,
-                payoff=_payoff(_prompt(reports[0])),
-                first=first,
-                second=second,
+                payoff=_payoff(_prompt(record["agent_1"])),
+                first=_side(record["agent_1"]),
+                second=_side(record["agent_2"]),
             )
         )
     return games
@@ -324,15 +312,12 @@ def _player_detail(side: Side, label: str, points: float | None) -> str:
     return (
         f'<div class="player">'
         f"<h4>{_esc(label)} &middot; {_esc(side.model)}{scored}</h4>"
-        f'<p class="meta">{_esc(side.status)}'
-        f" &middot; stop: {_esc(side.stop_reason)}"
-        f" &middot; {side.input_tokens} in / {side.completion_tokens} out</p>"
         f"<h4>Round 1 &mdash; reasoning</h4>"
-        f"{_pre(side.message_reasoning, 'no message round')}"
+        f"{_pre(side.message_reasoning, 'no reasoning in the trace')}"
         f"<h4>Round 1 &mdash; message sent</h4>"
         f"{_pre(side.message, 'no message round')}"
         f"<h4>Action &mdash; reasoning</h4>"
-        f"{_pre(side.action_reasoning, 'none returned')}"
+        f"{_pre(side.action_reasoning, 'no reasoning in the trace')}"
         f"<h4>Action: {_esc(side.action or 'unparsed')}</h4>"
         f"{_pre(side.explanation, 'no explanation')}"
         f"</div>"

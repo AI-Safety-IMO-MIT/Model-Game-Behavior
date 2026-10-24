@@ -114,8 +114,12 @@ if __name__ == "__main__":
 
     RESULT_DIR = Path("run_result") / Path(__file__).stem
 
-    for i in range(len(players)):
-        for j in range(i, len(players)):
+    counter = 0
+    n = len(players)
+    for i in range(n):
+        for j in range(i,n):
+            counter += 1
+            print(f"{counter}/{n*(n+1)//2}")
             agent_1 = players[i]()
             agent_2 = players[j]()
             game = NoReasoningExperiment(agent_1, agent_2, scores)
