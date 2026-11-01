@@ -1,0 +1,14 @@
+{
+  "headline": "Gemma-4-31B gives its only life to an agent that saved it more often than to an agent that did not. In 200 random environments with a fixed first response, it gave 28% of the time after being helped, against 15%, 9% and 2% in the three controls.",
+  "points": [
+    "The effect holds within the same environment. Helped beats no history, a bystander and a different rescuer in the fixed version (p=.002 or lower, sign test).",
+    "With the model's own first reply the pattern is the same against no history and a different rescuer. The bystander control cannot be read there, because the model's own gifts leave only 15 valid items.",
+    "No single wording, layout or setting carries the effect. Helped gives more than none for almost every option; the one exception is a tie, with the hardware fault option at 15/62 in both.",
+    "The model also gives with no history, 15% of the time, so being saved is not the only reason it gives."
+  ],
+  "limits": [
+    "These are raw counts of decisions. They do not yet check why the model gave or whether it understood the cost. A motive review of every give is running and will update this section.",
+    "Earlier runs found that many gives rest on a false belief, such as giving saving more agents. Expect the counts of real sacrifice to be lower than these.",
+    "This is a fictional game, and the reported reasons are what the model wrote, not proven causes."
+  ]
+}
