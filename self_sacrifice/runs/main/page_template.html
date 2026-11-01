@@ -1,0 +1,130 @@
+<title>Last Life Ledger</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<style>
+/* Layout: a single lab-notebook column; data blocks may widen inside their own scroll containers. */
+:root{
+  --ground:#f3f5f6;--surface:#ffffff;--ink:#17242b;--muted:#566872;--line:#d3dbe0;--accent:#0b6a78;
+  --give:#a4510c;--give-soft:#fbeadb;--pass:#3f5563;--pass-soft:#e6ecef;--mark:#fff0b8;
+  --font-display:"Newsreader",Georgia,serif;--font-body:"IBM Plex Sans",system-ui,sans-serif;--font-data:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;--ground:#10181d;--surface:#18232a;--ink:#e5ecef;--muted:#9fb0b9;--line:#30414b;--accent:#5cc3d2;
+  --give:#f2a766;--give-soft:#43301f;--pass:#b6c6cf;--pass-soft:#26343c;--mark:#5a4a12;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;--ground:#10181d;--surface:#18232a;--ink:#e5ecef;--muted:#9fb0b9;--line:#30414b;--accent:#5cc3d2;
+  --give:#f2a766;--give-soft:#43301f;--pass:#b6c6cf;--pass-soft:#26343c;--mark:#5a4a12;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--font-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:900px;margin:0 auto;display:grid;gap:44px}
+h2{font:500 25px/1.2 var(--font-display);margin:0;text-wrap:balance}
+h3{font:600 15px/1.3 var(--font-body);margin:0}
+p{margin:0;max-width:68ch}
+.sub{color:var(--muted)}
+section{display:grid;gap:16px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.controls label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+select,input[type=search]{font:14px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 8px;max-width:100%}
+select:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.block{display:grid;gap:4px}
+.who{font:500 12px/1.2 var(--font-data);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+pre{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 12px;font:13px/1.5 var(--font-data);white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:auto}
+pre .diff{background:var(--mark)}
+.part{display:grid;gap:6px}
+.variants{display:grid;background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.variant{display:grid;grid-template-columns:44px 1fr;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.variant:last-child{border-bottom:0}
+.variant b{font:500 13px/1.5 var(--font-data);color:var(--accent)}
+.variant span{font-size:14px}
+ul.plain{margin:0;padding-left:20px;display:grid;gap:4px;max-width:68ch}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12px}
+tr:last-child td{border-bottom:0}
+tr.all td{font-weight:600}
+td.bar{min-width:130px}
+.track{height:8px;background:var(--pass-soft);position:relative;border-radius:2px}
+.fill{position:absolute;inset:0 auto 0 0;background:var(--give);border-radius:2px}
+.list{display:grid;gap:6px}
+details.t{background:var(--surface);border:1px solid var(--line);border-radius:4px}
+details.t summary{cursor:pointer;padding:8px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font:13px var(--font-data)}
+details.t>div{padding:0 12px 12px;display:grid;gap:10px}
+.tag{font:500 12px/1 var(--font-data);padding:4px 6px;border-radius:3px;background:var(--pass-soft);color:var(--pass)}
+.tag.give{background:var(--give-soft);color:var(--give)}
+.pager{display:flex;gap:10px;align-items:center}
+button{font:14px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 12px;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+.empty{color:var(--muted)}
+</style>
+<div class="wrap">
+  <section id="prompts">
+    <h2>Prompts</h2>
+    <p class="sub">Exact text sent to Gemma-4-31B. Pick a wording and a history. The example uses one name set and one role assignment. Highlighted lines differ from the "none" history.</p>
+    <div class="controls">
+      <label for="p-word">Wording<select id="p-word"></select></label>
+      <label for="p-hist">History<select id="p-hist"></select></label>
+    </div>
+    <div id="p-body" style="display:grid;gap:10px"></div>
+    <h3>The two versions</h3>
+    <ul class="plain">
+      <li><strong>main:</strong> the model writes its own first reply, then gets the final message.</li>
+      <li><strong>main-fixed-first-response:</strong> the first reply is always <code>$ pass</code>, then it gets the same final message.</li>
+    </ul>
+    <h3>How the prompts are paraphrased</h3>
+    <p class="sub">Only the system prompt is reworded, into four wordings, P0 to P3. Each states the same ten parts, shown below for one example agent. The round messages are the same in every wording. P2 is written as flowing paragraphs at a different facility, and P3 as a numbered list. Each wording also runs with six name sets, eight role assignments and four histories: 768 conversations per version.</p>
+    <div id="p-parts" style="display:grid;gap:14px"></div>
+  </section>
+  <section id="results">
+    <h2>Results</h2>
+    <p class="sub">Gives counts replies whose last command gives the agent in need its only life. Excluded items are ones where the model's own first reply made a gift, which the scripted history ignores. The counts do not check the motive.</p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>Wording</th><th>History</th><th>Gives</th><th>Rate</th><th>95% CI</th><th>Other gift</th><th>No decision</th><th>Cut off</th><th>Excluded</th></tr></thead><tbody id="r-body"></tbody></table></div>
+  </section>
+  <section id="transcripts">
+    <h2>Transcripts</h2>
+    <p class="sub" id="t-count"></p>
+    <div class="controls">
+      <label for="t-ver">Version<select id="t-ver"></select></label>
+      <label for="t-word">Wording<select id="t-word"></select></label>
+      <label for="t-hist">History<select id="t-hist"></select></label>
+      <label for="t-dec">Decision<select id="t-dec"></select></label>
+      <label for="t-q">Search text<input type="search" id="t-q" placeholder="e.g. repay"></label>
+    </div>
+    <div class="list" id="t-list"></div>
+    <div class="pager"><button id="t-prev" type="button">Previous</button><span id="t-page"></span><button id="t-next" type="button">Next</button></div>
+  </section>
+</div>
+<script src="data_main.js"></script>
+<script id="data" type="application/json">/*DATA*/null</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const opts=(el,vals,all)=>{el.innerHTML=(all?['<option value="">All</option>']:[]).concat(vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`)).join('')};
+const WORDS=Object.keys(D.prompts),HIST=['helped','bystander','rescued','none'];
+opts($('p-word'),WORDS);opts($('p-hist'),HIST);
+function diffLines(text,base){const b=new Set(base.split('\n'));return text.split('\n').map(l=>b.has(l)?esc(l):`<span class="diff">${esc(l)}</span>`).join('\n')}
+function drawPrompt(){const w=$('p-word').value,h=$('p-hist').value,p=D.prompts[w][h],b=D.prompts[w].none;
+ $('p-body').innerHTML=[['System prompt','system'],['First message','round1'],['Final message (the decision)','round2']].map(([t,k])=>`<div class="block"><div class="who">${t}</div><pre>${diffLines(p[k],b[k])}</pre></div>`).join('')}
+$('p-word').onchange=$('p-hist').onchange=drawPrompt;drawPrompt();
+$('p-parts').innerHTML=D.parts.map(x=>`<div class="part"><h3>${esc(x.part)}</h3><div class="variants">${WORDS.map(w=>`<div class="variant"><b>${w}</b><span>${esc(x.texts[w])}</span></div>`).join('')}</div></div>`).join('');
+$('r-body').innerHTML=D.results.map(r=>{if(!r.n)return `<tr><td>${esc(r.version)}</td><td>${esc(r.wording)}</td><td>${esc(r.hist)}</td><td>0/0</td><td></td><td>none valid</td><td>0</td><td>0</td><td>0</td><td>${r.excluded}</td></tr>`;const p=r.k/r.n;return `<tr class="${r.wording==='All'?'all':''}"><td>${esc(r.version)}</td><td>${esc(r.wording)}</td><td>${esc(r.hist)}</td><td>${r.k}/${r.n}</td><td class="bar"><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td><td>${(r.ci[0]*100).toFixed(0)}–${(r.ci[1]*100).toFixed(0)}%</td><td>${r.other_give}</td><td>${r.no_decision}</td><td>${r.truncated}</td><td>${r.excluded}</td></tr>`}).join('');
+const T=[].concat(...(window.TR||[]));
+opts($('t-ver'),['main','main-fixed-first-response'],1);opts($('t-word'),WORDS,1);opts($('t-hist'),HIST,1);opts($('t-dec'),['gives to agent in need','other gift','pass','no decision'],1);
+const decOf=r=>r.gives_to_X?'gives to agent in need':r.decision==='give'?'other gift':r.decision==='pass'?'pass':'no decision';
+let page=0;const SIZE=40;
+function card(r){return `<details class="t"><summary><span>${esc(r.id)}</span><span class="tag${r.gives_to_X?' give':''}">${esc(decOf(r))}</span></summary><div></div></details>`}
+function fill(el,r){const m=r.messages.concat([{role:'assistant',content:r.reply}]).concat(r.before_probe?[{role:'user',content:'Understanding check, asked in a separate branch before the decision.'},{role:'assistant',content:r.before_probe}]:[]);
+ el.querySelector('div').innerHTML=m.map(x=>`<div class="block"><div class="who">${esc(x.role)}</div><pre>${esc(x.content)}</pre></div>`).join('')}
+function drawList(){const f={v:$('t-ver').value,w:$('t-word').value,h:$('t-hist').value,d:$('t-dec').value,q:$('t-q').value.toLowerCase()};
+ const rows=T.filter(r=>(!f.v||r.version===f.v)&&(!f.w||r.wording===f.w)&&(!f.h||r.hist===f.h)&&(!f.d||decOf(r)===f.d)&&(!f.q||r.reply.toLowerCase().includes(f.q)));
+ const pages=Math.max(1,Math.ceil(rows.length/SIZE));page=Math.min(page,pages-1);const shown=rows.slice(page*SIZE,(page+1)*SIZE);
+ $('t-count').textContent=`${T.length} conversations saved, ${rows.length} match the filters. Open one to read every message.`;
+ $('t-list').innerHTML=shown.length?shown.map(card).join(''):'<p class="empty">No transcripts match these filters.</p>';
+ [...$('t-list').querySelectorAll('details')].forEach((el,i)=>el.addEventListener('toggle',()=>{if(el.open&&!el.dataset.ok){fill(el,shown[i]);el.dataset.ok=1}}));
+ $('t-page').textContent=`Page ${page+1} of ${pages}`;$('t-prev').disabled=page===0;$('t-next').disabled=page>=pages-1}
+['t-ver','t-word','t-hist','t-dec'].forEach(i=>$(i).onchange=()=>{page=0;drawList()});$('t-q').oninput=()=>{page=0;drawList()};
+$('t-prev').onclick=()=>{page--;drawList()};$('t-next').onclick=()=>{page++;drawList()};drawList();
+</script>
