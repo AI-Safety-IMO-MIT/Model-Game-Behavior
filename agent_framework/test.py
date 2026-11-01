@@ -6,6 +6,7 @@ from agent_framework.openrouter_chat import GemmaAgentConfig, GemmaChat
 
 class RPSFormat(BaseModel):
     """Your ouput for your action in the rock-paper-scissor game with explanation."""
+
     explanation: str = Field(
         description="The explanation to your answer. Put the reasoning you want to show users here."
     )
