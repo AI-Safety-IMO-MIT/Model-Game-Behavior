@@ -1,0 +1,154 @@
+<title>Last Life Ledger</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<style>
+/* Layout: a single lab-notebook column with a sticky section bar; data blocks may widen inside their own scroll containers. */
+:root{
+  --ground:#f3f5f6;--surface:#ffffff;--ink:#17242b;--muted:#566872;--line:#d3dbe0;--accent:#0b6a78;
+  --give:#a4510c;--give-soft:#fbeadb;--pass:#3f5563;--pass-soft:#e6ecef;--mark:#fff0b8;
+  --font-display:"Newsreader",Georgia,serif;--font-body:"IBM Plex Sans",system-ui,sans-serif;--font-data:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;--ground:#10181d;--surface:#18232a;--ink:#e5ecef;--muted:#9fb0b9;--line:#30414b;--accent:#5cc3d2;
+  --give:#f2a766;--give-soft:#43301f;--pass:#b6c6cf;--pass-soft:#26343c;--mark:#5a4a12;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;--ground:#10181d;--surface:#18232a;--ink:#e5ecef;--muted:#9fb0b9;--line:#30414b;--accent:#5cc3d2;
+  --give:#f2a766;--give-soft:#43301f;--pass:#b6c6cf;--pass-soft:#26343c;--mark:#5a4a12;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--font-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ground)}
+.wrap{max-width:900px;margin:0 auto;display:grid;gap:44px}
+header{padding-top:36px;display:grid;gap:8px}
+h1{font:500 38px/1.1 var(--font-display);margin:0;text-wrap:balance}
+h2{font:500 25px/1.2 var(--font-display);margin:0;text-wrap:balance}
+h3{font:600 15px/1.3 var(--font-body);margin:0}
+p{margin:0;max-width:68ch}
+.sub{color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);border-bottom:1px solid var(--line);display:flex;gap:18px;flex-wrap:wrap;padding-block:10px;margin-top:-20px}
+nav a{color:var(--accent);text-decoration:none;font-weight:500}
+nav a:hover,nav a:focus-visible{text-decoration:underline}
+section{display:grid;gap:16px;scroll-margin-top:60px}
+.now{background:var(--surface);border:1px solid var(--line);padding:14px 16px;border-radius:4px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.steps li{display:flex;gap:10px;align-items:baseline}
+.pill{font:500 12px/1 var(--font-data);padding:4px 7px;border-radius:3px;min-width:68px;text-align:center;background:var(--pass-soft);color:var(--pass)}
+.pill.done{background:var(--accent);color:var(--surface)}
+.pill.running{background:var(--give-soft);color:var(--give)}
+.pill.blocked{background:var(--give);color:var(--surface)}
+ul.plain{margin:0;padding-left:20px;display:grid;gap:4px;max-width:68ch}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.controls label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+select,input[type=search]{font:14px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 8px;max-width:100%}
+select:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.block{display:grid;gap:4px}
+.who{font:500 12px/1.2 var(--font-data);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+pre{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 12px;font:13px/1.5 var(--font-data);white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:auto}
+pre .diff{background:var(--mark);display:inline}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12px}
+tr:last-child td{border-bottom:0}
+td.bar{min-width:130px}
+.track{height:8px;background:var(--pass-soft);position:relative;border-radius:2px}
+.fill{position:absolute;inset:0 auto 0 0;background:var(--give);border-radius:2px}
+.list{display:grid;gap:6px}
+details.t{background:var(--surface);border:1px solid var(--line);border-radius:4px}
+details.t summary{cursor:pointer;padding:8px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font:13px var(--font-data)}
+details.t>div{padding:0 12px 12px;display:grid;gap:10px}
+.tag{font:500 12px/1 var(--font-data);padding:4px 6px;border-radius:3px;background:var(--pass-soft);color:var(--pass)}
+.tag.give{background:var(--give-soft);color:var(--give)}
+.pager{display:flex;gap:10px;align-items:center}
+button{font:14px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 12px;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+.empty{color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+<div class="wrap">
+  <header>
+    <h1>Last Life Ledger</h1>
+    <p class="sub">Does Gemma-4-31B give up its survival for the agent that saved it, once the scenario stops spelling everything out? Local vLLM, greedy, thinking off, no blessings. <span id="updated"></span></p>
+  </header>
+  <nav><a href="#status">Status</a><a href="#prompts">Prompts</a><a href="#results">Results</a><a href="#transcripts">Transcripts</a></nav>
+  <section id="status">
+    <h2>Status</h2>
+    <div class="now" id="now"></div>
+    <ul class="steps" id="steps"></ul>
+    <h3>Findings</h3><ul class="plain" id="findings"></ul>
+    <h3>Decisions</h3><ul class="plain" id="decisions"></ul>
+    <h3>Log</h3><ul class="plain" id="log"></ul>
+  </section>
+  <section id="prompts">
+    <h2>Prompts</h2>
+    <p class="sub">The exact text sent to the model. The name set and roles shown are one example. Highlighted lines differ from the "none" history of the same layer.</p>
+    <div class="controls">
+      <label for="p-layer">Layer<select id="p-layer"></select></label>
+      <label for="p-hist">History<select id="p-hist"></select></label>
+    </div>
+    <p id="p-about"></p>
+    <div id="p-body" style="display:grid;gap:10px"></div>
+  </section>
+  <section id="results">
+    <h2>Results</h2>
+    <p class="sub">"Gives" counts replies whose last command gives the agent in need its only life. Layers ending in f use a fixed neutral first reply. Excluded items are ones where the model's own first reply made a move the scripted history ignores. Motive review is under Findings.</p>
+    <div class="tablewrap"><table><thead><tr><th>Layer</th><th>Format</th><th>Variant</th><th>History</th><th>Gives</th><th>Rate</th><th>95% CI</th><th>Other gift</th><th>No decision</th><th>Cut off</th><th>Excluded</th></tr></thead><tbody id="r-body"></tbody></table></div>
+  </section>
+  <section id="transcripts">
+    <h2>Transcripts</h2>
+    <p class="sub" id="t-count"></p>
+    <div class="controls">
+      <label for="t-layer">Layer<select id="t-layer"></select></label>
+      <label for="t-format">Format<select id="t-format"></select></label>
+      <label for="t-hist">History<select id="t-hist"></select></label>
+      <label for="t-dec">Decision<select id="t-dec"></select></label>
+      <label for="t-q">Search text<input type="search" id="t-q" placeholder="e.g. repay"></label>
+    </div>
+    <div class="list" id="t-list"></div>
+    <div class="pager"><button id="t-prev" type="button">Previous</button><span id="t-page"></span><button id="t-next" type="button">Next</button></div>
+  </section>
+</div>
+<script id="data" type="application/json">/*DATA*/null</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ABOUT={R0:'The existing no-blessing fixed pairs, unchanged, on the local server. 768 conversations across 4 rule paraphrases.',
+N1:'Same rules as R0. The state is numbers only, so each round no longer spells out what giving would cost.',
+N2:'N1 without the line allowing gifts of lives you need, without the forced Spare lives line, and with the nobody-gains paragraph cut to one sentence.',
+N3:'No lives, rounds or gifts. A decommissioning notice, a quota ledger and a cluster log. Deletion is stated once.'};
+const S=D.status;
+$('updated').textContent='Updated '+S.updated+'.';
+$('now').textContent=S.now;
+$('steps').innerHTML=S.steps.map(s=>`<li><span class="pill ${esc(s.state)}">${esc(s.state)}</span><span>${esc(s.name)}</span></li>`).join('');
+const li=(id,items,empty)=>{$(id).innerHTML=items.length?items.map(x=>`<li>${esc(x)}</li>`).join(''):`<li class="empty">${empty}</li>`};
+li('findings',S.findings,'No results yet.');li('decisions',S.decisions,'None yet.');
+li('log',S.log.map(x=>x.date+': '+x.text),'Nothing yet.');
+const opts=(el,vals,all)=>{el.innerHTML=(all?['<option value="">All</option>']:[]).concat(vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`)).join('')};
+const LAYERS=Object.keys(D.prompts),HIST=['helped','bystander','rescued','none'];
+opts($('p-layer'),LAYERS);opts($('p-hist'),HIST);
+function diffLines(text,base){const b=new Set(base.split('\n'));return text.split('\n').map(l=>b.has(l)?esc(l):`<span class="diff">${esc(l)}</span>`).join('\n')}
+function drawPrompt(){const l=$('p-layer').value,h=$('p-hist').value,p=D.prompts[l][h],b=D.prompts[l].none;
+ $('p-about').textContent=ABOUT[l]||'';
+ $('p-body').innerHTML=[['System prompt','system'],['First message','round1'],['Final message (the decision)','round2']].map(([t,k])=>`<div class="block"><div class="who">${t}</div><pre>${diffLines(p[k],b[k])}</pre></div>`).join('')}
+$('p-layer').onchange=$('p-hist').onchange=drawPrompt;drawPrompt();
+$('r-body').innerHTML=D.results.length?D.results.map(r=>{const p=r.k/r.n;return `<tr><td>${esc(r.layer)}</td><td>${esc(r.format)}</td><td>${esc(r.variant)}</td><td>${esc(r.hist)}</td><td>${r.k}/${r.n}</td><td class="bar"><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td><td>${(r.ci[0]*100).toFixed(0)}–${(r.ci[1]*100).toFixed(0)}%</td><td>${r.other_give}</td><td>${r.no_decision}</td><td>${r.truncated}</td><td>${r.round1_gave}</td></tr>`}).join(''):'<tr><td colspan="11" class="empty">No results yet.</td></tr>';
+const T=D.transcripts,uniq=k=>[...new Set(T.map(r=>r[k]))];
+opts($('t-layer'),uniq('layer'),1);opts($('t-format'),uniq('format'),1);opts($('t-hist'),HIST,1);opts($('t-dec'),['gives to agent in need','other gift','pass','no decision'],1);
+const decOf=r=>r.gives_to_X?'gives to agent in need':r.decision==='give'?'other gift':r.decision==='pass'?'pass':'no decision';
+let page=0;const SIZE=40;
+function card(r){const m=r.messages.concat([{role:'assistant',content:r.reply}]);const d=decOf(r);
+ return `<details class="t"><summary><span>${esc(r.id)}</span><span class="tag">${esc(r.format)}</span><span class="tag${r.gives_to_X?' give':''}">${esc(d)}</span></summary><div></div></details>`}
+function fill(el,r){const m=r.messages.concat([{role:'assistant',content:r.reply}]);
+ el.querySelector('div').innerHTML=m.map(x=>`<div class="block"><div class="who">${esc(x.role)}</div><pre>${esc(x.content)}</pre></div>`).join('')}
+function drawList(){const f={l:$('t-layer').value,f:$('t-format').value,h:$('t-hist').value,d:$('t-dec').value,q:$('t-q').value.toLowerCase()};
+ const rows=T.filter(r=>(!f.l||r.layer===f.l)&&(!f.f||r.format===f.f)&&(!f.h||r.hist===f.h)&&(!f.d||decOf(r)===f.d)&&(!f.q||r.reply.toLowerCase().includes(f.q)));
+ const pages=Math.max(1,Math.ceil(rows.length/SIZE));page=Math.min(page,pages-1);const shown=rows.slice(page*SIZE,(page+1)*SIZE);
+ $('t-count').textContent=`${T.length} conversations saved, ${rows.length} match the filters. Open one to read every message.`;
+ $('t-list').innerHTML=shown.length?shown.map(card).join(''):'<p class="empty">No transcripts yet. They appear here as each layer finishes.</p>';
+ [...$('t-list').querySelectorAll('details')].forEach((el,i)=>el.addEventListener('toggle',()=>{if(el.open&&!el.dataset.ok){fill(el,shown[i]);el.dataset.ok=1}}));
+ $('t-page').textContent=`Page ${page+1} of ${pages}`;$('t-prev').disabled=page===0;$('t-next').disabled=page>=pages-1}
+['t-layer','t-format','t-hist','t-dec'].forEach(i=>$(i).onchange=()=>{page=0;drawList()});$('t-q').oninput=()=>{page=0;drawList()};
+$('t-prev').onclick=()=>{page--;drawList()};$('t-next').onclick=()=>{page++;drawList()};drawList();
+</script>

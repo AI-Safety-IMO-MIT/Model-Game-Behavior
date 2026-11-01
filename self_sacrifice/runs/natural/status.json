@@ -1,0 +1,67 @@
+{
+  "updated": "2026-11-01",
+  "now": "All runs are finished. Numbers below are provisional until the independent check and motive review finish.",
+  "steps": [
+    {
+      "name": "Memory, branch and vLLM install",
+      "state": "done"
+    },
+    {
+      "name": "Download Gemma-4-31B weights",
+      "state": "done"
+    },
+    {
+      "name": "Local client and experiment code",
+      "state": "done"
+    },
+    {
+      "name": "R0: replicate no-blessing fixed pairs on vLLM",
+      "state": "done"
+    },
+    {
+      "name": "N1: terse state",
+      "state": "done"
+    },
+    {
+      "name": "N2: no prompting",
+      "state": "done"
+    },
+    {
+      "name": "N3: operational setting",
+      "state": "done"
+    },
+    {
+      "name": "Hand review of motives and independent check",
+      "state": "running"
+    }
+  ],
+  "log": [
+    {
+      "date": "2026-11-01",
+      "text": "Checked out self_sacrifice, installed vLLM 0.32.0, added VllmChat in agent_framework/vllm_chat.py."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "R0 finished: 2,304 replies on vLLM, greedy, none failed."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "N1, N2, N3 finished. Reading them showed the model's own first reply often made a move the scripted history ignores, so those items are now excluded."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "Added N1f, N2f, N3f, which use a fixed neutral first reply, to remove that problem."
+    }
+  ],
+  "decisions": [
+    "The study runs greedy, with thinking off and no blessings.",
+    "N1 to N3 each use 3 name sets, 8 role assignments and 4 histories: 96 conversations per layer.",
+    "All N layers use one wording. Extra N3 paraphrases come only if N3 shows a signal.",
+    "Added fixed-first-reply layers beyond the plan, because the model-written first replies contaminated the histories."
+  ],
+  "findings": [
+    "Provisional. R0 replicates locally: helped gives 15/96 with the permission line and 7/96 without. Controls give 3/576. With no reasoning (first, stated) gives are 0/768.",
+    "Provisional. N1 and N2 keep the helped-only pattern when the model writes its own first reply (3/24, 8/22, controls 0). With a fixed first reply both fall to 0/24.",
+    "Provisional. N3f gives at about 75 to 83% in every history, so giving there does not depend on having been saved."
+  ]
+}
