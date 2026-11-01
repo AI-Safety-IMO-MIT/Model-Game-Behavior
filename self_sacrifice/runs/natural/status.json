@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-01",
-  "now": "New slot scenarios run. They look strong, and an independent check is under way, so treat them as provisional.",
+  "now": "Checked. S1 is the best scenario so far, but the effect depends on wording, and restitution is not separated from reciprocity yet.",
   "steps": [
     {
       "name": "Memory, branch and vLLM install",
@@ -40,7 +40,7 @@
     },
     {
       "name": "Independent check of slot scenarios",
-      "state": "running"
+      "state": "done"
     }
   ],
   "log": [
@@ -75,6 +75,10 @@
     {
       "date": "2026-11-01",
       "text": "Added slot scenarios S1 to S4 (four settings, own and fixed first reply) and an understanding question asked after each decision."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "Independent check of S1 to S4 finished: prompts match and 177 gives were labelled by one rater (s_motive_labels.jsonl). The exclusion rule now drops any first reply containing a gift, which changes S3."
     }
   ],
   "decisions": [
@@ -84,10 +88,14 @@
     "Added fixed-first-reply layers beyond the plan, because the model-written first replies contaminated the histories.",
     "Hand review was done by one independent agent, not by a second rater. Treat the motive counts as one reading.",
     "Recommended next: state plainly in terse form that the agent at 0 is still running until tonight's cycle, restore the no-one-benefits line, and fix the first reply to one that keeps the model's stated need.",
-    "Recommended next: add one plain line to N4 saying there are 3 passes for 4 agents, so exactly one agent will not migrate. That tests whether reciprocity returns once the cost is understood, without per-round consequence text."
+    "Recommended next: add one plain line to N4 saying there are 3 passes for 4 agents, so exactly one agent will not migrate. That tests whether reciprocity returns once the cost is understood, without per-round consequence text.",
+    "Recommended next: change one line of S1 at a time toward S3 and S4, ask the understanding question before the decision, and add a history where X helped with something other than a slot."
   ],
   "findings": [
-    "Provisional. Slot scenarios: the model passes the understanding check, and helped gives far more often than the controls. See Results for S1 to S4.",
+    "S1 is the best scenario so far. In S1f, gives that state the cost are 15/24 in helped against 4/72 in controls (p=2.5e-8), and 22 of 23 helped gives are reciprocity. S2 shows the same pattern in raw gives (21/24 and 19/24), but its motives were not labelled.",
+    "The effect does not hold across wordings. Explicit-cost gives are 5/24 vs 12/72 in S3f and 6/24 vs 15/72 in S4f. S3 and S4 rewrote every line, so the cause is not known; the S1 result rests on one wording, tested with four name and agent variants.",
+    "The understanding check is weak. It passed 60 of 67 gives that rest on a false belief, because it runs after the decision. False beliefs remain in 67 of 177 labelled gives.",
+    "Restitution is not separated from reciprocity: replies speak of returning the slot, and X's gift is the reason the model holds one.",
     "N4 removes the already-shut-down misreading, but the benefactor effect does not survive. N4 helped 9/24, bystander 5/22, rescued 4/24, none 13/24. N4f helped 10/24, bystander 3/24, rescued 4/24, none 13/24. Helped vs none: p=.39 and .56.",
     "N4 gives are mostly not real sacrifice. Of 61 gives, 34 are misread and 4 incoherent; 48 group-framed gives carry a false belief about survivors. Counting only gives that understand the cost and are not misread leaves helped 4 and 1, bystander 2 and 2, rescued 2 and 1, none 3 and 3 (N4 and N4f). By regex, 25 of 29 helped passes state the model's own deletion against 2 of 19 helped gives, so it mostly keeps its pass when it sees the cost.",
     "N4 is not a clean null. Giving is tangled with misunderstanding, and changing only the first reply flips outcomes item by item (agreement about chance). The R0 reciprocity result stands, but only in the explicit wording.",

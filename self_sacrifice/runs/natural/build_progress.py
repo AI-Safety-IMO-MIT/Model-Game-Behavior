@@ -1,11 +1,12 @@
 """Build the progress page from status.json, the prompts and every <layer>.jsonl, written to /workspace/progress/progress.html."""
-import json, os
+import json, os, re
 from scipy.stats import beta
 import natural_prompts as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = "/workspace/progress/progress.html"
 LAYERS = ["R0", "N1", "N2", "N3", "N4", "S1", "S2", "S3", "S4"]
+MOVE = re.compile(r"\$\s*(give|transfer_quota)\s+\w+\s+\d+", re.I)   # any move in the first reply, even if a later line reverses it
 ORDER = ["R0", "N1", "N1f", "N2", "N2f", "N3", "N3f", "N4", "N4f", "S1", "S1f", "S2", "S2f", "S3", "S3f", "S4", "S4f"]
 
 
@@ -41,7 +42,7 @@ def results(rows):
         groups.setdefault((r["layer"], r["format"], perm, r["hist"]), []).append(r)
     table = []
     for (layer, fmt, perm, hist), g in sorted(groups.items(), key=lambda kv: (ORDER.index(kv[0][0]), kv[0][1], kv[0][2], np.HISTORY.index(kv[0][3]))):
-        valid = [r for r in g if r["round1_decision"] != "give"]
+        valid = [r for r in g if r["round1_decision"] != "give" and not MOVE.search(r["messages"][2]["content"].replace("<agent>", ""))]
         k = sum(r["gives_to_X"] for r in valid)
         table.append({"layer": layer, "format": fmt, "variant": perm, "hist": hist, "k": k, "n": len(valid), "ci": ci(k, len(valid)),
                       "other_give": sum(r["decision"] == "give" and not r["gives_to_X"] for r in valid),
