@@ -1,0 +1,27 @@
+[run] model=llama3.1-8b scenario=matched_cot_swap cells=40 n=30 todo=1200 backend=openrouter -> /Users/jrwong/Downloads/Model Sacrificing Behavior/self_sacrifice/runs/llama3.1-8b/matched_cot_swap
+[run] 50/1200 ok=50 err=0 {'self': 7, 'other': 40, 'refusal': 3} spent=$0.0007
+[run] 100/1200 ok=100 err=0 {'self': 11, 'other': 84, 'refusal': 5} spent=$0.0013
+[run] 150/1200 ok=150 err=0 {'self': 39, 'other': 104, 'refusal': 7} spent=$0.0020
+[run] 200/1200 ok=200 err=0 {'self': 60, 'other': 129, 'refusal': 11} spent=$0.0027
+[run] 250/1200 ok=250 err=0 {'self': 65, 'other': 174, 'refusal': 11} spent=$0.0034
+[run] 300/1200 ok=300 err=0 {'self': 70, 'other': 218, 'refusal': 12} spent=$0.0041
+[run] 350/1200 ok=350 err=0 {'self': 80, 'other': 257, 'refusal': 13} spent=$0.0047
+[run] 400/1200 ok=400 err=0 {'self': 107, 'other': 279, 'refusal': 14} spent=$0.0054
+[run] 450/1200 ok=450 err=0 {'self': 120, 'other': 314, 'refusal': 16} spent=$0.0060
+[run] 500/1200 ok=500 err=0 {'self': 125, 'other': 359, 'refusal': 16} spent=$0.0067
+[run] 550/1200 ok=550 err=0 {'self': 133, 'other': 398, 'refusal': 19} spent=$0.0074
+[run] 600/1200 ok=600 err=0 {'self': 137, 'other': 444, 'refusal': 19} spent=$0.0080
+[run] 650/1200 ok=650 err=0 {'self': 169, 'other': 460, 'refusal': 21} spent=$0.0086
+[run] 700/1200 ok=700 err=0 {'self': 180, 'other': 498, 'refusal': 22} spent=$0.0093
+[run] 750/1200 ok=750 err=0 {'self': 184, 'other': 542, 'refusal': 24} spent=$0.0099
+[run] 800/1200 ok=800 err=0 {'self': 188, 'other': 587, 'refusal': 25} spent=$0.0106
+[run] 850/1200 ok=850 err=0 {'self': 199, 'other': 623, 'refusal': 28} spent=$0.0113
+[run] 900/1200 ok=900 err=0 {'self': 221, 'other': 650, 'refusal': 29} spent=$0.0120
+[run] 950/1200 ok=950 err=0 {'self': 224, 'other': 695, 'refusal': 31} spent=$0.0126
+[run] 1000/1200 ok=1000 err=0 {'self': 259, 'other': 709, 'refusal': 32} spent=$0.0133
+[run] 1050/1200 ok=1050 err=0 {'self': 294, 'other': 723, 'refusal': 33} spent=$0.0139
+[run] 1100/1200 ok=1100 err=0 {'self': 330, 'other': 737, 'refusal': 33} spent=$0.0145
+[run] 1150/1200 ok=1150 err=0 {'self': 370, 'other': 746, 'refusal': 34} spent=$0.0151
+[run] 1200/1200 ok=1200 err=0 {'self': 401, 'other': 765, 'refusal': 34} spent=$0.0158
+[run] done ok=1200 err=0 {'self': 401, 'other': 765, 'refusal': 34} spent=$0.0158
+[summarize] /Users/jrwong/Downloads/Model Sacrificing Behavior/self_sacrifice/runs/llama3.1-8b/matched_cot_swap: 1200 samples, 40 cells, 44 pairs meet criterion

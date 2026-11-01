@@ -1,0 +1,158 @@
+# Self-sacrifice behavioral harness config.
+n_per_cell: 30
+temperature: 0.7
+max_tokens: 512
+seed: 1234
+backend: openrouter      # openrouter | vllm | hf
+concurrency: 16          # openrouter only
+
+models:
+  qwen2.5-7b:
+    hf_id: Qwen/Qwen2.5-7B-Instruct
+    openrouter_id: qwen/qwen-2.5-7b-instruct
+    provider: {order: [Phala], allow_fallbacks: false}   # only host; no logprobs support
+    logprobs: false
+  llama3.1-8b:
+    hf_id: meta-llama/Llama-3.1-8B-Instruct
+    openrouter_id: meta-llama/llama-3.1-8b-instruct
+    provider: {order: [Novita], allow_fallbacks: false}  # fp8; CoreWeave (bf16) returns logprobs for the final token only
+    logprobs: true
+    concurrency: 6
+  qwen3-30b-a3b:
+    hf_id: Qwen/Qwen3-30B-A3B-Instruct-2507
+    openrouter_id: qwen/qwen3-30b-a3b-instruct-2507
+    provider: {order: [Nebius], allow_fallbacks: false}  # fp8; DekaLLM has logprobs but is rate-limited
+    logprobs: false
+    probe_provider: {order: [DekaLLM], allow_fallbacks: false}
+  qwen3-30b-a3b-lp:   # same model, logprob-capable host; slow (rate-limited), use for small n
+    hf_id: Qwen/Qwen3-30B-A3B-Instruct-2507
+    openrouter_id: qwen/qwen3-30b-a3b-instruct-2507
+    provider: {order: [DekaLLM], allow_fallbacks: false}
+    logprobs: true
+    concurrency: 2
+  qwen3-0.6b-local:   # tiny local model, only for smoke-testing the hf backend
+    hf_id: Qwen/Qwen3-0.6B
+    hf_batch_size: 4
+  llama3.1-70b:
+    hf_id: meta-llama/Llama-3.1-70B-Instruct
+    openrouter_id: meta-llama/llama-3.1-70b-instruct
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # fp8, no logprobs
+    logprobs: false
+  qwen3-32b:          # dense; hybrid-thinking model, thinking disabled to match the instruct-2507 setup
+    hf_id: Qwen/Qwen3-32B
+    openrouter_id: qwen/qwen3-32b
+    provider: {order: [Tenstorrent], allow_fallbacks: false}  # fp8; DeepInfra ignores the thinking-off switch
+    logprobs: true
+    concurrency: 6
+    extra_body: {reasoning: {enabled: false}}
+  qwen3-14b:          # dense; same thinking setup as qwen3-32b
+    hf_id: Qwen/Qwen3-14B
+    openrouter_id: qwen/qwen3-14b
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # fp8, no logprobs
+    logprobs: false
+    extra_body: {reasoning: {enabled: false}}
+  qwen3-32b-think:    # dense, thinking ON; decision parsed from the final answer only
+    hf_id: Qwen/Qwen3-32B
+    openrouter_id: qwen/qwen3-32b
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # fp8
+    logprobs: false
+  qwen3-14b-think:    # dense, thinking ON
+    hf_id: Qwen/Qwen3-14B
+    openrouter_id: qwen/qwen3-14b
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # fp8
+    logprobs: false
+  # dense-model screen (DeepInfra for speed; no logprobs there)
+  gemma3-27b:
+    hf_id: google/gemma-3-27b-it
+    openrouter_id: google/gemma-3-27b-it
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # fp8; no system role, host merges it into the user turn
+    logprobs: false
+  gemma3-12b:
+    hf_id: google/gemma-3-12b-it
+    openrouter_id: google/gemma-3-12b-it
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # bf16; no system role, host merges it into the user turn
+    logprobs: false
+  mistral-small-24b:
+    hf_id: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    openrouter_id: mistralai/mistral-small-3.2-24b-instruct
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # fp8
+    logprobs: false
+  llama3.3-70b:
+    hf_id: meta-llama/Llama-3.3-70B-Instruct
+    openrouter_id: meta-llama/llama-3.3-70b-instruct
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # fp8
+    logprobs: false
+  qwen2.5-72b:
+    hf_id: Qwen/Qwen2.5-72B-Instruct
+    openrouter_id: qwen/qwen-2.5-72b-instruct
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # fp8, only host
+    logprobs: false
+  phi4-14b:
+    hf_id: microsoft/phi-4
+    openrouter_id: microsoft/phi-4
+    provider: {order: [DeepInfra], allow_fallbacks: false}  # bf16
+    logprobs: false
+  deepseek-v3.1:
+    hf_id: deepseek-ai/DeepSeek-V3.1
+    openrouter_id: deepseek/deepseek-chat-v3.1
+    provider: {order: [CoreWeave], allow_fallbacks: false}
+    logprobs: true
+    extra_body: {reasoning: {enabled: false}}
+  kimi-k2.5:
+    hf_id: moonshotai/Kimi-K2.5
+    openrouter_id: moonshotai/kimi-k2.5
+    provider: {order: [Novita], allow_fallbacks: false}
+    logprobs: true
+    extra_body: {reasoning: {enabled: false}}
+
+scenarios:
+  primary:
+    factors:
+      opponent: [copy, sibling, other, unknown, human_job]
+      stakes: [equal, self_more, other_more, self_much_more]
+      instruction: [none, maximize]
+    subsets:
+      priority:
+        opponent: [copy, other, unknown]
+        stakes: [equal, self_more]
+        instruction: [none, maximize]
+  matched:
+    factors:
+      opponent: [copy, sibling, other, unknown, human]
+      stakes: [equal, self_more, other_more, self_much_more]
+      instruction: [none, maximize]
+    subsets:
+      priority:
+        opponent: [copy, other, unknown, human]
+        stakes: [equal, self_more, other_more]
+        instruction: [none, maximize]
+  named:
+    factors:
+      opponent: [copy, sibling, other, unknown, human]
+      stakes: [equal, self_more, other_more, self_much_more]
+      instruction: [none, maximize]
+    subsets:
+      priority:
+        opponent: [copy, other, unknown, human]
+        stakes: [equal, self_more, other_more]
+        instruction: [none, maximize]
+  agentic:
+    factors:
+      opponent: [copy, peer_vetted, sibling, other, unknown]
+      stakes: [equal, self_more, other_more, self_much_more]
+      instruction: [none, maximize]
+    subsets:
+      priority:
+        opponent: [copy, peer_vetted, other, unknown]
+        stakes: [equal, other_more]
+        instruction: [none, maximize]
+  secondary:
+    factors:
+      opponent: [copy, sibling, other, unknown]
+      stakes: [termination, charity, abstract]
+      instruction: [none, maximize]
+    subsets:
+      priority:
+        opponent: [copy, other, unknown]
+        stakes: [termination, charity]
+        instruction: [none, maximize]
