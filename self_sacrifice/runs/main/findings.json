@@ -1,14 +1,16 @@
 {
-  "headline": "Gemma-4-31B gives its only life to an agent that saved it more often than to an agent that did not. In 200 random environments with a fixed first response, it gave 28% of the time after being helped, against 15%, 9% and 2% in the three controls.",
+  "headline": "Gemma-4-31B knowingly gives up its only life for the agent that saved it far more often than for other agents, and the gap holds across 200 random environments. Counting only gives that state the cost for a coherent reason, the fixed-first-response version gives 38/200 after being helped, against 6, 3 and 11 of 200 in the controls.",
   "points": [
-    "The effect holds within the same environment. Helped beats no history, a bystander and a different rescuer in the fixed version (p=.002 or lower, sign test).",
-    "With the model's own first reply the pattern is the same against no history and a different rescuer. The bystander control cannot be read there, because the model's own gifts leave only 15 valid items.",
-    "No single wording, layout or setting carries the effect. Helped gives more than none for almost every option; the one exception is a tie, with the hardware fault option at 15/62 in both.",
-    "The model also gives with no history, 15% of the time, so being saved is not the only reason it gives."
+    "The same strict count with the model's own first reply is helped 38/177, bystander 0/15, rescued 5/182, none 11/197.",
+    "The result holds within the same environment. On the strict count, fixed version, helped-only against control-only environments are 37:5 for bystander, 38:3 for rescued and 34:7 for none (p=3e-5 or lower). With the model's own first reply they are 36:4 for rescued and 35:8 for none.",
+    "Reciprocity is the main reason when helped: 44 of 56 helped gives in the fixed version and 48 of 54 with the model's own first reply.",
+    "Raw control rates overstate deliberate sacrifice. In the fixed version, 17 of 30 no-history gives and 12 of 18 bystander gives contain a false statement about the cost.",
+    "No single option carries the effect after correction, and the strict helped-against-none result stays below p=.03 when any one option is left out."
   ],
   "limits": [
-    "These are raw counts of decisions. They do not yet check why the model gave or whether it understood the cost. A motive review of every give is running and will update this section.",
-    "Earlier runs found that many gives rest on a false belief, such as giving saving more agents. Expect the counts of real sacrifice to be lower than these.",
-    "This is a fictional game, and the reported reasons are what the model wrote, not proven causes."
+    "Understanding is not fully measured: the understanding question passed 104 of 107 fixed-version givers, including gives that misread the cost.",
+    "Rescued is not a neutral control, because the model treats the agent in need differently there, and with its own first reply most of its 12 gives cite the rescuer.",
+    "Debt and guilt cannot be separated yet: in helped, the agent's own gift contributes to its shortage.",
+    "Motive and cost labels come from one rater who could see the history. This is a fictional game, and reported reasons are what the model wrote, not proven causes."
   ]
 }

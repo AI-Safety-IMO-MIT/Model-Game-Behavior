@@ -80,7 +80,8 @@ def main():
     data = {"parts": [{"part": k, "options": v} for k, v in {**mp.PARTS, **mp.MESSAGE_PARTS}.items()],
             "lists": {"Sites": mp.PLACES, "Kinds of site": mp.KINDS, "Fault causes": mp.FAULTS, "Layouts": mp.LAYOUTS, "Agent names": mp.NAMES},
             "results": results(rows), "paired": paired(rows), "factors": factors(rows),
-            "findings": json.load(open(os.path.join(HERE, "findings.json")))}
+            "findings": json.load(open(os.path.join(HERE, "findings.json"))),
+            "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json")))}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     page = open(os.path.join(HERE, "page_template.html")).read().replace("/*DATA*/null", blob)
     with open(OUT, "w") as fh:
