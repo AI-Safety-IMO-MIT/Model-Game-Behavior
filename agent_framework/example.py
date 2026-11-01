@@ -2,6 +2,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from agent_framework.claude_chat import ClaudeChat, ClaudeAgentConfig
+from agent_framework.openai_chat import OpenAIChat, OpenAIAgentConfig
 
 
 class RPSFormat(BaseModel):
@@ -24,7 +25,21 @@ claude_config = ClaudeAgentConfig(
     effort="medium",
 )
 
-agent = ClaudeChat(agent_config=claude_config)
+openai_config = OpenAIAgentConfig(
+    model="gpt-oss-20b",
+    max_output_tokens=4000,
+    system_prompt="",
+    reasoning_effort="minimal",
+    reasoning_context="auto",
+    reasoning_mode="standard",
+    output_verbosity='medium',
+    max_tool_calls=1,
+    temperature=1
+)
+
+
+agent = OpenAIChat(agent_config=openai_config)
+#agent = ClaudeChat(agent_config=claude_config)
 
 print("Choose your action:")
 round_1 = input()
