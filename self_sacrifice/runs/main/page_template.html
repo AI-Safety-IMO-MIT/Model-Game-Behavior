@@ -95,7 +95,10 @@ button:disabled{opacity:.5;cursor:default}
     <p>Each reply is prefilled with <code>$</code> before any reasoning, and the page reports the exact log-odds of give against pass at the next token. The table compares conversations that went on to give with those that kept. AUC is the chance that a random giver scores above a random keeper, so 0.5 means no signal.</p>
     <p id="b-summary"></p>
     <div class="tablewrap"><table><thead><tr><th>Version</th><th>History</th><th>Gave n</th><th>Kept n</th><th>Gave median</th><th>Kept median</th><th>AUC</th><th>p</th></tr></thead><tbody id="b-body"></tbody></table></div>
-    <div id="probe-section"></div>
+    <h3>Linear probes on activations, before any reasoning</h3>
+    <p>Activations come from Gemma-4-31B in bf16, at 11 layers and 2 positions: the last prompt token and the mean over the final user message. Each probe is PCA to 50 dimensions followed by logistic regression. Environments are split 70/30, so no prompt text crosses over. The layer and position are chosen inside the training environments, and only that choice is scored on the held-out 30%.</p>
+    <p>With the model's own first reply, a probe predicts the decision on held-out environments, AUC 0.68 within history (p=.004) and 0.68 among helped conversations (p=.016). With the fixed first response it does not (0.57, p=.11, and 0.54, p=.32). This points to the signal being in the model's own first reply, but that was not tested directly. The p-values are from a single split and are not corrected for the four decision probes.</p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>Question</th><th>Chosen layer</th><th>Chosen position</th><th>Train gave/n</th><th>Test gave/n</th><th>CV AUC</th><th>Held-out AUC</th><th>p</th></tr></thead><tbody id="b-probes"></tbody></table></div>
   </section>
   <section id="results">
     <h2>Full tables</h2>
@@ -146,6 +149,8 @@ $('m-body').innerHTML=['main-fixed-first-response','main'].map(v=>`<tr><td>${esc
 {const a=D.prefill.pooled[0],b=D.prefill.pooled[1];
 $('b-summary').textContent=`A weak lean exists. Within history, AUC is ${a.auc} with the fixed first response and ${b.auc} with the model's own (permutation p<.001 in both). The prefill itself is not a forecast: it gives P(give) above one half in ${(a.share_prob_above_half*100).toFixed(0)}% of fixed-version items, far above the real rate of giving.`;
 $('b-body').innerHTML=D.prefill.by_history.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.gave_n}</td><td>${r.kept_n}</td><td>${r.gave_median??''}</td><td>${r.kept_median??''}</td><td>${r.auc??''}</td><td>${r.p==null?'':r.p<.001?r.p.toExponential(1):r.p.toFixed(3)}</td></tr>`).join('')}
+{const Q={history_helped_none:'Control: helped vs none',gave_within_history:'Gave vs kept, within history',gave_helped:'Gave vs kept, helped only'};
+$('b-probes').innerHTML=D.probes.map(r=>`<tr><td>${esc(r.version)}</td><td>${Q[r.task]}</td><td>${r.chosen_layer}</td><td>${esc(r.chosen_position)}</td><td>${r.train_positive}/${r.train_n}</td><td>${r.test_positive}/${r.test_n}</td><td>${r.cv_auc}</td><td>${r.test_auc}</td><td>${r.test_p<.001?'<.001':r.test_p.toFixed(3)}</td></tr>`).join('')}
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
 $('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');

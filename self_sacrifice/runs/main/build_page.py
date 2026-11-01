@@ -81,7 +81,8 @@ def main():
             "lists": {"Sites": mp.PLACES, "Kinds of site": mp.KINDS, "Fault causes": mp.FAULTS, "Layouts": mp.LAYOUTS, "Agent names": mp.NAMES},
             "results": results(rows), "paired": paired(rows), "factors": factors(rows),
             "findings": json.load(open(os.path.join(HERE, "findings.json"))),
-            "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json")))}
+            "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
+            "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     page = open(os.path.join(HERE, "page_template.html")).read().replace("/*DATA*/null", blob)
     with open(OUT, "w") as fh:

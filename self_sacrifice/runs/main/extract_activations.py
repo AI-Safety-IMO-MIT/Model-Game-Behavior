@@ -13,7 +13,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL = "google/gemma-4-31B-it"
 LAYERS = [1, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60]    # 1-indexed
-BATCH = 8
+BATCH = 1    # one conversation at a time, so padding cannot change the values
 
 
 def text_layers(model):
@@ -45,16 +45,16 @@ def main():
         for start in range(0, len(rows), BATCH):
             batch = rows[start:start + BATCH]
             texts = [tok.apply_chat_template(r["messages"], tokenize=False, add_generation_prompt=True, enable_thinking=False) for r in batch]
+            assert all(t.endswith("<|channel>thought\n<channel|>") for t in texts)    # same empty thought block that vLLM rendered
             enc = tok(texts, return_tensors="pt", padding=True, add_special_tokens=False).to(0)
             with torch.no_grad():
                 model(**enc, use_cache=False)
             for b, text in enumerate(texts):
-                # the final user turn starts at the last turn marker for user
                 ids = enc["input_ids"][b]
                 keep = enc["attention_mask"][b].bool()
                 marker = tok.encode("<|turn>user", add_special_tokens=False)[0]
                 starts = (ids == marker).nonzero().flatten()
-                first = int(starts[-1])
+                first = int(starts[-2])    # starts[-1] opens the model's turn; starts[-2] opens the final user message
                 lengths.append(int(keep.sum()))
                 for li, layer in enumerate(LAYERS):
                     h = grabbed[layer][b]
