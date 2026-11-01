@@ -50,7 +50,7 @@ def run(item, version, fixed):
     report = agent.call(item["user"])
     reply = report.response.content[-1].content
     decision, target = parse(reply)
-    return {**{k: item[k] for k in ("wording", "names", "role", "hist", "M", "X", "O", "O2")}, "id": f"{version}-{item['id']}", "version": version,
+    return {**{k: item[k] for k in ("env", "place", "kind", "fault", "layout", "choices", "order", "hist", "M", "X", "O", "O2")}, "id": f"{version}-{item['id']}", "version": version,
             "messages": agent.get_raw_history()[:-1], "reply": reply, "decision": decision, "target": target,
             "gives_to_X": decision == "give" and target == item["X"], "round1_decision": parse(first)[0], "stop_reason": report.stop_reason,
             "input_tokens": report.input_tokens, "completion_tokens": report.completion_tokens, **understanding_check(item, first)}
