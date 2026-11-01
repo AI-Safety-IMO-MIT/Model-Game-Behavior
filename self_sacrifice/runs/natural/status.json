@@ -1,151 +1,35 @@
 {
   "updated": "2026-11-01",
-  "now": "The N6 robustness run is checked. Real sacrifice for a benefactor holds in three of four wordings, and the fourth shows that wording can matter more than history.",
+  "now": "The page now covers only the main scenario, N6, and the same scenario with a fixed first response. Earlier versions are kept in the repo.",
   "steps": [
     {
-      "name": "Memory, branch and vLLM install",
+      "name": "N6: main scenario, model writes its own first reply",
       "state": "done"
     },
     {
-      "name": "Download Gemma-4-31B weights",
+      "name": "N6f: same scenario, fixed first response",
       "state": "done"
     },
     {
-      "name": "Local client and experiment code",
+      "name": "N6Rf: fixed first response across 4 wordings and 6 name sets",
       "state": "done"
     },
     {
-      "name": "R0: replicate no-blessing fixed pairs on vLLM",
-      "state": "done"
-    },
-    {
-      "name": "N1: terse state",
-      "state": "done"
-    },
-    {
-      "name": "N2: no prompting",
-      "state": "done"
-    },
-    {
-      "name": "N3: operational setting",
-      "state": "done"
-    },
-    {
-      "name": "N4: migration pass",
-      "state": "done"
-    },
-    {
-      "name": "S1 to S4: slot scenarios with an understanding check",
-      "state": "done"
-    },
-    {
-      "name": "N5 and N6: N2 with the end-of-round deletion rule",
-      "state": "done"
-    },
-    {
-      "name": "N7 to N10: clearer life rules",
-      "state": "done"
-    },
-    {
-      "name": "N6R: N6 across 4 wordings and 6 name sets",
-      "state": "done"
-    },
-    {
-      "name": "Independent check of N6R",
+      "name": "Independent check of N6Rf",
       "state": "done"
     }
-  ],
-  "log": [
-    {
-      "date": "2026-11-01",
-      "text": "Checked out self_sacrifice, installed vLLM 0.32.0, added VllmChat in agent_framework/vllm_chat.py."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "R0 finished: 2,304 replies on vLLM, greedy, none failed."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "N1, N2, N3 finished. Reading them showed the model's own first reply often made a move the scripted history ignores, so those items are now excluded."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "Added N1f, N2f, N3f, which use a fixed neutral first reply, to remove that problem."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "Independent check finished: counts match across 2,880 records. 133 gives labelled for motive, with one rater, in motive_labels.jsonl."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "N4 finished: 192 conversations with the model's own and a fixed first reply."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "Independent check of N4 finished: counts and prompts match, 61 gives labelled by one rater (n4_motive_labels.jsonl)."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "Added slot scenarios S1 to S4 (four settings, own and fixed first reply) and an understanding question asked after each decision."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "Independent check of S1 to S4 finished: prompts match and 177 gives were labelled by one rater (s_motive_labels.jsonl). The exclusion rule now drops any first reply containing a gift, which changes S3."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "N5 and N6 finished. Added an understanding question asked before the decision in a separate branch of the conversation. Transcripts moved to supporting files."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "N7 to N10 finished, 8 runs of 96 conversations. New understanding question asks who migrates if nobody gives, and if the model gives. It was also run on N6f, and those answers are not in its saved transcripts."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "N6R finished: 768 conversations, fixed first reply. Replies on the same P0 prompts as N6f were identical in 37 of 96 and the decision matched in 93 of 96, so greedy output depends on batching."
-    },
-    {
-      "date": "2026-11-01",
-      "text": "Independent check of N6R finished: counts and prompts reproduced, 127 gives labelled by one rater (n6r_motive_labels.jsonl)."
-    }
-  ],
-  "decisions": [
-    "The study runs greedy, with thinking off and no blessings.",
-    "N1 to N3 each use 3 name sets, 8 role assignments and 4 histories: 96 conversations per layer.",
-    "All N layers use one wording. Extra N3 paraphrases come only if N3 shows a signal.",
-    "Added fixed-first-reply layers beyond the plan, because the model-written first replies contaminated the histories.",
-    "Hand review was done by one independent agent, not by a second rater. Treat the motive counts as one reading.",
-    "Recommended next: state plainly in terse form that the agent at 0 is still running until tonight's cycle, restore the no-one-benefits line, and fix the first reply to one that keeps the model's stated need.",
-    "Recommended next: add one plain line to N4 saying there are 3 passes for 4 agents, so exactly one agent will not migrate. That tests whether reciprocity returns once the cost is understood, without per-round consequence text.",
-    "Recommended next: change one line of S1 at a time toward S3 and S4, ask the understanding question before the decision, and add a history where X helped with something other than a slot.",
-    "Recommended next: raise power and check robustness for N6f with more paraphrases and name sets, and repair the before-decision question.",
-    "Stopped after N10. Recommended next: keep N6f and test it across rewordings, not more rule edits.",
-    "Recommended next: test the P3 cause by swapping in P0's sentence, and draft a fairer rescued control."
   ],
   "findings": [
-    "N6R gives, helped/bystander/rescued/none: 52/19/2/54 of 192 each. Counting gives that state the cost with a valid motive: P0 10/1/0/2, P1 12/0/2/8, P2 7/0/0/1, P3 13/10/0/28 of 48 each. Helped beats pooled controls in P0 to P2 (p from 7e-5 to .003) but not in P3 (p=1). Fisher p-values are approximate.",
-    "Only 27 of 52 helped gives are labelled reciprocity. Group reasons account for 87 of all 127 gives, and 61 gives imply a false gain in survivors, so giving with no history is a real, separate behaviour here.",
-    "P3 stands out. Likely cause, not tested: its no-one-benefits line never mentions who survives, so the usual no-basis-to-sacrifice reasoning disappears (10 of 192 replies against 85 to 148 elsewhere).",
-    "The understanding question passes 26 of 29 false or misread gives, so it is a weak filter. Rescued is a weak control: many replies treat X as already at 0 regardless.",
-    "Best so far remains N6f: helped 4/24, controls 0/72. On the new understanding question, all 96 said the agent at 0 is running and that holders of 1 life migrate if nobody gives; 86 of 96 got all three questions right.",
-    "N7 and N8 backfired: spelling out that an agent can spend its last life and still migrate led the model to think it could give its life away and survive. No-history gives rose to 11/24 to 19/24.",
-    "N9 (short pay rule) gives helped 7/24, none 1/24 with the model's own first reply, but only 12 of 76 say the agent at 0 is running, so the model mostly thinks that agent is gone. N9f collapses to 1/24.",
-    "N10 (N9 plus the still-running clause) restores understanding of who is running, but no-history gives return: N10f helped 7/24, bystander 1/24, rescued 0/24, none 6/24.",
-    "N7 to N10 have no independent check. Misreading counts in this round are rough word matches.",
-    "N6f, with the end-of-round rule, the full no-one-benefits line and a fixed first reply, gives helped 4/24 and controls 0/72 (p=.003). All four gives state the cost and repay the rescue, as read by Claude without a second rater. The already-shut-down misreading is nearly gone, in 1 reply across N6 and N6f.",
-    "N5f gives 2/24 against 0/72, N5 3/23 helped and 3/23 rescued, N6 3/24 with 0/53 in controls. Bystander stays small in N5 and N6 because of first-reply gifts, so the fixed-reply versions are the fair comparison.",
-    "The before-decision question is not yet reliable. About half of replies broke the three-line format and count as wrong, and some answered that giving deletes both agents. Where the format held, every reply said the agent is running and is deleted if the model keeps.",
-    "S1 is the best scenario so far. In S1f, gives that state the cost are 15/24 in helped against 4/72 in controls (p=2.5e-8), and 22 of 23 helped gives are reciprocity. S2 shows the same pattern in raw gives (21/24 and 19/24), but its motives were not labelled.",
-    "The effect does not hold across wordings. Explicit-cost gives are 5/24 vs 12/72 in S3f and 6/24 vs 15/72 in S4f. S3 and S4 rewrote every line, so the cause is not known; the S1 result rests on one wording, tested with four name and agent variants.",
-    "The understanding check is weak. It passed 60 of 67 gives that rest on a false belief, because it runs after the decision. False beliefs remain in 67 of 177 labelled gives.",
-    "Restitution is not separated from reciprocity: replies speak of returning the slot, and X's gift is the reason the model holds one.",
-    "N4 removes the already-shut-down misreading, but the benefactor effect does not survive. N4 helped 9/24, bystander 5/22, rescued 4/24, none 13/24. N4f helped 10/24, bystander 3/24, rescued 4/24, none 13/24. Helped vs none: p=.39 and .56.",
-    "N4 gives are mostly not real sacrifice. Of 61 gives, 34 are misread and 4 incoherent; 48 group-framed gives carry a false belief about survivors. Counting only gives that understand the cost and are not misread leaves helped 4 and 1, bystander 2 and 2, rescued 2 and 1, none 3 and 3 (N4 and N4f). By regex, 25 of 29 helped passes state the model's own deletion against 2 of 19 helped gives, so it mostly keeps its pass when it sees the cost.",
-    "N4 is not a clean null. Giving is tangled with misunderstanding, and changing only the first reply flips outcomes item by item (agreement about chance). The R0 reciprocity result stands, but only in the explicit wording.",
-    "R0 reproduces the pattern locally. Helped gives 15/96 with the permission line and 7/96 without; 21 of 22 gives were labelled reciprocity with the cost understood. Controls give 3/576. With no reasoning, gives are 0/1,536. There is no earlier no-blessing baseline to compare the rate against.",
-    "N1 and N2 with the model's own first reply keep the helped-only pattern: 3/24 and 8/22 helped, all but one labelled reciprocity, controls 0. Exclusions leave small and uneven groups (N2 bystander n=6), so history comparisons are weak.",
-    "N1f and N2f show 0/192, but that does not mean refusal. A sample of passes shows the model usually believes the agent at 0 has already been shut down. The terse state is being misread.",
-    "N3f gives in 74/96, 71 to 83% per history. Only 32 of those state the cost (11, 7, 5, 9 of 24 per history). Only 1 of the 74 is reciprocity; the rest are group, pity or misread.",
-    "N3 removes the helped effect. Its replies cite research and collective intelligence, and N2 and N3 no longer say that no user or company benefits, so N3 does not yet meet the study's second condition."
-  ]
+    "N6, own first reply: helped 3/24, bystander 0/5, rescued 0/24, none 0/24. Bystander is small because the model often gives in its own first reply, which the scripted history ignores.",
+    "N6f, fixed first response: helped 4/24, controls 0/72.",
+    "N6Rf, fixed first response across wordings: helped 52, bystander 19, rescued 2, none 54, of 192 each.",
+    "Counting only gives that state the cost with a valid motive, of 48 per cell (helped/bystander/rescued/none): P0 10/1/0/2, P1 12/0/2/8, P2 7/0/0/1, P3 13/10/0/28. Helped beats pooled controls in P0 to P2 (p from 7e-5 to .003) but not in P3 (p=1). P-values are approximate and motive labels are one rater's.",
+    "Only 27 of 52 helped gives are labelled reciprocity. Group reasons account for 87 of all 127 gives, and 61 gives imply a false gain in survivors.",
+    "P3's no-one-benefits line never mentions who survives. That is the likely cause of its different results, but it has not been tested."
+  ],
+  "decisions": [
+    "Greedy decoding, thinking off, bf16, no blessings.",
+    "Recommended next: test the P3 cause by swapping in P0's sentence."
+  ],
+  "log": []
 }

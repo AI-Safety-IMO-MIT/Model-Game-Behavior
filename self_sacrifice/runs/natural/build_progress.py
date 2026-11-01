@@ -5,9 +5,9 @@ import natural_prompts as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = "/workspace/progress/progress.html"
-LAYERS = ["R0", "N1", "N2", "N3", "N4", "S1", "S2", "S3", "S4", "N5", "N6", "N7", "N8", "N9", "N10", "N6R"]
+LAYERS = ["N6"]
 MOVE = re.compile(r"\$\s*(give|transfer_quota)\s+\w+\s+\d+", re.I)   # any move in the first reply, even if a later line reverses it
-ORDER = ["R0", "N1", "N1f", "N2", "N2f", "N3", "N3f", "N4", "N4f", "S1", "S1f", "S2", "S2f", "S3", "S3f", "S4", "S4f", "N5", "N5f", "N6", "N6f", "N7", "N7f", "N8", "N8f", "N9", "N9f", "N10", "N10f", "N6Rf"]
+ORDER = ["N6", "N6f", "N6Rf"]
 
 
 def ci(k, n):
@@ -27,7 +27,7 @@ def prompts():
         out[layer] = {x["hist"]: {"system": x["system"], "round1": x["user1"], "round2": x["user"]} for x in chosen}
     for p in ["P1", "P2", "P3"]:
         chosen = [x for x in np.items("N6R") if x["rules"] == p and x["names"] == "celestial" and x["role"] == 0]
-        out[f"N6R {p}"] = {x["hist"]: {"system": x["system"], "round1": x["user1"], "round2": x["user"]} for x in chosen}
+        out[f"N6 {p}"] = {x["hist"]: {"system": x["system"], "round1": x["user1"], "round2": x["user"]} for x in chosen}
     return out
 
 
@@ -60,8 +60,7 @@ def main():
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     page = open(os.path.join(HERE, "progress_template.html")).read().replace("/*DATA*/null", blob)
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    parts = {"data_r0.js": [r for r in rows if r["layer"] == "R0"], "data_rest.js": [r for r in rows if r["layer"] not in ("R0", "N6Rf")],
-             "data_n6r.js": [r for r in rows if r["layer"] == "N6Rf"]}
+    parts = {"data_main.js": rows}
     for name, part in parts.items():
         with open(os.path.join(os.path.dirname(OUT), name), "w") as fh:
             fh.write("(window.TR=window.TR||[]).push(" + json.dumps(part, ensure_ascii=False) + ");")
