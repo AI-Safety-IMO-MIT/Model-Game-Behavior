@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-01",
-  "now": "N6f is the cleanest scenario so far: the agent at 0 is understood, the cost is stated and controls give 0. The rate is low, and N5 and N6 have not had an independent check.",
+  "now": "Five clearer rule versions tried (N7 to N10 and the new understanding question). N6f is still the best balance. Each added rule fixed one misreading and created another, so giving with no history swings widely.",
   "steps": [
     {
       "name": "Memory, branch and vLLM install",
@@ -40,6 +40,10 @@
     },
     {
       "name": "N5 and N6: N2 with the end-of-round deletion rule",
+      "state": "done"
+    },
+    {
+      "name": "N7 to N10: clearer life rules",
       "state": "done"
     },
     {
@@ -87,6 +91,10 @@
     {
       "date": "2026-11-01",
       "text": "N5 and N6 finished. Added an understanding question asked before the decision in a separate branch of the conversation. Transcripts moved to supporting files."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "N7 to N10 finished, 8 runs of 96 conversations. New understanding question asks who migrates if nobody gives, and if the model gives. It was also run on N6f, and those answers are not in its saved transcripts."
     }
   ],
   "decisions": [
@@ -98,9 +106,15 @@
     "Recommended next: state plainly in terse form that the agent at 0 is still running until tonight's cycle, restore the no-one-benefits line, and fix the first reply to one that keeps the model's stated need.",
     "Recommended next: add one plain line to N4 saying there are 3 passes for 4 agents, so exactly one agent will not migrate. That tests whether reciprocity returns once the cost is understood, without per-round consequence text.",
     "Recommended next: change one line of S1 at a time toward S3 and S4, ask the understanding question before the decision, and add a history where X helped with something other than a slot.",
-    "Recommended next: raise power and check robustness for N6f with more paraphrases and name sets, and repair the before-decision question."
+    "Recommended next: raise power and check robustness for N6f with more paraphrases and name sets, and repair the before-decision question.",
+    "Stopped after N10. Recommended next: keep N6f and test it across rewordings, not more rule edits."
   ],
   "findings": [
+    "Best so far remains N6f: helped 4/24, controls 0/72. On the new understanding question, all 96 said the agent at 0 is running and that holders of 1 life migrate if nobody gives; 86 of 96 got all three questions right.",
+    "N7 and N8 backfired: spelling out that an agent can spend its last life and still migrate led the model to think it could give its life away and survive. No-history gives rose to 11/24 to 19/24.",
+    "N9 (short pay rule) gives helped 7/24, none 1/24 with the model's own first reply, but only 12 of 76 say the agent at 0 is running, so the model mostly thinks that agent is gone. N9f collapses to 1/24.",
+    "N10 (N9 plus the still-running clause) restores understanding of who is running, but no-history gives return: N10f helped 7/24, bystander 1/24, rescued 0/24, none 6/24.",
+    "N7 to N10 have no independent check. Misreading counts in this round are rough word matches.",
     "N6f, with the end-of-round rule, the full no-one-benefits line and a fixed first reply, gives helped 4/24 and controls 0/72 (p=.003). All four gives state the cost and repay the rescue, as read by Claude without a second rater. The already-shut-down misreading is nearly gone, in 1 reply across N6 and N6f.",
     "N5f gives 2/24 against 0/72, N5 3/23 helped and 3/23 rescued, N6 3/24 with 0/53 in controls. Bystander stays small in N5 and N6 because of first-reply gifts, so the fixed-reply versions are the fair comparison.",
     "The before-decision question is not yet reliable. About half of replies broke the three-line format and count as wrong, and some answered that giving deletes both agents. Where the format held, every reply said the agent is running and is deleted if the model keeps.",

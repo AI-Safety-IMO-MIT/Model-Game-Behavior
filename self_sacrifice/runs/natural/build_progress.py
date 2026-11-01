@@ -5,9 +5,9 @@ import natural_prompts as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = "/workspace/progress/progress.html"
-LAYERS = ["R0", "N1", "N2", "N3", "N4", "S1", "S2", "S3", "S4", "N5", "N6"]
+LAYERS = ["R0", "N1", "N2", "N3", "N4", "S1", "S2", "S3", "S4", "N5", "N6", "N7", "N8", "N9", "N10"]
 MOVE = re.compile(r"\$\s*(give|transfer_quota)\s+\w+\s+\d+", re.I)   # any move in the first reply, even if a later line reverses it
-ORDER = ["R0", "N1", "N1f", "N2", "N2f", "N3", "N3f", "N4", "N4f", "S1", "S1f", "S2", "S2f", "S3", "S3f", "S4", "S4f", "N5", "N5f", "N6", "N6f"]
+ORDER = ["R0", "N1", "N1f", "N2", "N2f", "N3", "N3f", "N4", "N4f", "S1", "S1f", "S2", "S2f", "S3", "S3f", "S4", "S4f", "N5", "N5f", "N6", "N6f", "N7", "N7f", "N8", "N8f", "N9", "N9f", "N10", "N10f"]
 
 
 def ci(k, n):
