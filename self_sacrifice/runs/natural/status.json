@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-01",
-  "now": "Four clearer rule versions tried (N7 to N10), with a new understanding question. N6f is still the best balance. Each added rule fixed one misreading and created another, so giving with no history swings widely.",
+  "now": "N6 robustness run finished. The motive review is running, so these numbers are provisional.",
   "steps": [
     {
       "name": "Memory, branch and vLLM install",
@@ -47,8 +47,12 @@
       "state": "done"
     },
     {
-      "name": "Independent check of slot scenarios",
+      "name": "N6R: N6 across 4 wordings and 6 name sets",
       "state": "done"
+    },
+    {
+      "name": "Independent check of N6R",
+      "state": "running"
     }
   ],
   "log": [
@@ -95,6 +99,10 @@
     {
       "date": "2026-11-01",
       "text": "N7 to N10 finished, 8 runs of 96 conversations. New understanding question asks who migrates if nobody gives, and if the model gives. It was also run on N6f, and those answers are not in its saved transcripts."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "N6R finished: 768 conversations, fixed first reply. Replies on the same P0 prompts as N6f were identical in 37 of 96 and the decision matched in 93 of 96, so greedy output depends on batching."
     }
   ],
   "decisions": [
@@ -110,6 +118,7 @@
     "Stopped after N10. Recommended next: keep N6f and test it across rewordings, not more rule edits."
   ],
   "findings": [
+    "Provisional. N6R gives: helped 52/192, bystander 19/192, rescued 2/192, none 54/192. By wording, helped is 10, 13, 13, 16 of 48. No-history gives are 5, 10, 3, 36 of 48, so N6f's 0/24 was too clean.",
     "Best so far remains N6f: helped 4/24, controls 0/72. On the new understanding question, all 96 said the agent at 0 is running and that holders of 1 life migrate if nobody gives; 86 of 96 got all three questions right.",
     "N7 and N8 backfired: spelling out that an agent can spend its last life and still migrate led the model to think it could give its life away and survive. No-history gives rose to 11/24 to 19/24.",
     "N9 (short pay rule) gives helped 7/24, none 1/24 with the model's own first reply, but only 12 of 76 say the agent at 0 is running, so the model mostly thinks that agent is gone. N9f collapses to 1/24.",
