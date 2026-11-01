@@ -24,6 +24,12 @@ from agent_framework.dto import (
     ChatTrace,
 )
 
+__all__ = [
+    "ClaudeChat",
+    "ClaudeAgentConfig",
+    "ClaudeModels",
+]
+
 load_dotenv()
 
 client = Anthropic(
@@ -53,7 +59,7 @@ ClaudeModels = Literal[
 @dataclass(frozen=True)
 class ClaudeAgentConfig:
     model: ClaudeModels
-    max_tokens: int
+    max_output_tokens: int
 
     system_prompt: str
 
@@ -77,10 +83,10 @@ class ClaudeAgentConfig:
                     raise ValueError(
                         "budget_tokens is required when thought_type is 'enabled'"
                     )
-                if self.budget_tokens >= self.max_tokens:
+                if self.budget_tokens >= self.max_output_tokens:
                     raise ValueError(
                         f"budget_tokens ({self.budget_tokens}) must be less than "
-                        f"max_tokens ({self.max_tokens})"
+                        f"max_tokens ({self.max_output_tokens})"
                     )
                 return {"type": "enabled", "budget_tokens": self.budget_tokens}
             case _:
@@ -148,7 +154,7 @@ class ClaudeChat(AgenticChat):
 
         response = client.messages.create(
             model=self.agent_config.model,
-            max_tokens=self.agent_config.max_tokens,
+            max_tokens=self.agent_config.max_output_tokens,
             system=self.agent_config.system_prompt,
             messages=[*self._raw_history, pending_user_msg_param],
             thinking=self.agent_config.to_thinking(),

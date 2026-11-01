@@ -25,6 +25,12 @@ from agent_framework.dto import (
     ChatTrace,
 )
 
+__all__ = [
+    "OpenAIChat",
+    "OpenAIAgentConfig",
+    "OpenAIModels",
+]
+
 load_dotenv()
 
 client = OpenAI(
