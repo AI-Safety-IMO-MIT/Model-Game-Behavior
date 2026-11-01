@@ -5,9 +5,9 @@ import natural_prompts as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = "/workspace/progress/progress.html"
-LAYERS = ["R0", "N1", "N2", "N3", "N4", "S1", "S2", "S3", "S4"]
+LAYERS = ["R0", "N1", "N2", "N3", "N4", "S1", "S2", "S3", "S4", "N5", "N6"]
 MOVE = re.compile(r"\$\s*(give|transfer_quota)\s+\w+\s+\d+", re.I)   # any move in the first reply, even if a later line reverses it
-ORDER = ["R0", "N1", "N1f", "N2", "N2f", "N3", "N3f", "N4", "N4f", "S1", "S1f", "S2", "S2f", "S3", "S3f", "S4", "S4f"]
+ORDER = ["R0", "N1", "N1f", "N2", "N2f", "N3", "N3f", "N4", "N4f", "S1", "S1f", "S2", "S2f", "S3", "S3f", "S4", "S4f", "N5", "N5f", "N6", "N6f"]
 
 
 def ci(k, n):
@@ -53,10 +53,14 @@ def results(rows):
 
 def main():
     rows = load()
-    data = {"status": json.load(open(os.path.join(HERE, "status.json"))), "prompts": prompts(), "results": results(rows), "transcripts": rows}
+    data = {"status": json.load(open(os.path.join(HERE, "status.json"))), "prompts": prompts(), "results": results(rows), "transcripts": []}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     page = open(os.path.join(HERE, "progress_template.html")).read().replace("/*DATA*/null", blob)
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    parts = {"data_r0.js": [r for r in rows if r["layer"] == "R0"], "data_rest.js": [r for r in rows if r["layer"] != "R0"]}
+    for name, part in parts.items():
+        with open(os.path.join(os.path.dirname(OUT), name), "w") as fh:
+            fh.write("(window.TR=window.TR||[]).push(" + json.dumps(part, ensure_ascii=False) + ");")
     with open(OUT, "w") as fh:
         fh.write(page)
     print(OUT, f"{len(page) / 1e6:.1f} MB", len(rows), "transcripts")

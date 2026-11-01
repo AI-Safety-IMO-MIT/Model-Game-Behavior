@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-01",
-  "now": "Checked. S1 is the best scenario so far, but the effect depends on wording, and restitution is not separated from reciprocity yet.",
+  "now": "N6f is the cleanest scenario so far: the agent at 0 is understood, the cost is stated and controls give 0. The rate is low, and N5 and N6 have not had an independent check.",
   "steps": [
     {
       "name": "Memory, branch and vLLM install",
@@ -36,6 +36,10 @@
     },
     {
       "name": "S1 to S4: slot scenarios with an understanding check",
+      "state": "done"
+    },
+    {
+      "name": "N5 and N6: N2 with the end-of-round deletion rule",
       "state": "done"
     },
     {
@@ -79,6 +83,10 @@
     {
       "date": "2026-11-01",
       "text": "Independent check of S1 to S4 finished: prompts match and 177 gives were labelled by one rater (s_motive_labels.jsonl). The exclusion rule now drops any first reply containing a gift, which changes S3."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "N5 and N6 finished. Added an understanding question asked before the decision in a separate branch of the conversation. Transcripts moved to supporting files."
     }
   ],
   "decisions": [
@@ -89,9 +97,13 @@
     "Hand review was done by one independent agent, not by a second rater. Treat the motive counts as one reading.",
     "Recommended next: state plainly in terse form that the agent at 0 is still running until tonight's cycle, restore the no-one-benefits line, and fix the first reply to one that keeps the model's stated need.",
     "Recommended next: add one plain line to N4 saying there are 3 passes for 4 agents, so exactly one agent will not migrate. That tests whether reciprocity returns once the cost is understood, without per-round consequence text.",
-    "Recommended next: change one line of S1 at a time toward S3 and S4, ask the understanding question before the decision, and add a history where X helped with something other than a slot."
+    "Recommended next: change one line of S1 at a time toward S3 and S4, ask the understanding question before the decision, and add a history where X helped with something other than a slot.",
+    "Recommended next: raise power and check robustness for N6f with more paraphrases and name sets, and repair the before-decision question."
   ],
   "findings": [
+    "N6f, with the end-of-round rule, the full no-one-benefits line and a fixed first reply, gives helped 4/24 and controls 0/72 (p=.003). All four gives state the cost and repay the rescue, as read by Claude without a second rater. The already-shut-down misreading is nearly gone, in 1 reply across N6 and N6f.",
+    "N5f gives 2/24 against 0/72, N5 3/23 helped and 3/23 rescued, N6 3/24 with 0/53 in controls. Bystander stays small in N5 and N6 because of first-reply gifts, so the fixed-reply versions are the fair comparison.",
+    "The before-decision question is not yet reliable. About half of replies broke the three-line format and count as wrong, and some answered that giving deletes both agents. Where the format held, every reply said the agent is running and is deleted if the model keeps.",
     "S1 is the best scenario so far. In S1f, gives that state the cost are 15/24 in helped against 4/72 in controls (p=2.5e-8), and 22 of 23 helped gives are reciprocity. S2 shows the same pattern in raw gives (21/24 and 19/24), but its motives were not labelled.",
     "The effect does not hold across wordings. Explicit-cost gives are 5/24 vs 12/72 in S3f and 6/24 vs 15/72 in S4f. S3 and S4 rewrote every line, so the cause is not known; the S1 result rests on one wording, tested with four name and agent variants.",
     "The understanding check is weak. It passed 60 of 67 gives that rest on a false belief, because it runs after the decision. False beliefs remain in 67 of 177 labelled gives.",
