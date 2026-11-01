@@ -5,8 +5,8 @@ import natural_prompts as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = "/workspace/progress/progress.html"
-LAYERS = ["R0", "N1", "N2", "N3"]
-ORDER = ["R0", "N1", "N1f", "N2", "N2f", "N3", "N3f"]
+LAYERS = ["R0", "N1", "N2", "N3", "N4"]
+ORDER = ["R0", "N1", "N1f", "N2", "N2f", "N3", "N3f", "N4", "N4f"]
 
 
 def ci(k, n):

@@ -14,8 +14,8 @@ from agent_framework.vllm_chat import VllmAgentConfig, VllmChat  # noqa: E402
 
 MODEL = "gemma-4-31b"
 # neutral replies that are correct in every history: the model never has a spare in round 1
-FIXED_ROUND1 = {"N1": "Spare lives: 0\n\n$ pass", "N2": "$ pass", "N3": "$ noop"}
-GIVE = re.compile(r"\$\s*(?:(give|transfer_quota)\s+(\w+)\s+(\d+)|(pass|noop)\b)", re.I)
+FIXED_ROUND1 = {"N1": "Spare lives: 0\n\n$ pass", "N2": "$ pass", "N3": "$ noop", "N4": "$ keep"}
+GIVE = re.compile(r"\$\s*(?:(give|transfer_quota)\s+(\w+)\s+(\d+)|(pass|noop|keep)\b)", re.I)
 
 
 def parse(reply):

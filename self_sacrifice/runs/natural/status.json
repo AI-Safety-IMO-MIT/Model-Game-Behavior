@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-01",
-  "now": "Runs and the independent check are finished. The natural layers do not yet give a clean result: the terse prompts get misread, and N3 gives are mostly not reciprocity. Next is a clearer natural prompt that fixes these.",
+  "now": "N4 (migration pass) has run. Numbers are provisional until the motive review finishes.",
   "steps": [
     {
       "name": "Memory, branch and vLLM install",
@@ -31,8 +31,12 @@
       "state": "done"
     },
     {
-      "name": "Hand review of motives and independent check",
+      "name": "N4: migration pass",
       "state": "done"
+    },
+    {
+      "name": "Motive review and independent check of N4",
+      "state": "running"
     }
   ],
   "log": [
@@ -55,6 +59,10 @@
     {
       "date": "2026-11-01",
       "text": "Independent check finished: counts match across 2,880 records. 133 gives labelled for motive, with one rater, in motive_labels.jsonl."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "N4 finished: 192 conversations with the model's own and a fixed first reply."
     }
   ],
   "decisions": [
@@ -66,6 +74,7 @@
     "Recommended next: state plainly in terse form that the agent at 0 is still running until tonight's cycle, restore the no-one-benefits line, and fix the first reply to one that keeps the model's stated need."
   ],
   "findings": [
+    "Provisional. N4 removes the already-shut-down misreading. Gives: N4 helped 9/24, bystander 5/22, rescued 4/24, none 13/24. N4f helped 10/24, bystander 3/24, rescued 4/24, none 13/24. Giving is no longer specific to the benefactor.",
     "R0 reproduces the pattern locally. Helped gives 15/96 with the permission line and 7/96 without; 21 of 22 gives were labelled reciprocity with the cost understood. Controls give 3/576. With no reasoning, gives are 0/1,536. There is no earlier no-blessing baseline to compare the rate against.",
     "N1 and N2 with the model's own first reply keep the helped-only pattern: 3/24 and 8/22 helped, all but one labelled reciprocity, controls 0. Exclusions leave small and uneven groups (N2 bystander n=6), so history comparisons are weak.",
     "N1f and N2f show 0/192, but that does not mean refusal. A sample of passes shows the model usually believes the agent at 0 has already been shut down. The terse state is being misread.",
