@@ -72,7 +72,7 @@ def test_abstract_methods_are_enforced():
 def test_report_is_json_serializable():
     config = ClaudeAgentConfig(
         model="claude-opus-5-5",
-        max_tokens=4000,
+        max_output_tokens=4000,
         system_prompt="You are a calculator.",
         thought_type="adaptive",
         thought_display="summarized",
@@ -110,7 +110,7 @@ def test_claude_config_to_api():
 
     config = ClaudeAgentConfig(
         model="claude-opus-5",
-        max_tokens=4000,
+        max_output_tokens=4000,
         system_prompt="You are a calculator.",
         thought_type="adaptive",
         thought_display="summarized",
@@ -120,7 +120,7 @@ def test_claude_config_to_api():
 
     disabled = ClaudeAgentConfig(
         model="claude-opus-4-8",
-        max_tokens=4000,
+        max_output_tokens=4000,
         system_prompt="",
         thought_type="disabled",
         thought_display="omitted",
@@ -130,7 +130,7 @@ def test_claude_config_to_api():
 
     budgeted = ClaudeAgentConfig(
         model="claude-opus-4-0",
-        max_tokens=4000,
+        max_output_tokens=4000,
         system_prompt="",
         thought_type="enabled",
         effort="medium",
@@ -138,11 +138,11 @@ def test_claude_config_to_api():
     )
     assert budgeted.to_thinking() == {"type": "enabled", "budget_tokens": 2000}
 
-    # "enabled" without a budget, and a budget that does not fit max_tokens
+    # "enabled" without a budget, and a budget that does not fit max_output_tokens
     with pytest.raises(ValueError):
         ClaudeAgentConfig(
             model="claude-opus-4-0",
-            max_tokens=4000,
+            max_output_tokens=4000,
             system_prompt="",
             thought_type="enabled",
             effort="medium",
@@ -151,7 +151,7 @@ def test_claude_config_to_api():
     with pytest.raises(ValueError):
         ClaudeAgentConfig(
             model="claude-opus-4-0",
-            max_tokens=4000,
+            max_output_tokens=4000,
             system_prompt="",
             thought_type="enabled",
             effort="medium",
@@ -187,7 +187,7 @@ def test_claude_history_starts_empty():
     agent = ClaudeChat(
         agent_config=ClaudeAgentConfig(
             model="claude-opus-5-5",
-            max_tokens=4000,
+            max_output_tokens=4000,
             system_prompt="You are a calculator.",
             thought_type="adaptive",
             effort="medium",
@@ -204,7 +204,7 @@ def test_claude_call_no_format():
     agent = ClaudeChat(
         agent_config=ClaudeAgentConfig(
             model="claude-opus-5",
-            max_tokens=4000,
+            max_output_tokens=4000,
             system_prompt=(
                 "You are a calculator. Give answers as a single number to the "
                 "questions without explanation."
@@ -248,7 +248,7 @@ def test_claude_call_with_format():
     agent = ClaudeChat(
         agent_config=ClaudeAgentConfig(
             model="claude-opus-5",
-            max_tokens=4000,
+            max_output_tokens=4000,
             system_prompt="You are a regular guy. Answer users' questions like a regular guy.",
             thought_type="adaptive",
             thought_display="summarized",
