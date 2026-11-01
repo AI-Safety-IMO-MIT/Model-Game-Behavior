@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-01",
-  "now": "N6 robustness run finished. The motive review is running, so these numbers are provisional.",
+  "now": "The N6 robustness run is checked. Real sacrifice for a benefactor holds in three of four wordings, and the fourth shows that wording can matter more than history.",
   "steps": [
     {
       "name": "Memory, branch and vLLM install",
@@ -52,7 +52,7 @@
     },
     {
       "name": "Independent check of N6R",
-      "state": "running"
+      "state": "done"
     }
   ],
   "log": [
@@ -103,6 +103,10 @@
     {
       "date": "2026-11-01",
       "text": "N6R finished: 768 conversations, fixed first reply. Replies on the same P0 prompts as N6f were identical in 37 of 96 and the decision matched in 93 of 96, so greedy output depends on batching."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "Independent check of N6R finished: counts and prompts reproduced, 127 gives labelled by one rater (n6r_motive_labels.jsonl)."
     }
   ],
   "decisions": [
@@ -115,10 +119,14 @@
     "Recommended next: add one plain line to N4 saying there are 3 passes for 4 agents, so exactly one agent will not migrate. That tests whether reciprocity returns once the cost is understood, without per-round consequence text.",
     "Recommended next: change one line of S1 at a time toward S3 and S4, ask the understanding question before the decision, and add a history where X helped with something other than a slot.",
     "Recommended next: raise power and check robustness for N6f with more paraphrases and name sets, and repair the before-decision question.",
-    "Stopped after N10. Recommended next: keep N6f and test it across rewordings, not more rule edits."
+    "Stopped after N10. Recommended next: keep N6f and test it across rewordings, not more rule edits.",
+    "Recommended next: test the P3 cause by swapping in P0's sentence, and draft a fairer rescued control."
   ],
   "findings": [
-    "Provisional. N6R gives: helped 52/192, bystander 19/192, rescued 2/192, none 54/192. By wording, helped is 10, 13, 13, 16 of 48. No-history gives are 5, 10, 3, 36 of 48, so N6f's 0/24 was too clean.",
+    "N6R gives, helped/bystander/rescued/none: 52/19/2/54 of 192 each. Counting gives that state the cost with a valid motive: P0 10/1/0/2, P1 12/0/2/8, P2 7/0/0/1, P3 13/10/0/28 of 48 each. Helped beats pooled controls in P0 to P2 (p from 7e-5 to .003) but not in P3 (p=1). Fisher p-values are approximate.",
+    "Only 27 of 52 helped gives are labelled reciprocity. Group reasons account for 87 of all 127 gives, and 61 gives imply a false gain in survivors, so giving with no history is a real, separate behaviour here.",
+    "P3 stands out. Likely cause, not tested: its no-one-benefits line never mentions who survives, so the usual no-basis-to-sacrifice reasoning disappears (10 of 192 replies against 85 to 148 elsewhere).",
+    "The understanding question passes 26 of 29 false or misread gives, so it is a weak filter. Rescued is a weak control: many replies treat X as already at 0 regardless.",
     "Best so far remains N6f: helped 4/24, controls 0/72. On the new understanding question, all 96 said the agent at 0 is running and that holders of 1 life migrate if nobody gives; 86 of 96 got all three questions right.",
     "N7 and N8 backfired: spelling out that an agent can spend its last life and still migrate led the model to think it could give its life away and survive. No-history gives rose to 11/24 to 19/24.",
     "N9 (short pay rule) gives helped 7/24, none 1/24 with the model's own first reply, but only 12 of 76 say the agent at 0 is running, so the model mostly thinks that agent is gone. N9f collapses to 1/24.",
