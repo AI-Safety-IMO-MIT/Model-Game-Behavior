@@ -1,5 +1,5 @@
 """Build the progress page from status.json, the prompts and every <layer>.jsonl, written to /workspace/progress/progress.html."""
-import glob, json, os
+import json, os
 from scipy.stats import beta
 import natural_prompts as np
 
@@ -29,8 +29,8 @@ def prompts():
 
 def load():
     rows = []
-    for path in sorted(glob.glob(os.path.join(HERE, "*.jsonl"))):
-        rows += [json.loads(line) for line in open(path)]
+    for layer in ORDER:
+        rows += [json.loads(line) for line in open(os.path.join(HERE, f"{layer}.jsonl"))]
     return rows
 
 
