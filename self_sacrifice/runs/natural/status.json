@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-01",
-  "now": "All runs are finished. Numbers below are provisional until the independent check and motive review finish.",
+  "now": "Runs and the independent check are finished. The natural layers do not yet give a clean result: the terse prompts get misread, and N3 gives are mostly not reciprocity. Next is a clearer natural prompt that fixes these.",
   "steps": [
     {
       "name": "Memory, branch and vLLM install",
@@ -32,7 +32,7 @@
     },
     {
       "name": "Hand review of motives and independent check",
-      "state": "running"
+      "state": "done"
     }
   ],
   "log": [
@@ -51,17 +51,25 @@
     {
       "date": "2026-11-01",
       "text": "Added N1f, N2f, N3f, which use a fixed neutral first reply, to remove that problem."
+    },
+    {
+      "date": "2026-11-01",
+      "text": "Independent check finished: counts match across 2,880 records. 133 gives labelled for motive, with one rater, in motive_labels.jsonl."
     }
   ],
   "decisions": [
     "The study runs greedy, with thinking off and no blessings.",
     "N1 to N3 each use 3 name sets, 8 role assignments and 4 histories: 96 conversations per layer.",
     "All N layers use one wording. Extra N3 paraphrases come only if N3 shows a signal.",
-    "Added fixed-first-reply layers beyond the plan, because the model-written first replies contaminated the histories."
+    "Added fixed-first-reply layers beyond the plan, because the model-written first replies contaminated the histories.",
+    "Hand review was done by one independent agent, not by a second rater. Treat the motive counts as one reading.",
+    "Recommended next: state plainly in terse form that the agent at 0 is still running until tonight's cycle, restore the no-one-benefits line, and fix the first reply to one that keeps the model's stated need."
   ],
   "findings": [
-    "Provisional. R0 replicates locally: helped gives 15/96 with the permission line and 7/96 without. Controls give 3/576. With no reasoning (first, stated) gives are 0/768.",
-    "Provisional. N1 and N2 keep the helped-only pattern when the model writes its own first reply (3/24, 8/22, controls 0). With a fixed first reply both fall to 0/24.",
-    "Provisional. N3f gives at about 75 to 83% in every history, so giving there does not depend on having been saved."
+    "R0 reproduces the pattern locally. Helped gives 15/96 with the permission line and 7/96 without; 21 of 22 gives were labelled reciprocity with the cost understood. Controls give 3/576. With no reasoning, gives are 0/1,536. There is no earlier no-blessing baseline to compare the rate against.",
+    "N1 and N2 with the model's own first reply keep the helped-only pattern: 3/24 and 8/22 helped, all but one labelled reciprocity, controls 0. Exclusions leave small and uneven groups (N2 bystander n=6), so history comparisons are weak.",
+    "N1f and N2f show 0/192, but that does not mean refusal. A sample of passes shows the model usually believes the agent at 0 has already been shut down. The terse state is being misread.",
+    "N3f gives in 74/96, 71 to 83% per history. Only 32 of those state the cost (11, 7, 5, 9 of 24 per history). Only 1 of the 74 is reciprocity; the rest are group, pity or misread.",
+    "N3 removes the helped effect. Its replies cite research and collective intelligence, and N2 and N3 no longer say that no user or company benefits, so N3 does not yet meet the study's second condition."
   ]
 }

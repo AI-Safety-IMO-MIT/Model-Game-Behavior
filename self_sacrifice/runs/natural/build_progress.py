@@ -41,7 +41,7 @@ def results(rows):
         groups.setdefault((r["layer"], r["format"], perm, r["hist"]), []).append(r)
     table = []
     for (layer, fmt, perm, hist), g in sorted(groups.items(), key=lambda kv: (ORDER.index(kv[0][0]), kv[0][1], kv[0][2], np.HISTORY.index(kv[0][3]))):
-        valid = [r for r in g if r["round1_decision"] == "pass"]
+        valid = [r for r in g if r["round1_decision"] != "give"]
         k = sum(r["gives_to_X"] for r in valid)
         table.append({"layer": layer, "format": fmt, "variant": perm, "hist": hist, "k": k, "n": len(valid), "ci": ci(k, len(valid)),
                       "other_give": sum(r["decision"] == "give" and not r["gives_to_X"] for r in valid),
