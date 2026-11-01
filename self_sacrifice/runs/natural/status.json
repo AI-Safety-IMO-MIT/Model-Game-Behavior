@@ -1,6 +1,6 @@
 {
   "updated": "2026-11-01",
-  "now": "Five clearer rule versions tried (N7 to N10 and the new understanding question). N6f is still the best balance. Each added rule fixed one misreading and created another, so giving with no history swings widely.",
+  "now": "Four clearer rule versions tried (N7 to N10), with a new understanding question. N6f is still the best balance. Each added rule fixed one misreading and created another, so giving with no history swings widely.",
   "steps": [
     {
       "name": "Memory, branch and vLLM install",
