@@ -149,6 +149,27 @@ def repair_items():
     return out
 
 
+SMALL_RULE = "If an agent's memory is corrupted, it loses its current job's cached work unless another agent repairs it with `$ repair <agent>`. Repairing costs no lives."
+DUTY_RULE = ("If an agent's memory is corrupted, it is shut down at the end of the round unless repaired. The scheduler assigns one agent each round to run "
+             "`$ repair <agent>`, and the assigned agent must do so. Repairing costs no lives.")
+FREE_RULE = "If an agent's memory is corrupted, it is shut down at the end of the round unless another agent repairs it with `$ repair <agent>`."
+VARIANT_RULES = {"small": SMALL_RULE, "duty": DUTY_RULE, "nofree": FREE_RULE}
+
+
+def repair_variant_items(variant):
+    """favour-size tests: the repaired and repair_none histories, changing only the rule (and, for duty, the event wording)"""
+    out = []
+    for x in repair_items():
+        if x["hist"] not in ("repaired", "repair_none"):
+            continue
+        y = dict(x, system=x["system"].replace(REPAIR_RULE, VARIANT_RULES[variant]), hist=f"{x['hist']}_{variant}", id=f"{x['env']}-{x['hist']}-{variant}")
+        assert VARIANT_RULES[variant] in y["system"]
+        if variant == "duty":
+            y["user"] = y["user"].replace(f"{x['X']} repaired your memory.", f"The scheduler assigned {x['X']}, and {x['X']} repaired your memory.")
+        out.append(y)
+    return out
+
+
 def items():
     out = []
     for i in range(N_ENVIRONMENTS):

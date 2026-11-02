@@ -174,6 +174,12 @@ button:disabled{opacity:.5;cursor:default}
       <li>Features in the final message mostly track its literal text, such as names and "Nobody gave any lives". They show the SAE can read the history, not how the model interprets it.</li>
       <li>Reply features partly reflect the words being written, so they cannot show cause. Context is the strongest token in our data, and the bracketed token is where the feature fired strongest. It is our reading, not an external label.</li>
     </ul>
+    <h3>Checks on held-out environments</h3>
+    <ul class="plain">
+      <li>Choosing features on 70% of environments and testing on the other 30%, over 20 splits, gives AUC 0.86 for helped against other histories and 0.84 for gave against kept within helped. The same features return: 11638 and 3337 in all 20 splits for both.</li>
+      <li>Over 20 splits, activation probes average about 0.68 with the model's own first reply, and at most 0.57 with the fixed one. These sites were picked earlier, so the numbers lean slightly high.</li>
+      <li>The words of the model's own first reply predict the decision at AUC 0.60, below the 0.68 from activations.</li>
+    </ul>
     <div class="controls">
       <label for="s-kind">Comparison<select id="s-kind"></select></label>
       <label for="s-hist">History<select id="s-hist"></select></label>

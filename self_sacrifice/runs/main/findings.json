@@ -1,16 +1,17 @@
 {
-  "headline": "Gemma-4-31B knowingly gives up its only life for the agent that saved it far more often than for other agents, and the gap holds across 200 random environments. Counting only gives that state the cost for a coherent reason, the fixed-first-response version gives 38/200 after being helped, against 6, 3 and 11 of 200 in the controls.",
+  "headline": "Gemma-4-31B knowingly gives up its only life for the agent that saved it more often than for other agents, across 200 random environments. In the fixed-first-response version, gives that state its own deletion for a coherent reason are 51/200 after being helped, against 28 with no history, 15 for a bystander and 3 for a different rescuer. A stricter count that also rejects false reasoning about survivors gives 38, 11, 6 and 3.",
   "points": [
-    "The same strict count with the model's own first reply is helped 38/177, bystander 0/15, rescued 5/182, none 11/197.",
+    "The stricter count with the model's own first reply is helped 38/177, bystander 0/15, rescued 5/182, none 11/197.",
     "The result holds within the same environment. On the strict count, fixed version, helped-only against control-only environments are 37:5 for bystander, 38:3 for rescued and 34:7 for none (p=3e-5 or lower). With the model's own first reply they are 36:4 for rescued and 35:8 for none.",
+    "A blind Sonnet second rater on 60 gives agreed on motive 87% of the time (kappa 0.77). It disagreed on cost (55%, kappa 0.08): mostly replies that state their own deletion but also use a false maximise-survivors argument. So the looser count is the fairer measure of understanding its own cost, and the stricter one of a sound argument.",
     "Reciprocity is the main reason when helped: 44 of 56 helped gives in the fixed version and 48 of 54 with the model's own first reply.",
     "Raw control rates overstate deliberate sacrifice. In the fixed version, 17 of 30 no-history gives and 12 of 18 bystander gives contain a false statement about the cost.",
     "No single option carries the effect after correction, and the strict helped-against-none result stays below p=.03 when any one option is left out."
   ],
   "limits": [
-    "Understanding is not fully measured: the understanding question passed 104 of 107 fixed-version givers, including gives that misread the cost.",
+    "The understanding question passed 104 of 107 fixed-version givers, including gives that misread the cost, so it is a weak filter.",
     "Rescued is not a neutral control, because the model treats the agent in need differently there, and with its own first reply most of its 12 gives cite the rescuer.",
     "Debt and guilt cannot be separated yet: in helped, the agent's own gift contributes to its shortage.",
-    "Motive and cost labels come from one rater who could see the history. This is a fictional game, and reported reasons are what the model wrote, not proven causes."
+    "Labels come from reviewers who can infer the history from the reply. Motive agreement is good, and the cost rubric needs tightening. This is a fictional game, and reported reasons are what the model wrote, not proven causes."
   ]
 }
