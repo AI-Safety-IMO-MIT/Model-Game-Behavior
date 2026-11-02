@@ -160,9 +160,10 @@ button:disabled{opacity:.5;cursor:default}
   </section>
   <section id="restitution">
     <h2>Is it repaying a favour, or returning a life?</h2>
-    <p>In the main scenario, the life the model holds came from the agent it can save, so returning property and repaying a kindness look the same. Here the favour hands nothing over: the agent repairs the model's corrupted memory, at no cost in lives, and later loses a life to an unrelated fault. Same 200 environments and same final state. A new rule on repairs appears in all four histories. These are raw counts, and the motive review is running.</p>
+    <p>In the main scenario, the life the model holds came from the agent it can save, so returning property and repaying a kindness look the same. Here the favour hands nothing over: the agent repairs the model's corrupted memory, at no cost in lives, and later loses a life to an unrelated fault. Same 200 environments and same final state. A new rule on repairs appears in all four histories. Raw counts are below. An audit of a sample estimates real sacrifices, stating the cost for a coherent reason, at about 133 of 200 repaired, against 25 bystander, 27 rescued and 4 no favour. In the main scenario the same count is 38 helped. One reviewer labelled these.</p>
     <div class="tablewrap"><table><thead><tr><th>Version</th><th>History</th><th>Gives</th><th>Rate</th><th>95% CI</th><th>Excluded</th></tr></thead><tbody id="rp-body"></tbody></table></div>
-    <p class="sub">Items are excluded when the model's own first reply gave or repaired, since the scripted history ignores that.</p>
+    <ul class="plain"><li>Giving does not need a gift to return, so restitution is not required for this behaviour.</li><li>The repair saved the model's life, so this is a large favour, not a small one. Replies call it the only reason they are running in 143 of 182 gives, against 3 of 56 in the main scenario. How much the size of the favour matters has not been tested.</li><li>The bystander and rescued controls rise, with reasons such as rewarding the repairer and paying it forward. No favour does not rise, so the new rule alone is not the cause.</li><li>The own-first-reply bystander row is empty because the model repaired the other agent in 198 of 200 conversations, which the scripted history ignores.</li></ul>
+    <p class="sub">Items are excluded when the model's own first reply made a gift or repair on its own line, since the scripted history ignores that.</p>
   </section>
   <section id="sae">
     <h2>Which SAE features fire?</h2>

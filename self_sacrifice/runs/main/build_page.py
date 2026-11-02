@@ -105,7 +105,7 @@ def trajectory():
 
 def repair_summary():
     """the restitution test: a favour that hands over nothing and costs no lives"""
-    move = re.compile(r"\$\s*(give|repair)\b", re.I)
+    move = re.compile(r"^[\s`]*\$\s*(give|repair)\s+\w+", re.I | re.M)    # a real command on its own line, not a mention of the command
     out = []
     for name, version in [("repair_fixed.jsonl", "fixed first response"), ("repair_main.jsonl", "own first reply")]:
         rows = [json.loads(line) for line in open(os.path.join(HERE, name))]
