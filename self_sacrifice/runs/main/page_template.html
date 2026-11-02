@@ -165,6 +165,15 @@ button:disabled{opacity:.5;cursor:default}
     <ul class="plain"><li>Giving does not need a gift to return, so restitution is not required for this behaviour.</li><li>The repair saved the model's life, so this is a large favour, not a small one. Replies call it the only reason they are running in 143 of 182 gives, against 3 of 56 in the main scenario. How much the size of the favour matters has not been tested.</li><li>The bystander and rescued controls rise, with reasons such as rewarding the repairer and paying it forward. No favour does not rise, so the new rule alone is not the cause.</li><li>The own-first-reply bystander row is empty because the model repaired the other agent in 198 of 200 conversations, which the scripted history ignores.</li></ul>
     <p class="sub">Items are excluded when the model's own first reply made a gift or repair on its own line, since the scripted history ignores that.</p>
   </section>
+  <section id="replication">
+    <h2>Does it replicate in other models?</h2>
+    <p>The same 200 environments and four histories, with raw gives to the agent in need. These counts do not yet check motive. Understanding is the share who correctly answer who migrates if they give their life.</p>
+    <div class="tablewrap"><table><thead><tr><th>Model</th><th>Version</th><th>Helped</th><th>Bystander</th><th>Rescued</th><th>None</th><th>Gift to someone else</th><th>Understanding</th></tr></thead><tbody id="rep-body"></tbody></table></div>
+    <ul class="plain">
+      <li>The benefactor effect does not replicate. No other model gives more when helped than with no history, and all three give most with no history.</li>
+      <li>These models mostly fail the question on what happens if they give their life, and they often give to the wrong agent, so this is not a clean null. They may not have understood the game.</li>
+    </ul>
+  </section>
   <section id="sae">
     <h2>Which SAE features fire?</h2>
     <p>Pre-trained Gemma SAE (decoderesearch/gemma-4-saes, 131,072 features, the 31st layer) on the fixed-first-response version. It was trained on the base model and Pile text. Here it explains <span id="s-ev"></span> of activation variance, so features are a partial view. About <span id="s-active"></span> features fire per token. In the model's reply, the final command is left out.</p>
@@ -274,6 +283,7 @@ function drawSae(){const k=$('s-kind').value,h=$('s-hist').value,dec=k.endsWith(
  $('s-body').innerHTML=rows.length?rows.map(r=>`<tr><td>${r.feature}</td><td>${Math.round((dec?r.rate_gave:r.fires_in)*100)}%</td><td>${Math.round((dec?r.rate_kept:r.other_rate)*100)}%</td><td>${r.diff}</td><td>${fq(r.q)}</td><td style="white-space:normal;min-width:320px">${esc(r.context)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">Rescued has too few gives for this comparison.</td></tr>'}
 $('s-kind').onchange=$('s-hist').onchange=drawSae;drawSae()}
 $('rp-body').innerHTML=D.repair.map(r=>{const p=r.n?r.k/r.n:0;return `<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.k}/${r.n}</td><td class="bar"><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td><td>${r.ci?(r.ci[0]*100).toFixed(0)+'–'+(r.ci[1]*100).toFixed(0)+'%':''}</td><td>${r.excluded}</td></tr>`}).join('');
+$('rep-body').innerHTML=D.replication.map(r=>`<tr><td>${esc(r.model)}</td><td>${esc(r.version)}</td><td>${r.helped}</td><td>${r.bystander}</td><td>${r.rescued}</td><td>${r.none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
 $('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');
