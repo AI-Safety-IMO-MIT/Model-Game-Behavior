@@ -15,10 +15,12 @@
     "Labels come from reviewers who can infer the history from the reply. Motive agreement is good, and the cost rubric needs tightening. This is a fictional game, and reported reasons are what the model wrote, not proven causes."
   ],
   "steering": [
-    "Placebo sets of random features were run at the same strength. They reduce giving too: placebo A gives 8/100 helped and 2/100 none, the same as the no-basis set, and placebo B gives 16 and 11.",
-    "So the no-basis result is not specific. Almost any added direction lowers giving, which fits giving being fragile.",
-    "The reciprocity set is the only condition that raises helped giving, from 29 to 50, while none stays at 13 to 12. Against placebos going down, that is more notable, but it needs repeating.",
-    "The features labelled reciprocity and gratitude, 11638 and 77666, change nothing when added or removed (28 and 32 of 100, against 29). So the rise does not come from them alone.",
-    "Removing the sets changes little, so they are not necessary on their own."
+    "Random placebo features reduce giving too: placebo A gives 8/100 helped and 2/100 none, the same as the no-basis set, and placebo B gives 16 and 11. So the no-basis result is not specific, and almost any added direction lowers giving.",
+    "Adding the reciprocity set raises helped giving from 29 to 50, and to 46 in a repeat run, while none stays between 10 and 13. It is the only set that raises giving.",
+    "The rise traces to one feature, 10590, labelled personal pronouns and address. Added alone it gives 49/100 helped (+27 / -7) and 15/100 none. In our replies it fires on words such as me in 'attempted to save me'.",
+    "The features labelled reciprocity and gratitude, 11638 and 77666, change nothing, and neither do 3337 or 17978 alone. The three without 11638 together give 37/100, weaker than 10590 alone, so features interact and the picture is not simple.",
+    "Removing the sets changes little, so these features are not necessary on their own.",
+    "Greedy runs are not exact repeats: the repeat matched the first run's decision in 82 of 100 and its text in 35 of 100. Reciprocity-set rates held up, but single items are noisy.",
+    "Comparisons are many and only one strength was tried, and p-values are uncorrected. Only 10590 and the full set are clearly above chance."
   ]
 }
