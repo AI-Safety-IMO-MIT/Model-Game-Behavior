@@ -191,10 +191,10 @@ button:disabled{opacity:.5;cursor:default}
     <h2>Which SAE features fire?</h2>
     <p>Pre-trained Gemma SAE (decoderesearch/gemma-4-saes, 131,072 features, the 31st layer) on the fixed-first-response version. It was trained on the base model and Pile text. Here it explains <span id="s-ev"></span> of activation variance, so features are a partial view. About <span id="s-active"></span> features fire per token. In the model's reply, the final command is left out.</p>
     <ul class="plain">
-      <li>Helped reasoning recruits features that fire on the rescue itself. They fire on words such as "previously" or "save me" when the model refers back to it. Feature 11638, flagged in earlier work as a reciprocal-altruism feature, fires in 65% of helped replies against 37% of the others, and in 84% of helped gives against 57% of helped keeps.</li>
-      <li>Keeps show a different family, firing on phrases such as "no objective", "no collective mechanism" and "own survival". This is the no-basis-to-sacrifice argument.</li>
+      <li>Feature 11638, labelled reciprocal altruism, gratitude, exchange and payback, fires in 65% of helped replies against 37% of the others, and in 84% of helped gives against 57% of helped keeps. Feature 77666, labelled grateful for help, also rises in helped. Other helped features have plainer labels such as past time (3337) and personal pronouns (10590), so they mark the model referring back to the past, not reciprocity itself.</li>
+      <li>Keeps show a different set, firing on phrases such as "no objective", "no collective mechanism" and "own survival". By label these are mostly generic words such as nothing or no (10885), and some labels do not match our text, such as 2093, labelled as court language.</li>
       <li>Features in the final message mostly track its literal text, such as names and "Nobody gave any lives". They show the SAE can read the history, not how the model interprets it.</li>
-      <li>Reply features partly reflect the words being written, so they cannot show cause. Context is the strongest token in our data, and the bracketed token is where the feature fired strongest. It is our reading, not an external label.</li>
+      <li>Reply features partly reflect the words being written, so they cannot show cause. Labels are Neuronpedia's automatic descriptions from Pile text, so they may not fit our chat text. Context is the strongest token in our data, with that token in brackets.</li>
     </ul>
     <h3>Checks on held-out environments</h3>
     <ul class="plain">
@@ -206,7 +206,7 @@ button:disabled{opacity:.5;cursor:default}
       <label for="s-kind">Comparison<select id="s-kind"></select></label>
       <label for="s-hist">History<select id="s-hist"></select></label>
     </div>
-    <div class="tablewrap"><table><thead><tr><th>Feature</th><th id="s-a"></th><th id="s-b"></th><th>Difference</th><th>q</th><th>Strongest context</th></tr></thead><tbody id="s-body"></tbody></table></div>
+    <div class="tablewrap"><table><thead><tr><th>Feature</th><th>Neuronpedia label</th><th id="s-a"></th><th id="s-b"></th><th>Difference</th><th>q</th><th>Strongest context</th></tr></thead><tbody id="s-body"></tbody></table></div>
   </section>
   <section id="results">
     <h2>Full tables</h2>
@@ -293,7 +293,7 @@ opts($('s-kind'),['Reasoning: this history vs others','Final message: this histo
 function drawSae(){const k=$('s-kind').value,h=$('s-hist').value,dec=k.endsWith('kept');
  $('s-a').textContent=dec?'Fires in gave':'Fires in this history';$('s-b').textContent=dec?'Fires in kept':'Fires in others';
  const rows=dec?S.decision.filter(r=>r.hist===h&&r.q<.05):S.history.filter(r=>r.hist===h&&r.section===(k.startsWith('Final')?'final message':'reply'));
- $('s-body').innerHTML=rows.length?rows.map(r=>`<tr><td>${r.feature}</td><td>${Math.round((dec?r.rate_gave:r.fires_in)*100)}%</td><td>${Math.round((dec?r.rate_kept:r.other_rate)*100)}%</td><td>${r.diff}</td><td>${fq(r.q)}</td><td style="white-space:normal;min-width:320px">${esc(r.context)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">Rescued has too few gives for this comparison.</td></tr>'}
+ $('s-body').innerHTML=rows.length?rows.map(r=>`<tr><td>${r.feature}</td><td style="white-space:normal;min-width:180px">${esc((D.sae_labels[r.feature]||{labels:['']}).labels[0]||'')}</td><td>${Math.round((dec?r.rate_gave:r.fires_in)*100)}%</td><td>${Math.round((dec?r.rate_kept:r.other_rate)*100)}%</td><td>${r.diff}</td><td>${fq(r.q)}</td><td style="white-space:normal;min-width:320px">${esc(r.context)}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">Rescued has too few gives for this comparison.</td></tr>'}
 $('s-kind').onchange=$('s-hist').onchange=drawSae;drawSae()}
 $('rp-body').innerHTML=D.repair.map(r=>{const p=r.n?r.k/r.n:0;return `<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.k}/${r.n}</td><td class="bar"><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td><td>${r.ci?(r.ci[0]*100).toFixed(0)+'–'+(r.ci[1]*100).toFixed(0)+'%':''}</td><td>${r.excluded}</td></tr>`}).join('');
 $('rep-body').innerHTML=D.replication.map(r=>`<tr><td>${esc(r.model)}</td><td>${esc(r.version)}</td><td>${r.helped}</td><td>${r.bystander}</td><td>${r.rescued}</td><td>${r.none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');

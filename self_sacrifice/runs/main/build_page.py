@@ -174,6 +174,7 @@ def main():
             "traj": {k: v for k, v in traj.items() if k != "records"},
             "branch": json.load(open(os.path.join(HERE, "branch_summary.json"))),
             "sae": json.load(open(os.path.join(HERE, "sae_summary.json"))),
+            "sae_labels": json.load(open(os.path.join(HERE, "sae_labels.json"))),
             "repair": repair_summary(),
             "replication": replication(),
             "favour": favour_summary(),
