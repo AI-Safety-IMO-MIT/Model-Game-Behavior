@@ -217,7 +217,7 @@ td.wrapcell{white-space:normal;min-width:190px}
       <li>Reply features partly reflect the words being written, so they cannot show cause. Labels are Neuronpedia's automatic descriptions from Pile text, so they may not fit our chat text. Context is the strongest token in our data, with that token in brackets.</li>
     </ul>
     <h3>Top 100 features on six replies</h3>
-    <p>Features are the top 100 by Mann-Whitney test between gave and kept replies in the helped history. Replies are the first three that gave and the first three that kept, by environment number. Hover over or tap a feature to light up where it fires. Colour is scaled to that feature's strongest token in these six, and the strongest token is underlined. Labels are Neuronpedia's automatic descriptions and may not fit this text.</p>
+    <p>Features are the top 100 by distance of AUC from 0.5, for gave against kept replies in the helped history. AUC is the chance that a random gave reply has a higher peak activation than a random kept reply. Replies are the first three that gave and the first three that kept, by environment number. Hover over or tap a feature to light up where it fires. Colour is scaled to that feature's strongest token in these six, and the strongest token is underlined. Labels are Neuronpedia's automatic descriptions and may not fit this text.</p>
     <div class="fp">
       <div class="fp-side">
         <label for="fp-dir" class="fp-filter">Show<select id="fp-dir"><option value="all">All 100</option><option value="gave">Higher in gave</option><option value="kept">Higher in kept</option></select></label>

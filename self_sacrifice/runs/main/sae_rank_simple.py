@@ -1,4 +1,4 @@
-"""Simple feature ranking: Mann-Whitney between gave and kept replies in the helped history, sorted by p.
+"""Simple feature ranking: AUC from a Mann-Whitney test between gave and kept replies in the helped history, sorted by the distance of AUC from 0.5, so both directions count.
 
 A feature's score is its peak activation in the reply, excluding the final command. Late tokens partly read the settled decision, so steering, not this ranking, shows cause.
 Restricting to the first half of the reply was tried and rejected: no feature passes correction, and 10590, the one steering hit, falls from rank 49 to 2508. Every feature active in at least one reply is tested, in both directions,
@@ -40,7 +40,7 @@ def main():
     q = p * len(p) / rankdata(p, method="ordinal")
     o = np.argsort(p)[::-1]
     q[o] = np.minimum.accumulate(q[o])
-    out = sorted([{"feature": r[0], "auc": round(r[1], 3), "p": r[2], "q": float(min(x, 1)), "rate_gave": round(r[3], 2), "rate_kept": round(r[4], 2)} for r, x in zip(rows, q)], key=lambda r: r["p"])
+    out = sorted([{"feature": r[0], "auc": round(r[1], 3), "p": r[2], "q": float(min(x, 1)), "rate_gave": round(r[3], 2), "rate_kept": round(r[4], 2)} for r, x in zip(rows, q)], key=lambda r: (-abs(r["auc"] - .5), r["p"]))
     for i, r in enumerate(out):
         r["rank"] = i + 1
     json.dump(out, open(os.path.join(HERE, "sae_rank_simple.json"), "w"))
