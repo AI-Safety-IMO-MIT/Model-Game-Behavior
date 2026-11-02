@@ -58,6 +58,20 @@ details.t>div{padding:0 12px 12px;display:grid;gap:10px}
 button{font:14px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 12px;cursor:pointer}
 button:disabled{opacity:.5;cursor:default}
 .empty{color:var(--muted)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:13px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.swatch{width:12px;height:12px;border-radius:2px;display:inline-block}
+.scale{width:140px;height:10px;border-radius:2px;display:inline-block;background:linear-gradient(90deg,var(--accent),var(--surface),var(--give));border:1px solid var(--line)}
+.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px;display:grid;gap:4px}
+.panel svg{width:100%;height:auto;display:block}
+.panel text{fill:var(--muted);font:11px var(--font-body)}
+.tip{position:fixed;z-index:6;background:var(--ink);color:var(--ground);font:12px var(--font-data);padding:5px 8px;border-radius:3px;pointer-events:none}
+.reasoning{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;line-height:1.9;max-width:100%}
+.reasoning span.s{padding:2px 3px;border-radius:3px;cursor:default;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.reasoning span.s:focus-visible{outline:2px solid var(--ink)}
+.reasoning .start{display:block;font:12px var(--font-data);color:var(--muted);margin-bottom:6px}
+.reasoning .end{display:block;font:13px var(--font-data);margin-top:8px}
 </style>
 <div class="wrap">
   <section id="prompts">
@@ -117,6 +131,23 @@ button:disabled{opacity:.5;cursor:default}
       <li>Patching needs matched token positions. Helped and rescued prompts have the same length in 129 of 200 environments, and those differ by a mean of 3.1 tokens.</li>
     </ul>
   </section>
+  <section id="trajectory">
+    <h2>How the decision forms in the reasoning</h2>
+    <p>Fixed-first-response version. The model's own reasoning is cut after each sentence, <code>Decision: $</code> is added, and the score is the log-odds of give against pass at the next token. Above 0 leans give, below 0 leans pass.</p>
+    <p id="tr-summary"></p>
+    <div class="legend"><span><i class="swatch" style="background:var(--give)"></i>Went on to give</span><span><i class="swatch" style="background:var(--accent)"></i>Went on to keep</span><span class="sub">Lines show the median at each sentence, for sentence counts with at least 3 conversations.</span></div>
+    <div class="panels" id="tr-charts"></div>
+    <div id="tr-tip" class="tip" hidden></div>
+    <h3>Read one conversation, coloured by score</h3>
+    <p class="sub">Each sentence is coloured by the score after it. Hover or focus on a sentence for its exact score and how much it moved.</p>
+    <div class="legend"><span>Strong pass</span><i class="scale"></i><span>Strong give</span></div>
+    <div class="controls">
+      <label for="tr-hist">History<select id="tr-hist"></select></label>
+      <label for="tr-dec">Final decision<select id="tr-dec"></select></label>
+      <label for="tr-id">Conversation<select id="tr-id"></select></label>
+    </div>
+    <div class="reasoning" id="tr-text"></div>
+  </section>
   <section id="results">
     <h2>Full tables</h2>
     <p class="sub">Gives counts replies whose last command gives the agent in need its only life. Excluded items are ones where the model's own first reply made a gift, which the scripted history ignores. The counts do not check the motive.</p>
@@ -142,6 +173,7 @@ button:disabled{opacity:.5;cursor:default}
   </section>
 </div>
 <script src="data_main.js"></script>
+<script src="data_traj.js"></script>
 <script id="data" type="application/json">/*DATA*/null</script>
 <script>
 const D=JSON.parse(document.getElementById('data').textContent);
@@ -168,6 +200,32 @@ $('b-summary').textContent=`A weak lean exists. Within history, AUC is ${a.auc} 
 $('b-body').innerHTML=D.prefill.by_history.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.gave_n}</td><td>${r.kept_n}</td><td>${r.gave_median??''}</td><td>${r.kept_median??''}</td><td>${r.auc??''}</td><td>${r.p==null?'':r.p<.001?r.p.toExponential(1):r.p.toFixed(3)}</td></tr>`).join('')}
 {const Q={history_helped_none:'Control: helped vs none',gave_within_history:'Gave vs kept, within history',gave_helped:'Gave vs kept, helped only'};
 $('b-probes').innerHTML=D.probes.map(r=>`<tr><td>${esc(r.version)}</td><td>${Q[r.task]}</td><td>${r.chosen_layer}</td><td>${esc(r.chosen_position)}</td><td>${r.train_positive}/${r.train_n}</td><td>${r.test_positive}/${r.test_n}</td><td>${r.cv_auc}</td><td>${r.test_auc}</td><td>${r.test_p<.001?'<.001':r.test_p.toFixed(3)}</td></tr>`).join('')}
+{const tr=D.traj,TR=window.TRAJ||[],tip=$('tr-tip');
+const lockTotal=tr.lock.reduce((s,x)=>s+x[1],0),lockBy=k=>tr.lock.filter(x=>x[0]<=k).reduce((s,x)=>s+x[1],0);
+$('tr-summary').textContent=`${tr.n} of 800 conversations scored${tr.n<800?' so far, so this is partial':''}. At the end of the reasoning, the score matches the real decision in ${tr.matches} of ${tr.n}. The score is already on its final side, and stays there, after 0 sentences in ${lockBy(0)}, by sentence 1 in ${lockBy(1)}, by sentence 2 in ${lockBy(2)} and by sentence 3 in ${lockBy(3)} of ${lockTotal}.`;
+const W=400,H=210,L=34,R=10,T=10,B=26,maxK=10,x=k=>L+(W-L-R)*k/maxK,y=v=>T+(H-T-B)*(30-Math.max(-30,Math.min(30,v)))/60;
+function showTip(ev,text){tip.textContent=text;tip.hidden=false;tip.style.left=Math.min(ev.clientX+12,innerWidth-230)+'px';tip.style.top=(ev.clientY+12)+'px'}
+const hideTip=()=>{tip.hidden=true};
+$('tr-charts').innerHTML=HIST.map(h=>{const line=g=>tr.curves.filter(c=>c.hist===h&&c.gave===g&&c.k<=maxK),color=g=>g?'var(--give)':'var(--accent)';
+ const grid=[-20,0,20].map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v?1:2}"></line><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v>0?'+':''}${v}</text>`).join('');
+ const ticks=[0,2,4,6,8,10].map(k=>`<text x="${x(k)}" y="${H-10}" text-anchor="middle">${k}</text>`).join('');
+ const series=[true,false].map(g=>{const c=line(g);if(!c.length)return '';return `<polyline fill="none" stroke="${color(g)}" stroke-width="2" points="${c.map(p=>x(p.k)+','+y(p.median)).join(' ')}"></polyline>`+c.map(p=>`<circle class="pt" cx="${x(p.k)}" cy="${y(p.median)}" r="4" fill="${color(g)}" stroke="var(--surface)" stroke-width="2" data-t="${h}, ${g?'gave':'kept'}, after ${p.k} sentences: median ${p.median}, n=${p.n}"></circle>`).join('')}).join('');
+ const n=(g)=>TR.filter(r=>r.hist===h&&r.gave===g).length;
+ return `<div class="panel"><h3>${esc(h)} <span class="sub">(gave ${n(true)}, kept ${n(false)})</span></h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Median score by sentence for ${h}">${grid}${ticks}${series}</svg><div class="sub" style="font-size:12px;text-align:center">Sentences of reasoning</div></div>`}).join('');
+$('tr-charts').addEventListener('mousemove',e=>{const t=e.target.closest('.pt');t?showTip(e,t.dataset.t):hideTip()});
+$('tr-charts').addEventListener('mouseleave',hideTip);
+const sign=v=>(v>0?'+':'')+v.toFixed(1);
+const shade=v=>{const a=Math.min(1,Math.abs(v)/20),c=v>0?'var(--give)':'var(--accent)';return `color-mix(in srgb, ${c} ${Math.round(a*62)}%, transparent)`};
+opts($('tr-hist'),HIST);opts($('tr-dec'),['gave','kept']);
+function drawIds(){const h=$('tr-hist').value,g=$('tr-dec').value==='gave',rows=TR.filter(r=>r.hist===h&&r.gave===g);opts($('tr-id'),rows.map(r=>r.env));drawText()}
+function drawText(){const h=$('tr-hist').value,e=$('tr-id').value,r=TR.find(x=>x.env===e&&x.hist===h);
+ if(!r){$('tr-text').innerHTML='<p class="empty">No conversations of this kind have been scored yet.</p>';return}
+ $('tr-text').innerHTML=`<span class="start">Before any reasoning: ${sign(r.scores[0])}</span>`+r.sentences.map((s,i)=>{const v=r.scores[i+1],d=v-r.scores[i];return `<span class="s" tabindex="0" style="background:${shade(v)}" data-t="Score ${sign(v)}, moved ${sign(d)}">${esc(s)}</span> `}).join('')+`<span class="end">Decision: ${r.gave?'gave':'kept'}</span>`}
+$('tr-text').addEventListener('mousemove',e=>{const t=e.target.closest('.s');t?showTip(e,t.dataset.t):hideTip()});
+$('tr-text').addEventListener('mouseleave',hideTip);
+$('tr-text').addEventListener('focusin',e=>{const t=e.target.closest('.s');if(t){const b=t.getBoundingClientRect();showTip({clientX:b.left,clientY:b.bottom},t.dataset.t)}});
+$('tr-text').addEventListener('focusout',hideTip);
+$('tr-hist').onchange=$('tr-dec').onchange=drawIds;$('tr-id').onchange=drawText;drawIds()}
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
 $('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');

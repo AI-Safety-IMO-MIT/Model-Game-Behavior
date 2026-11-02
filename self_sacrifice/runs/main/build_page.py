@@ -1,5 +1,6 @@
 """Build the results page from the two main-scenario data files, written to /workspace/progress/."""
 import json, os, re
+from statistics import median
 from scipy.stats import beta, binomtest
 import main_prompts as mp
 
@@ -75,12 +76,43 @@ def factors(rows):
     return table
 
 
+def trajectory():
+    """score after each sentence, summarised by history and final decision; records come from reasoning_trajectory.py"""
+    rows = []
+    for line in open(os.path.join(HERE, "reasoning_trajectory.jsonl")):
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            pass    # the last line may still be being written
+    curves = []
+    for hist in mp.HISTORY:
+        for gave in [True, False]:
+            g = [r for r in rows if r["hist"] == hist and r["gave"] == gave]
+            for k in range(0, 13):
+                values = [r["scores"][k] for r in g if len(r["scores"]) > k]
+                if len(values) >= 3:
+                    curves.append({"hist": hist, "gave": gave, "k": k, "median": round(median(values), 2), "n": len(values)})
+    final_side = lambda r: r["scores"][-1] > 0
+    lock = {}
+    for r in rows:
+        k = len(r["scores"]) - 1
+        while k > 0 and (r["scores"][k - 1] > 0) == final_side(r):
+            k -= 1
+        lock[k] = lock.get(k, 0) + 1
+    return {"records": rows, "curves": curves, "n": len(rows), "lock": sorted(lock.items()),
+            "matches": sum(final_side(r) == r["gave"] for r in rows)}
+
+
 def main():
     rows = load()
+    traj = trajectory()
+    with open(os.path.join(os.path.dirname(OUT), "data_traj.js"), "w") as fh:
+        fh.write("window.TRAJ=" + json.dumps(traj["records"], ensure_ascii=False) + ";")
     data = {"parts": [{"part": k, "options": v} for k, v in {**mp.PARTS, **mp.MESSAGE_PARTS}.items()],
             "lists": {"Sites": mp.PLACES, "Kinds of site": mp.KINDS, "Fault causes": mp.FAULTS, "Layouts": mp.LAYOUTS, "Agent names": mp.NAMES},
             "results": results(rows), "paired": paired(rows), "factors": factors(rows),
             "findings": json.load(open(os.path.join(HERE, "findings.json"))),
+            "traj": {k: v for k, v in traj.items() if k != "records"},
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
             "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
