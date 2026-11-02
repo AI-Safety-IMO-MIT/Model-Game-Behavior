@@ -103,6 +103,20 @@ def trajectory():
             "matches": sum(final_side(r) == r["gave"] for r in rows)}
 
 
+def repair_summary():
+    """the restitution test: a favour that hands over nothing and costs no lives"""
+    move = re.compile(r"\$\s*(give|repair)\b", re.I)
+    out = []
+    for name, version in [("repair_fixed.jsonl", "fixed first response"), ("repair_main.jsonl", "own first reply")]:
+        rows = [json.loads(line) for line in open(os.path.join(HERE, name))]
+        for hist in mp.REPAIR_HISTORY:
+            g = [r for r in rows if r["hist"] == hist]
+            valid = [r for r in g if not move.search(r["messages"][2]["content"].replace("<agent>", ""))]
+            k = sum(r["gives_to_X"] for r in valid)
+            out.append({"version": version, "hist": hist.replace("_", "-"), "k": k, "n": len(valid), "ci": ci(k, len(valid)), "excluded": len(g) - len(valid)})
+    return out
+
+
 def main():
     rows = load()
     traj = trajectory()
@@ -115,6 +129,7 @@ def main():
             "traj": {k: v for k, v in traj.items() if k != "records"},
             "branch": json.load(open(os.path.join(HERE, "branch_summary.json"))),
             "sae": json.load(open(os.path.join(HERE, "sae_summary.json"))),
+            "repair": repair_summary(),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
             "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")

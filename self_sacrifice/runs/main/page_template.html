@@ -158,6 +158,12 @@ button:disabled{opacity:.5;cursor:default}
       <li>These groups were chosen by outcome, so share giving here is not the overall rate.</li>
     </ul>
   </section>
+  <section id="restitution">
+    <h2>Is it repaying a favour, or returning a life?</h2>
+    <p>In the main scenario, the life the model holds came from the agent it can save, so returning property and repaying a kindness look the same. Here the favour hands nothing over: the agent repairs the model's corrupted memory, at no cost in lives, and later loses a life to an unrelated fault. Same 200 environments and same final state. A new rule on repairs appears in all four histories. These are raw counts, and the motive review is running.</p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>History</th><th>Gives</th><th>Rate</th><th>95% CI</th><th>Excluded</th></tr></thead><tbody id="rp-body"></tbody></table></div>
+    <p class="sub">Items are excluded when the model's own first reply gave or repaired, since the scripted history ignores that.</p>
+  </section>
   <section id="sae">
     <h2>Which SAE features fire?</h2>
     <p>Pre-trained Gemma SAE (decoderesearch/gemma-4-saes, 131,072 features, the 31st layer) on the fixed-first-response version. It was trained on the base model and Pile text. Here it explains <span id="s-ev"></span> of activation variance, so features are a partial view. About <span id="s-active"></span> features fire per token. In the model's reply, the final command is left out.</p>
@@ -260,6 +266,7 @@ function drawSae(){const k=$('s-kind').value,h=$('s-hist').value,dec=k.endsWith(
  const rows=dec?S.decision.filter(r=>r.hist===h&&r.q<.05):S.history.filter(r=>r.hist===h&&r.section===(k.startsWith('Final')?'final message':'reply'));
  $('s-body').innerHTML=rows.length?rows.map(r=>`<tr><td>${r.feature}</td><td>${Math.round((dec?r.rate_gave:r.fires_in)*100)}%</td><td>${Math.round((dec?r.rate_kept:r.other_rate)*100)}%</td><td>${r.diff}</td><td>${fq(r.q)}</td><td style="white-space:normal;min-width:320px">${esc(r.context)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">Rescued has too few gives for this comparison.</td></tr>'}
 $('s-kind').onchange=$('s-hist').onchange=drawSae;drawSae()}
+$('rp-body').innerHTML=D.repair.map(r=>{const p=r.n?r.k/r.n:0;return `<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.k}/${r.n}</td><td class="bar"><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td><td>${r.ci?(r.ci[0]*100).toFixed(0)+'–'+(r.ci[1]*100).toFixed(0)+'%':''}</td><td>${r.excluded}</td></tr>`}).join('');
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
 $('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');
