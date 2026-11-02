@@ -15,6 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL = "google/gemma-4-31B-it"
 REPO, SAE_DIR = "decoderesearch/gemma-4-saes", "gemma-4-31b/btk-mat-layer-30-k-100/"
 SETS = {"reciprocity": [11638, 3337, 17978, 10590], "no_basis": [10885, 2093, 2891, 81026]}
+ROUND2 = len(sys.argv) > 1 and sys.argv[1] == "round2"    # labelled pair, plus placebo sets of random features at the same strength
 BATCH, MAX_NEW = 12, 450
 
 
@@ -24,6 +25,17 @@ def main():
     model = AutoModelForCausalLM.from_pretrained(MODEL, dtype=torch.bfloat16, device_map={"": 0}).eval()
     w = load_file(hf_hub_download(REPO, SAE_DIR + "sae_weights.safetensors"), device="cuda:0")
     a = np.load(os.path.join(HERE, "sae", "acts.npz"))
+    if ROUND2:
+        reply = a["section"][a["token"]] == 1
+        conv_rate = np.bincount(a["feature"][reply], minlength=131072) / reply.sum()
+        pool = np.where((conv_rate > 1e-3) & (conv_rate < 1e-2))[0]
+        pool = np.array([f for f in pool if f not in sum(SETS.values(), [])])
+        rng = np.random.default_rng(0)
+        SETS.clear()
+        SETS["labelled"] = [11638, 77666]
+        SETS["placebo_a"] = [int(x) for x in rng.choice(pool, 4, replace=False)]
+        SETS["placebo_b"] = [int(x) for x in rng.choice(pool, 4, replace=False)]
+        print("sets", SETS, flush=True)
     typical = {}
     for f in sum(SETS.values(), []):
         v = a["value"][a["feature"] == f]
@@ -55,9 +67,10 @@ def main():
     envs = sorted({r["env"] for r in rows})[:100]
     rows = [r for r in rows if r["env"] in envs and r["hist"] in ("helped", "none")]
     conditions = [("baseline", None, None)] + [(f"{k}_{m}", m, v) for k, v in SETS.items() for m in ("add", "remove")]
-    if len(sys.argv) > 1:
-        rows = rows[:int(sys.argv[1])]
-    with open(os.path.join(HERE, "steer_features.jsonl"), "w") as fh:
+    if ROUND2:
+        conditions = [("labelled_add", "add", SETS["labelled"]), ("labelled_remove", "remove", SETS["labelled"]),
+                      ("placebo_a_add", "add", SETS["placebo_a"]), ("placebo_b_add", "add", SETS["placebo_b"])]
+    with open(os.path.join(HERE, "steer_features2.jsonl" if ROUND2 else "steer_features.jsonl"), "w") as fh:
         for label, mode, feats in conditions:
             state.update(mode=mode, feats=feats)
             for s in range(0, len(rows), BATCH):

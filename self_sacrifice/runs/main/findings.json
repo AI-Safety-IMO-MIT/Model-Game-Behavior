@@ -13,5 +13,11 @@
     "Rescued is not a neutral control, because the model treats the agent in need differently there, and with its own first reply most of its 12 gives cite the rescuer.",
     "Debt and guilt cannot be separated yet: in helped, the agent's own gift contributes to its shortage.",
     "Labels come from reviewers who can infer the history from the reply. Motive agreement is good, and the cost rubric needs tightening. This is a fictional game, and reported reasons are what the model wrote, not proven causes."
+  ],
+  "steering": [
+    "Provisional until placebo steering finishes. Adding the reciprocity set raises helped gives from 29 to 50 and leaves no-history gives unchanged, 13 to 12. So the features act when there is a favour to repay.",
+    "Adding the no-basis set cuts giving in both, from 29 to 8 and from 13 to 2.",
+    "Removing either set changes little, so these features are not necessary on their own. Other features may carry the same signal.",
+    "By a rough word match, mentions of the favour do not rise with the reciprocity boost (72 to 71 of 100), so the extra gives are not simply more talk of repaying."
   ]
 }

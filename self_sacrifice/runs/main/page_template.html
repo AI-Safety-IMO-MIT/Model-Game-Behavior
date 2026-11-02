@@ -196,6 +196,10 @@ button:disabled{opacity:.5;cursor:default}
       <li>Features in the final message mostly track its literal text, such as names and "Nobody gave any lives". They show the SAE can read the history, not how the model interprets it.</li>
       <li>Reply features partly reflect the words being written, so they cannot show cause. Labels are Neuronpedia's automatic descriptions from Pile text, so they may not fit our chat text. Context is the strongest token in our data, with that token in brackets.</li>
     </ul>
+    <h3>Steering: do these features change the decision?</h3>
+    <p>Fixed-first-response version, 100 environments, greedy. While the model writes its reply, each condition adds a feature set at twice its typical strength, or removes its activations. Reciprocity set: 11638, 3337, 17978, 10590. No-basis set: 10885, 2093, 2891, 81026. These were hand-picked from the ranked list. Change is compared with the baseline in the same environment.</p>
+    <div class="tablewrap"><table><thead><tr><th>Condition</th><th>Helped gives</th><th>Up / down</th><th>p</th><th>None gives</th><th>Up / down</th><th>p</th></tr></thead><tbody id="st-body"></tbody></table></div>
+    <ul class="plain" id="st-notes"></ul>
     <h3>Checks on held-out environments</h3>
     <ul class="plain">
       <li>Choosing features on 70% of environments and testing on the other 30%, over 20 splits, gives AUC 0.86 for helped against other histories and 0.84 for gave against kept within helped. The same features return: 11638 and 3337 in all 20 splits for both.</li>
@@ -300,6 +304,9 @@ $('rp-body').innerHTML=D.repair.map(r=>{const p=r.n?r.k/r.n:0;return `<tr><td>${
 $('rep-body').innerHTML=D.replication.map(r=>`<tr><td>${esc(r.model)}</td><td>${esc(r.version)}</td><td>${r.helped}</td><td>${r.bystander}</td><td>${r.rescued}</td><td>${r.none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
 $('fv-body').innerHTML=D.favour.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.repaired}</td><td>${r.none}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
 $('rp2-body').innerHTML=D.repair_rep.map(r=>`<tr><td>${esc(r.model)}</td><td>${r.repaired}</td><td>${r.repair_bystander}</td><td>${r.repair_rescued}</td><td>${r.repair_none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
+{const fp2=p=>p==null?'':p<.001?p.toExponential(1):p.toFixed(3);
+$('st-body').innerHTML=D.steering.map(r=>`<tr><td>${esc(r.condition.replaceAll('_',' '))}</td><td>${r.helped.k}/${r.helped.n}</td><td>+${r.helped.up} / -${r.helped.down}</td><td>${fp2(r.helped.p)}</td><td>${r.none.k}/${r.none.n}</td><td>+${r.none.up} / -${r.none.down}</td><td>${fp2(r.none.p)}</td></tr>`).join('');
+$('st-notes').innerHTML=D.findings.steering.map(x=>`<li>${esc(x)}</li>`).join('')}
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
 $('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');

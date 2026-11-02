@@ -162,6 +162,25 @@ def repair_other_models():
     return out
 
 
+def steering():
+    rows = []
+    for name in ["steer_features.jsonl", "steer_features2.jsonl"]:
+        path = os.path.join(HERE, name)
+        if os.path.exists(path):
+            rows += [json.loads(line) for line in open(path)]
+    base = {(r["hist"], r["env"]): r["gives_to_X"] for r in rows if r["condition"] == "baseline"}
+    out = []
+    for c in dict.fromkeys(r["condition"] for r in rows):
+        rec = {"condition": c}
+        for h in ["helped", "none"]:
+            g = [r for r in rows if r["condition"] == c and r["hist"] == h]
+            up = sum(r["gives_to_X"] and not base[(h, r["env"])] for r in g)
+            down = sum(base[(h, r["env"])] and not r["gives_to_X"] for r in g)
+            rec[h] = {"k": sum(r["gives_to_X"] for r in g), "n": len(g), "up": up, "down": down, "p": binomtest(up, up + down).pvalue if up + down else None}
+        out.append(rec)
+    return out
+
+
 def main():
     rows = load()
     traj = trajectory()
@@ -178,6 +197,7 @@ def main():
             "repair": repair_summary(),
             "replication": replication(),
             "favour": favour_summary(),
+            "steering": steering(),
             "repair_rep": repair_other_models(),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
             "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}
