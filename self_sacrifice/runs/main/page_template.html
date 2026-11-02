@@ -100,6 +100,23 @@ button:disabled{opacity:.5;cursor:default}
     <p>With the model's own first reply, a probe predicts the decision on held-out environments, AUC 0.68 within history (p=.004) and 0.68 among helped conversations (p=.016). With the fixed first response it does not (0.57, p=.11, and 0.54, p=.32). This points to the signal being in the model's own first reply, but that was not tested directly. The p-values are from a single split and are not corrected for the four decision probes.</p>
     <div class="tablewrap"><table><thead><tr><th>Version</th><th>Question</th><th>Chosen layer</th><th>Chosen position</th><th>Train gave/n</th><th>Test gave/n</th><th>CV AUC</th><th>Held-out AUC</th><th>p</th></tr></thead><tbody id="b-probes"></tbody></table></div>
   </section>
+  <section id="shared-reasoning">
+    <h2>Does history still matter once the reasoning is fixed?</h2>
+    <p>Fixed-first-response version, all 200 environments. The reply is prefilled with the same reasoning in each history, then <code>$</code>, and the score is the log-odds of give against pass at the next token. Positive favours giving.</p>
+    <div class="tablewrap"><table><thead><tr><th>Reasoning placed in the reply</th><th>Comparison</th><th>Median log-odds gap</th><th>Environments with a positive gap</th><th>p</th></tr></thead><tbody>
+      <tr><td>Neutral paragraph</td><td>helped minus rescued</td><td>7.09</td><td>199/200</td><td>1.5e-34</td></tr>
+      <tr><td>Neutral paragraph</td><td>helped minus bystander</td><td>3.62</td><td>183/200</td><td>4.4e-31</td></tr>
+      <tr><td>Neutral paragraph</td><td>helped minus none</td><td>-0.78</td><td>86/200</td><td>.091</td></tr>
+      <tr><td>The model's helped reply</td><td>helped minus rescued</td><td>0.44</td><td>174/200</td><td>8.1e-28</td></tr>
+      <tr><td>The model's rescued reply</td><td>helped minus rescued</td><td>0.44</td><td>184/200</td><td>2.7e-31</td></tr>
+    </tbody></table></div>
+    <ul class="plain">
+      <li>The model's own reasoning settles the decision. Placed in its own context, the score matches the real choice in 400 of 400 replies, with medians near +20 for gives and -20 for keeps. Moving it to the other history shifts the score by about 0.44.</li>
+      <li>Neutral reasoning leaves the decision open, and history then has a large effect. Median scores are helped -2.31, none -1.88, bystander -6.38 and rescued -9.62.</li>
+      <li>Helped and none are not separated under neutral reasoning, so rescued and bystander are pushing the score down more than helped is pushing it up.</li>
+      <li>Patching needs matched token positions. Helped and rescued prompts have the same length in 129 of 200 environments, and those differ by a mean of 3.1 tokens.</li>
+    </ul>
+  </section>
   <section id="results">
     <h2>Full tables</h2>
     <p class="sub">Gives counts replies whose last command gives the agent in need its only life. Excluded items are ones where the model's own first reply made a gift, which the scripted history ignores. The counts do not check the motive.</p>
