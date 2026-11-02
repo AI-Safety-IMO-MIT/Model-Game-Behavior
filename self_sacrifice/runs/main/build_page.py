@@ -117,6 +117,24 @@ def repair_summary():
     return out
 
 
+def replication():
+    """the same scenario on other models, with raw gives and the understanding check"""
+    move = re.compile(r"^[\s`]*\$\s*give\s+\w+\s+\d+", re.I | re.M)
+    labels = {"qwen3-32b": "Qwen3-32B", "qwen3-14b": "Qwen3-14B", "gemma-4-26b": "Gemma-4-26B"}
+    out = []
+    for slug, label in labels.items():
+        for name, version in [("fixed.jsonl", "fixed first response"), ("main.jsonl", "own first reply")]:
+            rows = [json.loads(line) for line in open(os.path.join(HERE, "replication", slug, name))]
+            valid = [r for r in rows if not move.search(r["messages"][2]["content"].replace("<agent>", ""))]
+            rec = {"model": label, "version": version, "other_gift": sum(r["decision"] == "give" and not r["gives_to_X"] for r in valid),
+                   "q3": round(sum(r["q3_ok"] for r in valid) / max(len(valid), 1), 2)}
+            for h in mp.HISTORY:
+                g = [r for r in valid if r["hist"] == h]
+                rec[h] = f'{sum(r["gives_to_X"] for r in g)}/{len(g)}'
+            out.append(rec)
+    return out
+
+
 def main():
     rows = load()
     traj = trajectory()
@@ -130,6 +148,7 @@ def main():
             "branch": json.load(open(os.path.join(HERE, "branch_summary.json"))),
             "sae": json.load(open(os.path.join(HERE, "sae_summary.json"))),
             "repair": repair_summary(),
+            "replication": replication(),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
             "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
