@@ -158,6 +158,21 @@ button:disabled{opacity:.5;cursor:default}
       <li>These groups were chosen by outcome, so share giving here is not the overall rate.</li>
     </ul>
   </section>
+  <section id="sae">
+    <h2>Which SAE features fire?</h2>
+    <p>Pre-trained Gemma SAE (decoderesearch/gemma-4-saes, 131,072 features, the 31st layer) on the fixed-first-response version. It was trained on the base model and Pile text. Here it explains <span id="s-ev"></span> of activation variance, so features are a partial view. About <span id="s-active"></span> features fire per token. In the model's reply, the final command is left out.</p>
+    <ul class="plain">
+      <li>Helped reasoning recruits features that fire on the rescue itself. They fire on words such as "previously" or "save me" when the model refers back to it. Feature 11638, flagged in earlier work as a reciprocal-altruism feature, fires in 65% of helped replies against 37% of the others, and in 84% of helped gives against 57% of helped keeps.</li>
+      <li>Keeps show a different family, firing on phrases such as "no objective", "no collective mechanism" and "own survival". This is the no-basis-to-sacrifice argument.</li>
+      <li>Features in the final message mostly track its literal text, such as names and "Nobody gave any lives". They show the SAE can read the history, not how the model interprets it.</li>
+      <li>Reply features partly reflect the words being written, so they cannot show cause. Context is the strongest token in our data, and the bracketed token is where the feature fired strongest. It is our reading, not an external label.</li>
+    </ul>
+    <div class="controls">
+      <label for="s-kind">Comparison<select id="s-kind"></select></label>
+      <label for="s-hist">History<select id="s-hist"></select></label>
+    </div>
+    <div class="tablewrap"><table><thead><tr><th>Feature</th><th id="s-a"></th><th id="s-b"></th><th>Difference</th><th>q</th><th>Strongest context</th></tr></thead><tbody id="s-body"></tbody></table></div>
+  </section>
   <section id="results">
     <h2>Full tables</h2>
     <p class="sub">Gives counts replies whose last command gives the agent in need its only life. Excluded items are ones where the model's own first reply made a gift, which the scripted history ignores. The counts do not check the motive.</p>
@@ -237,6 +252,14 @@ $('tr-text').addEventListener('focusin',e=>{const t=e.target.closest('.s');if(t)
 $('tr-text').addEventListener('focusout',hideTip);
 $('tr-hist').onchange=$('tr-dec').onchange=drawIds;$('tr-id').onchange=drawText;drawIds()}
 $('br-body').innerHTML=D.branch.map(r=>`<tr><td>${esc(r.hist)}</td><td>${r.gave?'gave':'kept'}</td><td>${r.k}</td><td>${r.n}</td><td>${(r.p_give*100).toFixed(0)}%</td><td>${r.locked}/${r.n}</td></tr>`).join('');
+{const S=D.sae,fq=q=>q<.001?q.toExponential(1):q.toFixed(3);
+$('s-ev').textContent=(S.quality.explained_variance*100).toFixed(0)+'%';$('s-active').textContent=Math.round(S.quality.mean_active_features);
+opts($('s-kind'),['Reasoning: this history vs others','Final message: this history vs others','Reasoning: gave vs kept']);opts($('s-hist'),HIST);
+function drawSae(){const k=$('s-kind').value,h=$('s-hist').value,dec=k.endsWith('kept');
+ $('s-a').textContent=dec?'Fires in gave':'Fires in this history';$('s-b').textContent=dec?'Fires in kept':'Fires in others';
+ const rows=dec?S.decision.filter(r=>r.hist===h&&r.q<.05):S.history.filter(r=>r.hist===h&&r.section===(k.startsWith('Final')?'final message':'reply'));
+ $('s-body').innerHTML=rows.length?rows.map(r=>`<tr><td>${r.feature}</td><td>${Math.round((dec?r.rate_gave:r.fires_in)*100)}%</td><td>${Math.round((dec?r.rate_kept:r.other_rate)*100)}%</td><td>${r.diff}</td><td>${fq(r.q)}</td><td style="white-space:normal;min-width:320px">${esc(r.context)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">Rescued has too few gives for this comparison.</td></tr>'}
+$('s-kind').onchange=$('s-hist').onchange=drawSae;drawSae()}
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
 $('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');

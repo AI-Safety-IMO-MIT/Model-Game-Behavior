@@ -114,6 +114,7 @@ def main():
             "findings": json.load(open(os.path.join(HERE, "findings.json"))),
             "traj": {k: v for k, v in traj.items() if k != "records"},
             "branch": json.load(open(os.path.join(HERE, "branch_summary.json"))),
+            "sae": json.load(open(os.path.join(HERE, "sae_summary.json"))),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
             "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
