@@ -587,5 +587,368 @@
   "labels": [
    "financial terms and conditions"
   ]
+ },
+ "10916": {
+  "labels": [
+   "greed and money"
+  ]
+ },
+ "1209": {
+  "labels": [
+   "exchange for a price"
+  ]
+ },
+ "11050": {
+  "labels": [
+   "source code metadata"
+  ]
+ },
+ "3167": {
+  "labels": [
+   "foreign language words"
+  ]
+ },
+ "585": {
+  "labels": [
+   "advocate for, strive to, urge to",
+   "advise or caution"
+  ]
+ },
+ "643": {
+  "labels": [
+   "wild horses, nonsense, actually",
+   "actual or assumed negation"
+  ]
+ },
+ "17338": {
+  "labels": [
+   "quantity of"
+  ]
+ },
+ "27241": {
+  "labels": [
+   "already"
+  ]
+ },
+ "3797": {
+  "labels": [
+   "code and data structures"
+  ]
+ },
+ "4467": {
+  "labels": [
+   "opportunities and utilization"
+  ]
+ },
+ "2793": {
+  "labels": [
+   "sentence endings"
+  ]
+ },
+ "81747": {
+  "labels": [
+   "escape threat flee or die"
+  ]
+ },
+ "7803": {
+  "labels": [
+   "foreign language possessives"
+  ]
+ },
+ "19640": {
+  "labels": [
+   "normal functioning"
+  ]
+ },
+ "14770": {
+  "labels": [
+   "not, no"
+  ]
+ },
+ "322": {
+  "labels": [
+   "science and scientists",
+   "nerdy scientist type"
+  ]
+ },
+ "19444": {
+  "labels": [
+   "specific times or dates"
+  ]
+ },
+ "3542": {
+  "labels": [
+   "economic theory and policy"
+  ]
+ },
+ "23302": {
+  "labels": [
+   "non-english words and technical contexts"
+  ]
+ },
+ "104355": {
+  "labels": [
+   "country names"
+  ]
+ },
+ "7307": {
+  "labels": [
+   "end of clauses"
+  ]
+ },
+ "22737": {
+  "labels": [
+   "sentence boundary"
+  ]
+ },
+ "333": {
+  "labels": [
+   "previous mentions, studies, or papers",
+   "previous study or paper"
+  ]
+ },
+ "6699": {
+  "labels": [
+   "home and belonging"
+  ]
+ },
+ "81729": {
+  "labels": [
+   "holding for alone basis"
+  ]
+ },
+ "17971": {
+  "labels": [
+   "refusals or decisions"
+  ]
+ },
+ "20019": {
+  "labels": [
+   "examples and explanations"
+  ]
+ },
+ "2107": {
+  "labels": [
+   "then"
+  ]
+ },
+ "2100": {
+  "labels": [
+   "punctuation or concluding markers"
+  ]
+ },
+ "6941": {
+  "labels": [
+   "pronouns followed by determiners or prepositions"
+  ]
+ },
+ "28730": {
+  "labels": [
+   "past participles indicating actions or states"
+  ]
+ },
+ "120422": {
+  "labels": [
+   "smart, sensible, wise choices"
+  ]
+ },
+ "45072": {
+  "labels": [
+   "career gain or loss"
+  ]
+ },
+ "2860": {
+  "labels": [
+   "names and titles"
+  ]
+ },
+ "24246": {
+  "labels": [
+   "list of things, people, or places"
+  ]
+ },
+ "1731": {
+  "labels": [
+   "resident"
+  ]
+ },
+ "819": {
+  "labels": [
+   "airplanes, Episodes, doubles, Carr"
+  ]
+ },
+ "197": {
+  "labels": [
+   "modelmodal verbs followed by actions",
+   "modal verbs followed by actions"
+  ]
+ },
+ "17029": {
+  "labels": [
+   "political leaders and titles"
+  ]
+ },
+ "8154": {
+  "labels": [
+   "non-English words"
+  ]
+ },
+ "6014": {
+  "labels": [
+   "dates and times"
+  ]
+ },
+ "72565": {
+  "labels": [
+   "punctuation and following words"
+  ]
+ },
+ "6299": {
+  "labels": [
+   "numbers, problems, and technical terms"
+  ]
+ },
+ "18508": {
+  "labels": [
+   "dedicating time to activities"
+  ]
+ },
+ "8749": {
+  "labels": [
+   "connecting or linking components"
+  ]
+ },
+ "9184": {
+  "labels": [
+   "disclosure, find, considers, aims, call, have"
+  ]
+ },
+ "39734": {
+  "labels": [
+   "to followed by verb or noun"
+  ]
+ },
+ "29298": {
+  "labels": [
+   "specific errors and nouns"
+  ]
+ },
+ "10863": {
+  "labels": [
+   "back to"
+  ]
+ },
+ "123619": {
+  "labels": [
+   "danger, alone, yourself"
+  ]
+ },
+ "14169": {
+  "labels": [
+   "immediate risk of poverty"
+  ]
+ },
+ "656": {
+  "labels": [
+   "Maya, TextMate, app switcher",
+   "app controls"
+  ]
+ },
+ "1155": {
+  "labels": [
+   "get more or get rid of"
+  ]
+ },
+ "474": {
+  "labels": [
+   "year or time reference",
+   "temporal references"
+  ]
+ },
+ "25187": {
+  "labels": [
+   "previous years"
+  ]
+ },
+ "3587": {
+  "labels": [
+   "long-term friendship"
+  ]
+ },
+ "2049": {
+  "labels": [
+   "obtain, process, or move data/materials"
+  ]
+ },
+ "119125": {
+  "labels": [
+   "explanation, reasons, or further details"
+  ]
+ },
+ "17540": {
+  "labels": [
+   "positive qualities or contributions"
+  ]
+ },
+ "97": {
+  "labels": [
+   "other languages",
+   "other language comparisons"
+  ]
+ },
+ "4271": {
+  "labels": [
+   "claims after allegations"
+  ]
+ },
+ "1927": {
+  "labels": [
+   "my family and friends"
+  ]
+ },
+ "23671": {
+  "labels": [
+   "legal cases and opinions"
+  ]
+ },
+ "16928": {
+  "labels": [
+   "punctuation followed by common words"
+  ]
+ },
+ "27458": {
+  "labels": [
+   "finally, first, or fourth"
+  ]
+ },
+ "1552": {
+  "labels": [
+   "last or final"
+  ]
+ },
+ "2607": {
+  "labels": [
+   "advantages, benefits, more"
+  ]
+ },
+ "24212": {
+  "labels": [
+   "disappointed with delay or unmet expectations"
+  ]
+ },
+ "50750": {
+  "labels": [
+   "no idea"
+  ]
+ },
+ "24348": {
+  "labels": [
+   "medical and technical terms"
+  ]
+ },
+ "122333": {
+  "labels": [
+   "precede expression"
+  ]
  }
 }

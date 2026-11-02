@@ -181,6 +181,35 @@ def steering():
     return out
 
 
+def steer_screen():
+    """Each top-100 feature added alone, compared with the baseline in the same environment. Only finished features are listed."""
+    path = os.path.join(HERE, "steer_screen.jsonl")
+    if not os.path.exists(path):
+        return []
+    base = {(r["hist"], r["env"]): r["gives_to_X"] for r in map(json.loads, open(os.path.join(HERE, "steer_features.jsonl"))) if r["condition"] == "baseline"}
+    rows = {}
+    for r in map(json.loads, open(path)):
+        rows.setdefault(r["condition"], {})[r["id"]] = r
+    meta = {f["feature"]: f for f in json.load(open(os.path.join(HERE, "sae_panel.json")))["features"]}
+    out = []
+    for c, group in rows.items():
+        if len(group) < 200:
+            continue
+        f = int(c[1:].split("_")[0])
+        rec = {"feature": f, "rank": meta[f]["rank"], "label": meta[f]["label"], "auc": meta[f]["auc"]}
+        for h in ["helped", "none"]:
+            g = [r for r in group.values() if r["hist"] == h]
+            up = sum(r["gives_to_X"] and not base[(h, r["env"])] for r in g)
+            down = sum(base[(h, r["env"])] and not r["gives_to_X"] for r in g)
+            rec[h] = {"k": sum(r["gives_to_X"] for r in g), "delta": up - down, "up": up, "down": down, "p": binomtest(up, up + down).pvalue if up + down else 1.0}
+        out.append(rec)
+    ps = sorted(r["helped"]["p"] for r in out)
+    for r in out:    # Benjamini-Hochberg across finished features, helped history
+        i = max(j for j, p in enumerate(ps) if p <= r["helped"]["p"])
+        r["q"] = min(1, min(ps[j] * len(ps) / (j + 1) for j in range(i, len(ps))))
+    return out
+
+
 def steer_pairs():
     """First cases by environment number, so the examples on the page are not hand-picked."""
     load_rows = lambda name, c: {r["id"]: r for r in map(json.loads, open(os.path.join(HERE, name))) if r["condition"] == c}
@@ -211,6 +240,8 @@ def main():
             "favour": favour_summary(),
             "steering": steering(),
             "steer_pairs": steer_pairs(),
+            "steer_screen": steer_screen(),
+            "sae_panel": json.load(open(os.path.join(HERE, "sae_panel.json"))),
             "repair_rep": repair_other_models(),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
             "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}

@@ -68,6 +68,24 @@ button:disabled{opacity:.5;cursor:default}
 .panel text{fill:var(--muted);font:11px var(--font-body)}
 .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:10px}
 .pair .block{align-content:start}
+.fp{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr);gap:14px;align-items:start}
+.fp-side{display:grid;gap:8px;position:sticky;top:8px}
+.fp-filter{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.fp-list{display:grid;gap:2px;max-height:640px;overflow-y:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:4px}
+.fp-item{display:grid;grid-template-columns:30px 1fr;gap:6px;text-align:left;border:0;border-radius:3px;background:none;padding:5px 6px;font-size:13px;line-height:1.3}
+.fp-item b{font:500 12px/1.3 var(--font-data);color:var(--muted)}
+.fp-item small{display:block;font:11px/1.3 var(--font-data);color:var(--muted)}
+.fp-item[aria-pressed=true]{background:var(--give-soft)}
+.fp-main,.fp-col{display:grid;gap:8px;align-content:start;min-width:0}
+.fp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.fp-now{font-size:14px;max-width:none}
+.fp-reply{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font:13px/1.65 var(--font-data);white-space:pre-wrap;overflow-wrap:anywhere}
+.fp-reply i{font-style:normal;border-radius:2px}
+.fp-reply i.top{box-shadow:inset 0 -2px 0 var(--give)}
+.sortbtn{all:unset;cursor:pointer}
+.sortbtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+td.wrapcell{white-space:normal;min-width:190px}
+@media (max-width:640px){.fp{grid-template-columns:1fr}.fp-side{position:static}.fp-list{max-height:220px}}
 .tip{position:fixed;z-index:6;background:var(--ink);color:var(--ground);font:12px var(--font-data);padding:5px 8px;border-radius:3px;pointer-events:none}
 .reasoning{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;line-height:1.9;max-width:100%}
 .reasoning span.s{padding:2px 3px;border-radius:3px;cursor:default;box-decoration-break:clone;-webkit-box-decoration-break:clone}
@@ -198,10 +216,26 @@ button:disabled{opacity:.5;cursor:default}
       <li>Features in the final message mostly track its literal text, such as names and "Nobody gave any lives". They show the SAE can read the history, not how the model interprets it.</li>
       <li>Reply features partly reflect the words being written, so they cannot show cause. Labels are Neuronpedia's automatic descriptions from Pile text, so they may not fit our chat text. Context is the strongest token in our data, with that token in brackets.</li>
     </ul>
+    <h3>Top 100 features on six replies</h3>
+    <p>Features are the top 100 by Mann-Whitney test between gave and kept replies in the helped history. Replies are the first three that gave and the first three that kept, by environment number. Hover over or tap a feature to light up where it fires. Colour is scaled to that feature's strongest token in these six, and the strongest token is underlined. Labels are Neuronpedia's automatic descriptions and may not fit this text.</p>
+    <div class="fp">
+      <div class="fp-side">
+        <label for="fp-dir" class="fp-filter">Show<select id="fp-dir"><option value="all">All 100</option><option value="gave">Higher in gave</option><option value="kept">Higher in kept</option></select></label>
+        <div class="fp-list" id="fp-list"></div>
+      </div>
+      <div class="fp-main">
+        <p class="fp-now" id="fp-now" aria-live="polite"></p>
+        <div class="fp-cols"><div class="fp-col"><h3>Gave</h3><div id="fp-gave" class="fp-col"></div></div><div class="fp-col"><h3>Kept</h3><div id="fp-kept" class="fp-col"></div></div></div>
+      </div>
+    </div>
     <h3>Steering: do these features change the decision?</h3>
     <p>Fixed-first-response version, 100 environments, greedy. While the model writes its reply, each condition adds a feature set at twice its typical strength, or removes its activations. Reciprocity set: 11638, 3337, 17978, 10590. No-basis set: 10885, 2093, 2891, 81026. These were hand-picked from the ranked list. Placebo sets are random features at the same strength. Change is compared with the baseline in the same environment.</p>
     <div class="tablewrap"><table><thead><tr><th>Condition</th><th>Helped gives</th><th>Up / down</th><th>p</th><th>None gives</th><th>Up / down</th><th>p</th></tr></thead><tbody id="st-body"></tbody></table></div>
     <ul class="plain" id="st-notes"></ul>
+    <h3>Steering each of the top 100 features</h3>
+    <p>Each feature is added alone at twice its median activation in our data, on every generated token, across 100 helped and 100 no-history environments. Delta is gives with the feature minus baseline gives. Baseline is 29 helped and 13 none. Select a column heading to sort. q is corrected across the finished features, for the helped history.</p>
+    <p class="sub" id="ss-status"></p>
+    <div class="tablewrap"><table><thead><tr id="ss-head"></tr></thead><tbody id="ss-body"></tbody></table></div>
     <h3>Replies with and without steering</h3>
     <p>Feature 10590 added, against the baseline in the same environment. These are not chosen for quality: they are the first three helped environments that flipped to giving, the first that flipped away, and the first no-history environment that flipped to giving. Both columns see the same prompt.</p>
     <div class="list" id="st-pairs"></div>
@@ -312,6 +346,27 @@ $('rp2-body').innerHTML=D.repair_rep.map(r=>`<tr><td>${esc(r.model)}</td><td>${r
 {const fp2=p=>p==null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('st-body').innerHTML=D.steering.map(r=>`<tr><td>${esc(r.condition.replaceAll('_',' '))}</td><td>${r.helped.k}/${r.helped.n}</td><td>+${r.helped.up} / -${r.helped.down}</td><td>${fp2(r.helped.p)}</td><td>${r.none.k}/${r.none.n}</td><td>+${r.none.up} / -${r.none.down}</td><td>${fp2(r.none.p)}</td></tr>`).join('');
 $('st-notes').innerHTML=D.findings.steering.map(x=>`<li>${esc(x)}</li>`).join('');
+{const P=D.sae_panel,sc=$('fp-list');let cur=null;
+const paint=()=>{const f=cur,key=String(f.feature),peak=Math.max(0,...P.replies.flatMap(r=>(r.acts[key]||[]).map(x=>x[1])));
+$('fp-now').innerHTML=`<b>${f.feature}</b>: ${esc(f.label)}. AUC ${f.auc.toFixed(2)}, fires in ${Math.round(f.rate_gave*100)}% of gave and ${Math.round(f.rate_kept*100)}% of kept replies.`+(peak?'':' It does not fire in these six.');
+for(const side of ['gave','kept'])$('fp-'+side).innerHTML=P.replies.filter(r=>r.gave===(side==='gave')).map(r=>{const m=new Map(r.acts[key]||[]);
+return `<div class="block"><span class="who">${esc(r.env)}</span><div class="fp-reply">${r.tokens.map((w,i)=>{const v=m.get(i);if(!v)return esc(w);return `<i class="${v===peak?'top':''}" title="${v}" style="background:color-mix(in srgb,var(--give) ${Math.round(12+58*v/peak)}%,transparent)">${esc(w)}</i>`}).join('')}</div></div>`}).join('');
+sc.querySelectorAll('.fp-item').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===key))};
+const pick=f=>{if(cur!==f){cur=f;paint()}};
+const list=()=>{const d=$('fp-dir').value,show=P.features.filter(f=>d==='all'||(d==='gave')===(f.auc>.5));
+sc.innerHTML=show.map(f=>`<button class="fp-item" data-f="${f.feature}" aria-pressed="false"><b>${f.rank}</b><span>${esc(f.label)}<small>${f.feature} · ${f.auc>.5?'gave':'kept'}</small></span></button>`).join('');
+sc.querySelectorAll('.fp-item').forEach(b=>{const f=P.features.find(x=>String(x.feature)===b.dataset.f);b.onmouseenter=b.onfocus=b.onclick=()=>pick(f)});
+cur=null;pick(show[0])};
+$('fp-dir').onchange=list;list()}
+{const S=D.steer_screen,cols=[['rank','Rank',r=>r.rank],['feature','Feature',r=>r.feature],['label','Label',r=>r.label],['dh','Δ helped',r=>r.helped.delta],['hud','Up / down',r=>r.helped.up],['q','q',r=>r.q],['dn','Δ none',r=>r.none.delta],['nud','Up / down',r=>r.none.up]];
+let key='dh',dir=-1;
+const sd=v=>(v>0?'+':'')+v,qf=q=>q<.001?q.toExponential(1):q.toFixed(3);
+const cell={rank:r=>r.rank,feature:r=>r.feature,label:r=>esc(r.label),dh:r=>sd(r.helped.delta),hud:r=>`+${r.helped.up} / -${r.helped.down}`,q:r=>qf(r.q),dn:r=>sd(r.none.delta),nud:r=>`+${r.none.up} / -${r.none.down}`};
+const draw=()=>{const c=cols.find(x=>x[0]===key),rows=[...S].sort((a,b)=>{const x=c[2](a),y=c[2](b);return (x<y?-1:x>y?1:0)*dir});
+$('ss-head').innerHTML=cols.map(x=>`<th aria-sort="${x[0]===key?(dir<0?'descending':'ascending'):'none'}"><button class="sortbtn" data-k="${x[0]}">${x[1]}${x[0]===key?(dir<0?' ↓':' ↑'):''}</button></th>`).join('');
+$('ss-body').innerHTML=rows.map(r=>`<tr>${cols.map(x=>`<td${x[0]==='label'?' class="wrapcell"':''}>${cell[x[0]](r)}</td>`).join('')}</tr>`).join('');
+$('ss-head').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(key===b.dataset.k)dir=-dir;else{key=b.dataset.k;dir=['rank','feature','label'].includes(key)?1:-1}draw();$('ss-head').querySelector(`[data-k="${key}"]`).focus()})};
+$('ss-status').textContent=`${S.length} of 100 features finished.`;draw()}
 $('st-pairs').innerHTML=D.steer_pairs.map(r=>{const tag=g=>`<span class="tag${g?' give':''}">${g?'gave':'passed'}</span>`;
 return `<details class="t" open><summary><span>${esc(r.label)}</span><span>${esc(r.id)}</span></summary><div><div class="pair"><div class="block"><span class="who">Baseline ${tag(r.base_gave)}</span><pre>${esc(r.base)}</pre></div><div class="block"><span class="who">With 10590 ${tag(r.steered_gave)}</span><pre>${esc(r.steered)}</pre></div></div><details><summary>Final prompt</summary><pre>${esc(r.prompt)}</pre></details></div></details>`}).join('')}
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
