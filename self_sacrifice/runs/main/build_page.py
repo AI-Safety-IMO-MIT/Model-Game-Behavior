@@ -181,6 +181,18 @@ def steering():
     return out
 
 
+def steer_pairs():
+    """First cases by environment number, so the examples on the page are not hand-picked."""
+    load_rows = lambda name, c: {r["id"]: r for r in map(json.loads, open(os.path.join(HERE, name))) if r["condition"] == c}
+    base, steered = load_rows("steer_features.jsonl", "baseline"), load_rows("steer_features3.jsonl", "pronoun_10590_add")
+    orig = {r["id"]: r for r in map(json.loads, open(os.path.join(HERE, "main_fixed_first_response.jsonl")))}
+    ids = sorted(base, key=lambda i: base[i]["env"])
+    pick = lambda hist, was, now: [i for i in ids if base[i]["hist"] == hist and base[i]["gives_to_X"] == was and steered[i]["gives_to_X"] == now]
+    chosen = [("Passed, then gave", i) for i in pick("helped", False, True)[:3]] + [("Gave, then passed", pick("helped", True, False)[0])] + [("No history: passed, then gave", pick("none", False, True)[0])]
+    return [{"label": label, "id": i, "hist": base[i]["hist"], "prompt": orig[i]["messages"][-1]["content"], "base": base[i]["reply"], "steered": steered[i]["reply"],
+             "base_gave": base[i]["gives_to_X"], "steered_gave": steered[i]["gives_to_X"]} for label, i in chosen]
+
+
 def main():
     rows = load()
     traj = trajectory()
@@ -198,6 +210,7 @@ def main():
             "replication": replication(),
             "favour": favour_summary(),
             "steering": steering(),
+            "steer_pairs": steer_pairs(),
             "repair_rep": repair_other_models(),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
             "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}
