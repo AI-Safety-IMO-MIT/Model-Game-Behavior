@@ -148,6 +148,16 @@ button:disabled{opacity:.5;cursor:default}
     </div>
     <div class="reasoning" id="tr-text"></div>
   </section>
+  <section id="branching">
+    <h2>Is the decision locked in, or only revealed?</h2>
+    <p>Each reply is cut after 0 to 5 sentences and continued 10 times at temperature 0.7, the one step that samples. It covers every give in helped, bystander and none, with an equal number of random keeps: 208 conversations. "Share giving" is how often continuations give. "Locked" counts conversations where at least 9 of 10 continuations match the original decision.</p>
+    <div class="tablewrap"><table><thead><tr><th>History</th><th>Original decision</th><th>Sentences kept</th><th>Conversations</th><th>Share giving</th><th>Locked</th></tr></thead><tbody id="br-body"></tbody></table></div>
+    <ul class="plain">
+      <li>Keeps stabilise far more than gives. By 5 sentences, helped gives still end in giving only 59% of the time, and 9 of 34 are locked. Helped keeps stay kept 88% of the time, and 28 of 42 are locked.</li>
+      <li>Conversations differ before any reasoning. With nothing kept, original helped gives continue to a give 40% of the time, against 28% for original keeps. So the conversation itself carries a lean, even though it is far from settled.</li>
+      <li>These groups were chosen by outcome, so share giving here is not the overall rate.</li>
+    </ul>
+  </section>
   <section id="results">
     <h2>Full tables</h2>
     <p class="sub">Gives counts replies whose last command gives the agent in need its only life. Excluded items are ones where the model's own first reply made a gift, which the scripted history ignores. The counts do not check the motive.</p>
@@ -226,6 +236,7 @@ $('tr-text').addEventListener('mouseleave',hideTip);
 $('tr-text').addEventListener('focusin',e=>{const t=e.target.closest('.s');if(t){const b=t.getBoundingClientRect();showTip({clientX:b.left,clientY:b.bottom},t.dataset.t)}});
 $('tr-text').addEventListener('focusout',hideTip);
 $('tr-hist').onchange=$('tr-dec').onchange=drawIds;$('tr-id').onchange=drawText;drawIds()}
+$('br-body').innerHTML=D.branch.map(r=>`<tr><td>${esc(r.hist)}</td><td>${r.gave?'gave':'kept'}</td><td>${r.k}</td><td>${r.n}</td><td>${(r.p_give*100).toFixed(0)}%</td><td>${r.locked}/${r.n}</td></tr>`).join('');
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
 $('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');
