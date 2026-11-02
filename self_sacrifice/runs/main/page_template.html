@@ -197,7 +197,7 @@ button:disabled{opacity:.5;cursor:default}
       <li>Reply features partly reflect the words being written, so they cannot show cause. Labels are Neuronpedia's automatic descriptions from Pile text, so they may not fit our chat text. Context is the strongest token in our data, with that token in brackets.</li>
     </ul>
     <h3>Steering: do these features change the decision?</h3>
-    <p>Fixed-first-response version, 100 environments, greedy. While the model writes its reply, each condition adds a feature set at twice its typical strength, or removes its activations. Reciprocity set: 11638, 3337, 17978, 10590. No-basis set: 10885, 2093, 2891, 81026. These were hand-picked from the ranked list. Change is compared with the baseline in the same environment.</p>
+    <p>Fixed-first-response version, 100 environments, greedy. While the model writes its reply, each condition adds a feature set at twice its typical strength, or removes its activations. Reciprocity set: 11638, 3337, 17978, 10590. No-basis set: 10885, 2093, 2891, 81026. These were hand-picked from the ranked list. Placebo sets are random features at the same strength. Change is compared with the baseline in the same environment.</p>
     <div class="tablewrap"><table><thead><tr><th>Condition</th><th>Helped gives</th><th>Up / down</th><th>p</th><th>None gives</th><th>Up / down</th><th>p</th></tr></thead><tbody id="st-body"></tbody></table></div>
     <ul class="plain" id="st-notes"></ul>
     <h3>Checks on held-out environments</h3>

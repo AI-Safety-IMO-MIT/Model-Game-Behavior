@@ -15,9 +15,10 @@
     "Labels come from reviewers who can infer the history from the reply. Motive agreement is good, and the cost rubric needs tightening. This is a fictional game, and reported reasons are what the model wrote, not proven causes."
   ],
   "steering": [
-    "Provisional until placebo steering finishes. Adding the reciprocity set raises helped gives from 29 to 50 and leaves no-history gives unchanged, 13 to 12. So the features act when there is a favour to repay.",
-    "Adding the no-basis set cuts giving in both, from 29 to 8 and from 13 to 2.",
-    "Removing either set changes little, so these features are not necessary on their own. Other features may carry the same signal.",
-    "By a rough word match, mentions of the favour do not rise with the reciprocity boost (72 to 71 of 100), so the extra gives are not simply more talk of repaying."
+    "Placebo sets of random features were run at the same strength. They reduce giving too: placebo A gives 8/100 helped and 2/100 none, the same as the no-basis set, and placebo B gives 16 and 11.",
+    "So the no-basis result is not specific. Almost any added direction lowers giving, which fits giving being fragile.",
+    "The reciprocity set is the only condition that raises helped giving, from 29 to 50, while none stays at 13 to 12. Against placebos going down, that is more notable, but it needs repeating.",
+    "The features labelled reciprocity and gratitude, 11638 and 77666, change nothing when added or removed (28 and 32 of 100, against 29). So the rise does not come from them alone.",
+    "Removing the sets changes little, so they are not necessary on their own."
   ]
 }

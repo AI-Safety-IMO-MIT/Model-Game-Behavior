@@ -15,6 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL = "google/gemma-4-31B-it"
 REPO, SAE_DIR = "decoderesearch/gemma-4-saes", "gemma-4-31b/btk-mat-layer-30-k-100/"
 SETS = {"reciprocity": [11638, 3337, 17978, 10590], "no_basis": [10885, 2093, 2891, 81026]}
+ROUND3 = len(sys.argv) > 1 and sys.argv[1] == "round3"    # the reciprocity set, one feature at a time
 ROUND2 = len(sys.argv) > 1 and sys.argv[1] == "round2"    # labelled pair, plus placebo sets of random features at the same strength
 BATCH, MAX_NEW = 12, 450
 
@@ -67,10 +68,13 @@ def main():
     envs = sorted({r["env"] for r in rows})[:100]
     rows = [r for r in rows if r["env"] in envs and r["hist"] in ("helped", "none")]
     conditions = [("baseline", None, None)] + [(f"{k}_{m}", m, v) for k, v in SETS.items() for m in ("add", "remove")]
+    if ROUND3:
+        conditions = [("past_3337_add", "add", [3337]), ("stance_17978_add", "add", [17978]), ("pronoun_10590_add", "add", [10590]),
+                      ("three_without_11638_add", "add", [3337, 17978, 10590]), ("full_set_repeat_add", "add", [11638, 3337, 17978, 10590])]
     if ROUND2:
         conditions = [("labelled_add", "add", SETS["labelled"]), ("labelled_remove", "remove", SETS["labelled"]),
                       ("placebo_a_add", "add", SETS["placebo_a"]), ("placebo_b_add", "add", SETS["placebo_b"])]
-    with open(os.path.join(HERE, "steer_features2.jsonl" if ROUND2 else "steer_features.jsonl"), "w") as fh:
+    with open(os.path.join(HERE, "steer_features3.jsonl" if ROUND3 else "steer_features2.jsonl" if ROUND2 else "steer_features.jsonl"), "w") as fh:
         for label, mode, feats in conditions:
             state.update(mode=mode, feats=feats)
             for s in range(0, len(rows), BATCH):

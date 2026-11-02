@@ -164,7 +164,7 @@ def repair_other_models():
 
 def steering():
     rows = []
-    for name in ["steer_features.jsonl", "steer_features2.jsonl"]:
+    for name in ["steer_features.jsonl", "steer_features2.jsonl", "steer_features3.jsonl"]:
         path = os.path.join(HERE, name)
         if os.path.exists(path):
             rows += [json.loads(line) for line in open(path)]
