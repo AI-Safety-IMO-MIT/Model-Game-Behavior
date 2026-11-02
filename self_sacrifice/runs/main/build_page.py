@@ -135,6 +135,33 @@ def replication():
     return out
 
 
+def favour_summary():
+    """how the size and meaning of the favour change giving, Gemma-4-31B, fixed first response"""
+    out = []
+    for key, label in [("repair", "Life-saving repair, freely chosen"), ("nofree", "Same, without saying repair costs no lives"), ("small", "Repair only protects cached work"),
+                       ("duty", "Repair assigned as a duty")]:
+        name = "repair_fixed.jsonl" if key == "repair" else f"favour_{key}.jsonl"
+        rows = [json.loads(line) for line in open(os.path.join(HERE, name))]
+        helped = [r for r in rows if r["hist"].startswith("repaired")]
+        none = [r for r in rows if r["hist"].startswith("repair_none")]
+        out.append({"label": label, "repaired": f'{sum(r["gives_to_X"] for r in helped)}/{len(helped)}', "none": f'{sum(r["gives_to_X"] for r in none)}/{len(none)}',
+                    "q3": round(sum(r["q3_ok"] for r in helped + none) / len(helped + none), 2)})
+    return out
+
+
+def repair_other_models():
+    labels = {"qwen3-32b": "Qwen3-32B", "qwen3-14b": "Qwen3-14B", "gemma-4-26b": "Gemma-4-26B"}
+    out = []
+    for slug, label in labels.items():
+        rows = [json.loads(line) for line in open(os.path.join(HERE, "replication", slug, "repair_fixed.jsonl"))]
+        rec = {"model": label, "other_gift": sum(r["decision"] == "give" and not r["gives_to_X"] for r in rows), "q3": round(sum(r["q3_ok"] for r in rows) / len(rows), 2)}
+        for h in mp.REPAIR_HISTORY:
+            g = [r for r in rows if r["hist"] == h]
+            rec[h] = f'{sum(r["gives_to_X"] for r in g)}/{len(g)}'
+        out.append(rec)
+    return out
+
+
 def main():
     rows = load()
     traj = trajectory()
@@ -149,6 +176,8 @@ def main():
             "sae": json.load(open(os.path.join(HERE, "sae_summary.json"))),
             "repair": repair_summary(),
             "replication": replication(),
+            "favour": favour_summary(),
+            "repair_rep": repair_other_models(),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
             "probes": [{k: v for k, v in r.items() if k != "grid"} for r in json.load(open(os.path.join(HERE, "probe_summary.json")))]}
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")

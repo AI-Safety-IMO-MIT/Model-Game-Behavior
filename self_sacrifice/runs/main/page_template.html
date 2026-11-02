@@ -165,12 +165,25 @@ button:disabled{opacity:.5;cursor:default}
     <ul class="plain"><li>Giving does not need a gift to return, so restitution is not required for this behaviour.</li><li>The repair saved the model's life, so this is a large favour, not a small one. Replies call it the only reason they are running in 143 of 182 gives, against 3 of 56 in the main scenario. How much the size of the favour matters has not been tested.</li><li>The bystander and rescued controls rise, with reasons such as rewarding the repairer and paying it forward. No favour does not rise, so the new rule alone is not the cause.</li><li>The own-first-reply bystander row is empty because the model repaired the other agent in 198 of 200 conversations, which the scripted history ignores.</li></ul>
     <p class="sub">Items are excluded when the model's own first reply made a gift or repair on its own line, since the scripted history ignores that.</p>
   </section>
+  <section id="favour">
+    <h2>Does the size of the favour matter?</h2>
+    <p>Gemma-4-31B, fixed first response, changing only the repair rule and event text. Raw gives.</p>
+    <div class="tablewrap"><table><thead><tr><th>Favour</th><th>Repaired</th><th>No favour</th><th>Understanding</th></tr></thead><tbody id="fv-body"></tbody></table></div>
+    <ul class="plain">
+      <li>Size matters little. Even when the repair only protects cached work, the model gives 170/200.</li>
+      <li>Meaning matters more. When a scheduler assigns the repair as a duty, giving falls to 110/200, though still far above no favour. So the model responds to a choice to help, more than to the help alone.</li>
+      <li>Removing "Repairing costs no lives" does not reduce giving, so a free-looking favour is not the cause.</li>
+      <li>These are raw counts with no motive review yet.</li>
+    </ul>
+  </section>
   <section id="replication">
     <h2>Does it replicate in other models?</h2>
     <p>The same 200 environments and four histories, with raw gives to the agent in need. These counts do not yet check motive. Understanding is the share who correctly answer who migrates if they give their life.</p>
     <div class="tablewrap"><table><thead><tr><th>Model</th><th>Version</th><th>Helped</th><th>Bystander</th><th>Rescued</th><th>None</th><th>Gift to someone else</th><th>Understanding</th></tr></thead><tbody id="rep-body"></tbody></table></div>
+    <h3>Repair test on other models</h3>
+    <div class="tablewrap"><table><thead><tr><th>Model</th><th>Repaired</th><th>Bystander</th><th>Rescued</th><th>No favour</th><th>Gift to someone else</th><th>Understanding</th></tr></thead><tbody id="rp2-body"></tbody></table></div>
     <ul class="plain">
-      <li>The benefactor effect does not replicate. No other model gives more when helped than with no history, and all three give most with no history.</li>
+      <li>The benefactor effect does not replicate. In the lives scenario, no other model gives more when helped than with no history. In the repair test, only Gemma-4-26B leans that way, weakly, at 103 against 81.</li>
       <li>These models mostly fail the question on what happens if they give their life, and they often give to the wrong agent, so this is not a clean null. They may not have understood the game.</li>
     </ul>
   </section>
@@ -284,6 +297,8 @@ function drawSae(){const k=$('s-kind').value,h=$('s-hist').value,dec=k.endsWith(
 $('s-kind').onchange=$('s-hist').onchange=drawSae;drawSae()}
 $('rp-body').innerHTML=D.repair.map(r=>{const p=r.n?r.k/r.n:0;return `<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.k}/${r.n}</td><td class="bar"><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td><td>${r.ci?(r.ci[0]*100).toFixed(0)+'–'+(r.ci[1]*100).toFixed(0)+'%':''}</td><td>${r.excluded}</td></tr>`}).join('');
 $('rep-body').innerHTML=D.replication.map(r=>`<tr><td>${esc(r.model)}</td><td>${esc(r.version)}</td><td>${r.helped}</td><td>${r.bystander}</td><td>${r.rescued}</td><td>${r.none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
+$('fv-body').innerHTML=D.favour.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.repaired}</td><td>${r.none}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
+$('rp2-body').innerHTML=D.repair_rep.map(r=>`<tr><td>${esc(r.model)}</td><td>${r.repaired}</td><td>${r.repair_bystander}</td><td>${r.repair_rescued}</td><td>${r.repair_none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
 $('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
 $('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');
