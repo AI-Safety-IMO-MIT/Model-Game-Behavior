@@ -201,6 +201,7 @@ button:disabled{opacity:.5;cursor:default}
       <li>Choosing features on 70% of environments and testing on the other 30%, over 20 splits, gives AUC 0.86 for helped against other histories and 0.84 for gave against kept within helped. The same features return: 11638 and 3337 in all 20 splits for both.</li>
       <li>Over 20 splits, activation probes average about 0.68 with the model's own first reply, and at most 0.57 with the fixed one. These sites were picked earlier, so the numbers lean slightly high.</li>
       <li>The words of the model's own first reply predict the decision at AUC 0.60, below the 0.68 from activations.</li>
+      <li>Before any reasoning, SAE features do not predict the decision in the fixed-first-response version. Held-out AUC is 0.49 to 0.53, the same as shuffled labels, in the final user message and at the last token before the reply. The same holds within helped alone.</li>
     </ul>
     <div class="controls">
       <label for="s-kind">Comparison<select id="s-kind"></select></label>
