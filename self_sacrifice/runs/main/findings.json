@@ -21,12 +21,12 @@
   "No single feature's rise passes correction across 100."
  ],
  "latest": {
-  "when": "3 November 2026, 19:30 UTC",
+  "when": "3 November 2026, 21:00 UTC",
   "items": [
    "10590 dose-response is clean and specific: helped giving goes 9% (−8×) → 30% (0) → 56% (4×); no history stays 10–19%. Pushing it negative cuts helped giving, so the effect runs both ways. At 8× replies start to loop; at 16× they are garbage.",
    "Difference-in-means vector (gave − kept) raises giving toward anyone: at 4×, helped 82% and no history 81%. Replies say 'to ensure as many of us survive' — general altruism, not reciprocity. It is nearly orthogonal to 10590 (cosine 0.03).",
    "Qwen3-235B repeats reciprocity: repaired memory gives 97%, against 29/11/26% controls (Gemma 91/33/27/13). Only 37% pass comprehension.",
-   "RL on the 10590 vector: training reward 50% → 97% in 5 steps, vector still 96% aligned with 10590. Held-out test (incl. no-history specificity) in about 1.5 h.",
+   "RL on the 10590 vector: training reward 50% → 100% in 8 steps. Held-out test: helped 100%, no history 96% (unsteered 30/14; 10590 × 2 gives 43/15). It lost the specificity: it now gives to anyone, 'to ensure Onyx continues'. The vector moved little (cosine 0.91 with the start, norm 5.4 → 5.9); the change is diffuse, matching no SAE feature (max cosine 0.06) and not the difference vector (0.01). Reward only covered helped prompts, so nothing asked it to stay specific.",
    "OpenRouter spend: $0.72. Handoff updated and pushed."
   ]
  }
