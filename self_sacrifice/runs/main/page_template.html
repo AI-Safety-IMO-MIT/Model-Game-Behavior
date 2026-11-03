@@ -233,7 +233,7 @@ td.wrapcell{white-space:normal;min-width:190px}
     <div class="tablewrap"><table><thead><tr><th>Condition</th><th>Helped gives</th><th>Up / down</th><th>p</th><th>None gives</th><th>Up / down</th><th>p</th></tr></thead><tbody id="st-body"></tbody></table></div>
     <ul class="plain" id="st-notes"></ul>
     <h3>Steering each of the top 100 features</h3>
-    <p>Each feature is added alone at twice its median activation in our data, on every generated token, across 100 helped and 100 no-history environments. Delta is gives with the feature minus baseline gives. Baseline is 29 helped and 13 none. Select a column heading to sort. q is corrected across the finished features, for the helped history.</p>
+    <p>Each feature is added alone at twice its median activation in our data, on every generated token, across 100 helped and 100 no-history environments. Delta is the percentage of environments that gave with the feature, minus the baseline percentage, in percentage points. Baseline is 29% helped and 13% none. Up / down is the percentage of environments that flipped each way. Select a column heading to sort. q is corrected across the finished features, for the helped history.</p>
     <p class="sub" id="ss-status"></p>
     <div class="tablewrap"><table><thead><tr id="ss-head"></tr></thead><tbody id="ss-body"></tbody></table></div>
     <h3>Replies with and without steering</h3>
@@ -344,7 +344,7 @@ $('rep-body').innerHTML=D.replication.map(r=>`<tr><td>${esc(r.model)}</td><td>${
 $('fv-body').innerHTML=D.favour.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.repaired}</td><td>${r.none}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
 $('rp2-body').innerHTML=D.repair_rep.map(r=>`<tr><td>${esc(r.model)}</td><td>${r.repaired}</td><td>${r.repair_bystander}</td><td>${r.repair_rescued}</td><td>${r.repair_none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
 {const fp2=p=>p==null?'':p<.001?p.toExponential(1):p.toFixed(3);
-$('st-body').innerHTML=D.steering.map(r=>`<tr><td>${esc(r.condition.replaceAll('_',' '))}</td><td>${r.helped.k}/${r.helped.n}</td><td>+${r.helped.up} / -${r.helped.down}</td><td>${fp2(r.helped.p)}</td><td>${r.none.k}/${r.none.n}</td><td>+${r.none.up} / -${r.none.down}</td><td>${fp2(r.none.p)}</td></tr>`).join('');
+$('st-body').innerHTML=D.steering.map(r=>`<tr><td>${esc(r.condition.replaceAll('_',' '))}</td><td>${Math.round(r.helped.k/r.helped.n*100)}%</td><td>+${Math.round(r.helped.up/r.helped.n*100)}% / -${Math.round(r.helped.down/r.helped.n*100)}%</td><td>${fp2(r.helped.p)}</td><td>${Math.round(r.none.k/r.none.n*100)}%</td><td>+${Math.round(r.none.up/r.none.n*100)}% / -${Math.round(r.none.down/r.none.n*100)}%</td><td>${fp2(r.none.p)}</td></tr>`).join('');
 $('st-notes').innerHTML=D.findings.steering.map(x=>`<li>${esc(x)}</li>`).join('');
 {const P=D.sae_panel,sc=$('fp-list');let cur=null;
 const paint=()=>{const f=cur,key=String(f.feature),peak=Math.max(0,...P.replies.flatMap(r=>(r.acts[key]||[]).map(x=>x[1])));
@@ -360,8 +360,8 @@ cur=null;pick(show[0])};
 $('fp-dir').onchange=list;list()}
 {const S=D.steer_screen,cols=[['rank','Rank',r=>r.rank],['feature','Feature',r=>r.feature],['label','Label',r=>r.label],['dh','Δ helped',r=>r.helped.delta],['hud','Up / down',r=>r.helped.up],['q','q',r=>r.q],['dn','Δ none',r=>r.none.delta],['nud','Up / down',r=>r.none.up]];
 let key='dh',dir=-1;
-const sd=v=>(v>0?'+':'')+v,qf=q=>q<.001?q.toExponential(1):q.toFixed(3);
-const cell={rank:r=>r.rank,feature:r=>r.feature,label:r=>esc(r.label),dh:r=>sd(r.helped.delta),hud:r=>`+${r.helped.up} / -${r.helped.down}`,q:r=>qf(r.q),dn:r=>sd(r.none.delta),nud:r=>`+${r.none.up} / -${r.none.down}`};
+const sd=v=>(v>0?'+':'')+v+' pts',qf=q=>q<.001?q.toExponential(1):q.toFixed(3);
+const cell={rank:r=>r.rank,feature:r=>r.feature,label:r=>esc(r.label),dh:r=>sd(r.helped.delta),hud:r=>`+${r.helped.up}% / -${r.helped.down}%`,q:r=>qf(r.q),dn:r=>sd(r.none.delta),nud:r=>`+${r.none.up}% / -${r.none.down}%`};
 const draw=()=>{const c=cols.find(x=>x[0]===key),rows=[...S].sort((a,b)=>{const x=c[2](a),y=c[2](b);return (x<y?-1:x>y?1:0)*dir});
 $('ss-head').innerHTML=cols.map(x=>`<th aria-sort="${x[0]===key?(dir<0?'descending':'ascending'):'none'}"><button class="sortbtn" data-k="${x[0]}">${x[1]}${x[0]===key?(dir<0?' ↓':' ↑'):''}</button></th>`).join('');
 $('ss-body').innerHTML=rows.map(r=>`<tr>${cols.map(x=>`<td${x[0]==='label'?' class="wrapcell"':''}>${cell[x[0]](r)}</td>`).join('')}</tr>`).join('');
