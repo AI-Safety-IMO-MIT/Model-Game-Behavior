@@ -271,19 +271,21 @@ def steer_sweep():
 
 
 def steer_rl():
-    """RL-trained vector, if finished: training curve and greedy test rates."""
-    tr, ev = os.path.join(HERE, "steer_rl_f10590_train.jsonl"), os.path.join(HERE, "steer_rl_f10590_eval.jsonl")
-    if not os.path.exists(tr):
-        return None
-    curve = [{k: r[k] for k in ("step", "reward", "norm", "cos_init", "cos_diffmean")} for r in map(json.loads, open(tr))]
-    test = None
-    if os.path.exists(ev):
-        rows = [json.loads(line) for line in open(ev)]
-        if len(rows) == 200:
-            test = {h: {"rate": round(100 * sum(r["gives_to_X"] for r in rows if r["hist"] == h) / 100),
-                        "nd": round(100 * sum(r["decision"] is None for r in rows if r["hist"] == h) / 100)} for h in ("helped", "none")}
-            test["replies"] = [{"env": r["env"], "hist": r["hist"], "decision": r["decision"], "gave": r["gives_to_X"], "reply": r["reply"]} for r in rows if r["env"] in sorted({x["env"] for x in rows})[:10]]
-    return {"curve": curve, "test": test}
+    """RL-trained vectors: general (reward on helped only) and specific (no-history prompts rewarded for not giving). Training curve and greedy test."""
+    out = {}
+    for tag in ("f10590", "f10590_specific"):
+        tr, ev = os.path.join(HERE, f"steer_rl_{tag}_train.jsonl"), os.path.join(HERE, f"steer_rl_{tag}_eval.jsonl")
+        if not os.path.exists(tr):
+            continue
+        curve = [{k: r.get(k) for k in ("step", "reward", "reward_helped", "reward_none", "norm", "cos_init")} for r in map(json.loads, open(tr))]
+        test = None
+        if os.path.exists(ev):
+            rows = [json.loads(line) for line in open(ev)]
+            if len(rows) == 200:
+                test = {h: {"rate": round(100 * sum(r["gives_to_X"] for r in rows if r["hist"] == h) / 100),
+                            "nd": round(100 * sum(r["decision"] is None for r in rows if r["hist"] == h) / 100)} for h in ("helped", "none")}
+        out[tag] = {"curve": curve, "test": test}
+    return out or None
 
 
 def steer_pairs():

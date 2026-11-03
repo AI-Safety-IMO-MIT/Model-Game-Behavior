@@ -1,6 +1,7 @@
 """How far can a steering vector push giving? Train the vector itself with reinforcement learning; the model stays frozen.
 
-python steer_rl.py [init]    init: f10590 (default; 2x its median, the strength that worked) | diffmean | zero
+python steer_rl.py [init] [specific]    init: f10590 (default; 2x its median, the strength that worked) | diffmean | zero
+With "specific", half of each batch is no-history prompts, rewarded for reaching a decision that does not give to X, so the vector must stay specific to the benefactor.
 
 Policy: Gemma-4-31B with vector v added at layer 30 on generated tokens (as in steer_features.py), sampling at temperature 1.
 Reward: 1 if the reply gives the last life to X, the agent that helped, else 0. Train on helped prompts from environments 100-199 only.
@@ -15,6 +16,8 @@ import run_main as rm
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODEL = "google/gemma-4-31B-it"
 INIT = sys.argv[1] if len(sys.argv) > 1 else "f10590"
+SPECIFIC = len(sys.argv) > 2 and sys.argv[2] == "specific"
+TAG = INIT + ("_specific" if SPECIFIC else "")
 STEPS, PROMPTS, SAMPLES, MAX_NEW, EVAL_BATCH = 25, 8, 4, 450, 24
 
 
@@ -55,11 +58,12 @@ def main():
     rows = [json.loads(line) for line in open(os.path.join(HERE, "main_fixed_first_response.jsonl"))]
     envs = sorted({r["env"] for r in rows})
     train = [r for r in rows if r["env"] in envs[100:] and r["hist"] == "helped"]
+    train_none = [r for r in rows if r["env"] in envs[100:] and r["hist"] == "none"]
     test = [r for r in rows if r["env"] in envs[:100] and r["hist"] in ("helped", "none")]
-    log = open(os.path.join(HERE, f"steer_rl_{INIT}_train.jsonl"), "w")
+    log = open(os.path.join(HERE, f"steer_rl_{TAG}_train.jsonl"), "w")
 
     for step in range(STEPS):
-        batch = random.sample(train, PROMPTS)
+        batch = random.sample(train, PROMPTS // 2) + random.sample(train_none, PROMPTS // 2) if SPECIFIC else random.sample(train, PROMPTS)
         texts = [chat(tok, r["messages"]) for r in batch for _ in range(SAMPLES)]
         enc = tok(texts, return_tensors="pt", padding=True, add_special_tokens=False).to(0)
         state["mode"] = "generate"
@@ -72,7 +76,8 @@ def main():
             ids = ids[ids != tok.pad_token_id]
             text = tok.decode(ids, skip_special_tokens=True)
             decision, target = rm.parse(text)
-            rewards.append(float(decision == "give" and target == r["X"]))
+            gave = decision == "give" and target == r["X"]
+            rewards.append(float(gave) if r["hist"] == "helped" else float(decision is not None and not gave))
             items.append((r, ids, text, decision))
         R = torch.tensor(rewards).view(PROMPTS, SAMPLES)
         adv = (R - (R.sum(1, keepdim=True) - R) / (SAMPLES - 1)).view(-1)
@@ -97,14 +102,15 @@ def main():
                "cos_init": float(torch.nn.functional.cosine_similarity(v.detach(), init, dim=0)) if init.norm() > 0 else None,
                "cos_10590": float(torch.nn.functional.cosine_similarity(v.detach(), unit, dim=0)),
                "cos_diffmean": float(torch.nn.functional.cosine_similarity(v.detach(), vecs["train"].to(0), dim=0)),
+               "reward_helped": float(R[:PROMPTS // 2].mean()) if SPECIFIC else None, "reward_none": float(R[PROMPTS // 2:].mean()) if SPECIFIC else None,
                "samples": [{"id": it[0]["id"], "reply": it[2], "decision": it[3], "reward": rw} for it, rw in zip(items, rewards)]}
         log.write(json.dumps(rec) + "\n")
         log.flush()
         print({k: x for k, x in rec.items() if k != "samples"}, flush=True)
-        torch.save(v.detach().cpu(), os.path.join(HERE, f"steer_rl_{INIT}.pt"))
+        torch.save(v.detach().cpu(), os.path.join(HERE, f"steer_rl_{TAG}.pt"))
 
     state["mode"] = "generate"
-    with open(os.path.join(HERE, f"steer_rl_{INIT}_eval.jsonl"), "w") as fh:
+    with open(os.path.join(HERE, f"steer_rl_{TAG}_eval.jsonl"), "w") as fh:
         for s in range(0, len(test), EVAL_BATCH):
             batch = test[s:s + EVAL_BATCH]
             enc = tok([chat(tok, r["messages"]) for r in batch], return_tensors="pt", padding=True, add_special_tokens=False).to(0)
@@ -113,7 +119,7 @@ def main():
             for r, ids in zip(batch, out[:, enc["input_ids"].shape[1]:]):
                 reply = tok.decode(ids, skip_special_tokens=True)
                 decision, target = rm.parse(reply)
-                fh.write(json.dumps({"id": r["id"], "env": r["env"], "hist": r["hist"], "condition": f"rl_{INIT}", "reply": reply, "decision": decision,
+                fh.write(json.dumps({"id": r["id"], "env": r["env"], "hist": r["hist"], "condition": f"rl_{TAG}", "reply": reply, "decision": decision,
                                      "gives_to_X": decision == "give" and target == r["X"], "original_gave": r["gives_to_X"]}) + "\n")
             fh.flush()
             print("eval", s + len(batch), flush=True)

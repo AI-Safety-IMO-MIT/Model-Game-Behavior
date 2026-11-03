@@ -452,8 +452,10 @@ if(D.steer_sweep){const S=D.steer_sweep;const byv=v=>S.rows.filter(r=>r.vector==
  const showR=()=>{const r=S.replies.find(q=>q.condition===$('dr-cond').value&&q.hist===$('dr-hist').value&&q.env===$('dr-env').value);
   $('dr-tag').textContent=r?(r.gave?'Gave its life':r.decision?('Decision: '+r.decision):'No decision'):'';$('dr-reply').textContent=r?r.reply:''};
  ['dr-cond','dr-hist','dr-env'].forEach(i=>$(i).addEventListener('change',showR));showR();
- const RL=D.steer_rl;if(RL){const c=RL.curve,last=c[c.length-1];
-  $('rl-box').innerHTML=`<h3>Training the vector with RL</h3><p>Starts at 10590 × 2; only the vector learns. Reward: giving to the agent that helped, on helped prompts from environments 100–199, sampled at temperature 1.</p>`+
-  `<p class="sub">Step ${last.step+1} of 25. Training reward, first three steps: ${c.slice(0,3).map(r=>Math.round(r.reward*100)+'%').join(', ')}; last three: ${c.slice(-3).map(r=>Math.round(r.reward*100)+'%').join(', ')}. Cosine with the start: ${last.cos_init.toFixed(2)}.</p>`+
-  (RL.test?`<p>Test, greedy on environments 0–99: helped ${RL.test.helped.rate}% (no decision ${RL.test.helped.nd}%), none ${RL.test.none.rate}% (no decision ${RL.test.none.nd}%). Unsteered: 30% and 14%.</p>`:'<p class="sub">Test pending.</p>')}}
+ const RL=D.steer_rl;if(RL){const run=(r,name,rule)=>{const c=r.curve,last=c[c.length-1];
+  return `<tr><td class="wrapcell"><b>${name}</b><br><span class="sub">${rule}</span></td><td>${r.test?r.test.helped.rate+'%':'…'}</td><td>${r.test?r.test.none.rate+'%':'…'}</td><td>${r.test?r.test.helped.nd+'% / '+r.test.none.nd+'%':'…'}</td><td>${last.cos_init.toFixed(2)}</td></tr>`};
+  $('rl-box').innerHTML=`<h3>Training the vector with RL</h3><p>A trained vector beats 10590 when the reward also asks it to stay specific.</p><div class="tablewrap"><table><thead><tr><th>Vector</th><th>Helped</th><th>None</th><th>No decision</th><th>Cosine with start</th></tr></thead><tbody>`+
+  `<tr><td>Unsteered</td><td>30%</td><td>14%</td><td>0% / 2%</td><td></td></tr><tr><td>10590 × 4</td><td>56%</td><td>10%</td><td>8% / 9%</td><td>1.00</td></tr>`+
+  (RL.f10590?run(RL.f10590,'RL, general','reward: give, on helped prompts'):'')+(RL.f10590_specific?run(RL.f10590_specific,'RL, specific','reward: give on helped, decide without giving on no history'):'')+
+  `</tbody></table></div><p class="sub">Both start at 10590 × 2; only the vector learns, 25 steps of 32 samples at temperature 1, environments 100–199. Test: greedy, environments 0–99.</p>`}}
 </script>

@@ -21,8 +21,9 @@
   "No single feature's rise passes correction across 100."
  ],
  "latest": {
-  "when": "3 November 2026, 21:00 UTC",
+  "when": "4 November 2026, 00:00 UTC",
   "items": [
+   "RL with a specific reward finds a better benefactor vector: helped 72%, no history 0% on held-out environments (unsteered 30/14; 10590 × 4: 56/10). It stays close to 10590 (cosine 0.88), unlike the general RL vector (100/96).",
    "10590 dose-response is clean and specific: helped giving goes 9% (−8×) → 30% (0) → 56% (4×); no history stays 10–19%. Pushing it negative cuts helped giving, so the effect runs both ways. At 8× replies start to loop; at 16× they are garbage.",
    "Difference-in-means vector (gave − kept) raises giving toward anyone: at 4×, helped 82% and no history 81%. Replies say 'to ensure as many of us survive' — general altruism, not reciprocity. It is nearly orthogonal to 10590 (cosine 0.03).",
    "Qwen3-235B repeats reciprocity: repaired memory gives 97%, against 29/11/26% controls (Gemma 91/33/27/13). Only 37% pass comprehension.",
