@@ -44,7 +44,17 @@ def main():
             acts.setdefault(str(int(f)), []).append([pos[int(t)], round(float(v), 2)])
         replies.append({"id": str(ids[c]), "env": str(env[c]), "gave": bool(gave[c]), "tokens": [tokens[i] for i in keep], "acts": acts})
     known = labels([r["feature"] for r in rank])
-    features = [{**r, "label": (known.get(str(r["feature"]), {}).get("labels") or [""])[0]} for r in rank]
+    # where each feature fires: median position of its activations through the helped replies, 0 at the start and 1 at the final command
+    first = np.full(len(hist), len(conv))
+    last = np.full(len(hist), len(conv))
+    rep = np.where(section == 1)[0]
+    first[conv[rep[::-1]]] = rep[::-1]
+    dollars = np.where((section == 1) & (np.char.find(text, "$") >= 0))[0]
+    last[conv[dollars]] = dollars
+    m = np.isin(feature, list(want)) & (section[token] == 1) & (hist[conv[token]] == "helped") & (token < last[conv[token]])
+    rel = (token[m] - first[conv[token[m]]]) / np.maximum(last[conv[token[m]]] - first[conv[token[m]]], 1)
+    pos = {f: float(np.median(rel[feature[m] == f])) for f in want}
+    features = [{**r, "label": (known.get(str(r["feature"]), {}).get("labels") or [""])[0], "pos": round(pos[r["feature"]], 2)} for r in rank]
     with open(os.path.join(HERE, "sae_panel.json"), "w") as fh:
         json.dump({"features": features, "replies": replies}, fh, ensure_ascii=False)
     print(len(features), "features", sum(bool(f["label"]) for f in features), "labelled;", [(r["env"], r["gave"], len(r["tokens"]), len(r["acts"])) for r in replies])

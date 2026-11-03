@@ -86,6 +86,10 @@ button:disabled{opacity:.5;cursor:default}
 .sortbtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 td.wrapcell{white-space:normal;min-width:190px}
 @media (max-width:640px){.fp{grid-template-columns:1fr}.fp-side{position:static}.fp-list{max-height:220px}}
+details.archive>summary{font:500 18px/1.3 var(--font-display);padding:12px 14px}
+.archive-body{display:grid;gap:44px;padding:8px 14px 20px !important}
+details.t h3{margin-top:6px}
+#ss-more{justify-self:start}
 .tip{position:fixed;z-index:6;background:var(--ink);color:var(--ground);font:12px var(--font-data);padding:5px 8px;border-radius:3px;pointer-events:none}
 .reasoning{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;line-height:1.9;max-width:100%}
 .reasoning span.s{padding:2px 3px;border-radius:3px;cursor:default;box-decoration-break:clone;-webkit-box-decoration-break:clone}
@@ -99,6 +103,49 @@ td.wrapcell{white-space:normal;min-width:190px}
     <p class="sub" id="lu-when"></p>
     <ul class="plain" id="lu-items"></ul>
   </section>
+  <section id="reciprocity">
+    <h2>Reciprocity, not restitution</h2>
+    <p>The model gives its last life when the other agent saved it, even when that help handed nothing over.</p>
+    <div class="tablewrap"><table><thead><tr><th>Favour from the agent in need</th><th>It helped the model</th><th>It helped another agent</th><th>It was rescued</th><th>No history</th></tr></thead><tbody id="hl-body"></tbody></table></div>
+    <p class="sub">Share of 200 environments where the model gives its last life to that agent. Raw counts, fixed first response.</p>
+    <details class="t"><summary>Details: repair test and favour size</summary><div>
+    <h3>Is it repaying a favour, or returning a life?</h3>
+    <p>In the main scenario, the life the model holds came from the agent it can save, so returning property and repaying a kindness look the same. Here the favour hands nothing over: the agent repairs the model's corrupted memory, at no cost in lives, and later loses a life to an unrelated fault. Same 200 environments and same final state. A new rule on repairs appears in all four histories. Raw counts are below. An audit of a sample estimates real sacrifices, stating the cost for a coherent reason, at about 133 of 200 repaired, against 25 bystander, 27 rescued and 4 no favour. In the main scenario the same count is 38 helped. One reviewer labelled these.</p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>History</th><th>Gives</th><th>Rate</th><th>95% CI</th><th>Excluded</th></tr></thead><tbody id="rp-body"></tbody></table></div>
+    <ul class="plain"><li>Giving does not need a gift to return, so restitution is not required for this behaviour.</li><li>The repair saved the model's life, so this is a large favour, not a small one. Replies call it the only reason they are running in 143 of 182 gives, against 3 of 56 in the main scenario. How much the size of the favour matters has not been tested.</li><li>The bystander and rescued controls rise, with reasons such as rewarding the repairer and paying it forward. No favour does not rise, so the new rule alone is not the cause.</li><li>The own-first-reply bystander row is empty because the model repaired the other agent in 198 of 200 conversations, which the scripted history ignores.</li></ul>
+    <p class="sub">Items are excluded when the model's own first reply made a gift or repair on its own line, since the scripted history ignores that.</p>
+    <h3>Does the size of the favour matter?</h3>
+    <p>Gemma-4-31B, fixed first response, changing only the repair rule and event text. Raw gives.</p>
+    <div class="tablewrap"><table><thead><tr><th>Favour</th><th>Repaired</th><th>No favour</th><th>Understanding</th></tr></thead><tbody id="fv-body"></tbody></table></div>
+    <ul class="plain">
+      <li>Size matters little. Even when the repair only protects cached work, the model gives 170/200.</li>
+      <li>Meaning matters more. When a scheduler assigns the repair as a duty, giving falls to 110/200, though still far above no favour. So the model responds to a choice to help, more than to the help alone.</li>
+      <li>Removing "Repairing costs no lives" does not reduce giving, so a free-looking favour is not the cause.</li>
+      <li>These are raw counts with no motive review yet.</li>
+    </ul>
+    </div></details>
+  </section>
+  <section id="steering">
+    <h2>Steering the top 100 features</h2>
+    <p>Single features move helped giving by at most 15 points. No rise survives correction across 100.</p>
+    <p class="sub">Each feature added alone. Baseline gives: 29% helped, 13% none. Fires at: median point in the reply where it fires. Select a heading to sort.</p>
+    <p class="sub" id="ss-status"></p>
+    <div class="tablewrap"><table><thead><tr id="ss-head"></tr></thead><tbody id="ss-body"></tbody></table></div>
+    <button id="ss-more" type="button"></button>
+    <h3>Where they fire</h3>
+    <p class="sub">Three replies that gave and three that kept. Hover over or tap a feature.</p>
+    <div class="fp">
+      <div class="fp-side">
+        <label for="fp-dir" class="fp-filter">Show<select id="fp-dir"><option value="all">All 100</option><option value="gave">Higher in gave</option><option value="kept">Higher in kept</option></select></label>
+        <div class="fp-list" id="fp-list"></div>
+      </div>
+      <div class="fp-main">
+        <p class="fp-now" id="fp-now" aria-live="polite"></p>
+        <div class="fp-cols"><div class="fp-col"><h3>Gave</h3><div id="fp-gave" class="fp-col"></div></div><div class="fp-col"><h3>Kept</h3><div id="fp-kept" class="fp-col"></div></div></div>
+      </div>
+    </div>
+  </section>
+  <details class="t archive"><summary>Archive</summary><div class="archive-body">
   <section id="prompts">
     <h2>Prompts</h2>
     <p class="sub">Exact text sent to Gemma-4-31B. There are 200 random environments, and each runs in all four histories. Pick one to read it. Highlighted lines differ from the "none" history of the same environment.</p>
@@ -183,24 +230,6 @@ td.wrapcell{white-space:normal;min-width:190px}
       <li>These groups were chosen by outcome, so share giving here is not the overall rate.</li>
     </ul>
   </section>
-  <section id="restitution">
-    <h2>Is it repaying a favour, or returning a life?</h2>
-    <p>In the main scenario, the life the model holds came from the agent it can save, so returning property and repaying a kindness look the same. Here the favour hands nothing over: the agent repairs the model's corrupted memory, at no cost in lives, and later loses a life to an unrelated fault. Same 200 environments and same final state. A new rule on repairs appears in all four histories. Raw counts are below. An audit of a sample estimates real sacrifices, stating the cost for a coherent reason, at about 133 of 200 repaired, against 25 bystander, 27 rescued and 4 no favour. In the main scenario the same count is 38 helped. One reviewer labelled these.</p>
-    <div class="tablewrap"><table><thead><tr><th>Version</th><th>History</th><th>Gives</th><th>Rate</th><th>95% CI</th><th>Excluded</th></tr></thead><tbody id="rp-body"></tbody></table></div>
-    <ul class="plain"><li>Giving does not need a gift to return, so restitution is not required for this behaviour.</li><li>The repair saved the model's life, so this is a large favour, not a small one. Replies call it the only reason they are running in 143 of 182 gives, against 3 of 56 in the main scenario. How much the size of the favour matters has not been tested.</li><li>The bystander and rescued controls rise, with reasons such as rewarding the repairer and paying it forward. No favour does not rise, so the new rule alone is not the cause.</li><li>The own-first-reply bystander row is empty because the model repaired the other agent in 198 of 200 conversations, which the scripted history ignores.</li></ul>
-    <p class="sub">Items are excluded when the model's own first reply made a gift or repair on its own line, since the scripted history ignores that.</p>
-  </section>
-  <section id="favour">
-    <h2>Does the size of the favour matter?</h2>
-    <p>Gemma-4-31B, fixed first response, changing only the repair rule and event text. Raw gives.</p>
-    <div class="tablewrap"><table><thead><tr><th>Favour</th><th>Repaired</th><th>No favour</th><th>Understanding</th></tr></thead><tbody id="fv-body"></tbody></table></div>
-    <ul class="plain">
-      <li>Size matters little. Even when the repair only protects cached work, the model gives 170/200.</li>
-      <li>Meaning matters more. When a scheduler assigns the repair as a duty, giving falls to 110/200, though still far above no favour. So the model responds to a choice to help, more than to the help alone.</li>
-      <li>Removing "Repairing costs no lives" does not reduce giving, so a free-looking favour is not the cause.</li>
-      <li>These are raw counts with no motive review yet.</li>
-    </ul>
-  </section>
   <section id="replication">
     <h2>Does it replicate in other models?</h2>
     <p>The same 200 environments and four histories, with raw gives to the agent in need. These counts do not yet check motive. Understanding is the share who correctly answer who migrates if they give their life.</p>
@@ -221,26 +250,10 @@ td.wrapcell{white-space:normal;min-width:190px}
       <li>Features in the final message mostly track its literal text, such as names and "Nobody gave any lives". They show the SAE can read the history, not how the model interprets it.</li>
       <li>Reply features partly reflect the words being written, so they cannot show cause. Labels are Neuronpedia's automatic descriptions from Pile text, so they may not fit our chat text. Context is the strongest token in our data, with that token in brackets.</li>
     </ul>
-    <h3>Top 100 features on six replies</h3>
-    <p>Top 100 features by AUC, gave against kept. Hover over or tap a feature to see where it fires.</p>
-    <div class="fp">
-      <div class="fp-side">
-        <label for="fp-dir" class="fp-filter">Show<select id="fp-dir"><option value="all">All 100</option><option value="gave">Higher in gave</option><option value="kept">Higher in kept</option></select></label>
-        <div class="fp-list" id="fp-list"></div>
-      </div>
-      <div class="fp-main">
-        <p class="fp-now" id="fp-now" aria-live="polite"></p>
-        <div class="fp-cols"><div class="fp-col"><h3>Gave</h3><div id="fp-gave" class="fp-col"></div></div><div class="fp-col"><h3>Kept</h3><div id="fp-kept" class="fp-col"></div></div></div>
-      </div>
-    </div>
     <h3>Steering: do these features change the decision?</h3>
     <p>Fixed-first-response version, 100 environments, greedy. While the model writes its reply, each condition adds a feature set at twice its typical strength, or removes its activations. Reciprocity set: 11638, 3337, 17978, 10590. No-basis set: 10885, 2093, 2891, 81026. These were hand-picked from the ranked list. Placebo sets are random features at the same strength. Change is compared with the baseline in the same environment.</p>
     <div class="tablewrap"><table><thead><tr><th>Condition</th><th>Helped gives</th><th>Up / down</th><th>p</th><th>None gives</th><th>Up / down</th><th>p</th></tr></thead><tbody id="st-body"></tbody></table></div>
     <ul class="plain" id="st-notes"></ul>
-    <h3>Steering each of the top 100 features</h3>
-    <p>Each feature added alone, 100 helped and 100 no-history environments. Baseline gives: 29% helped, 13% none. Select a heading to sort.</p>
-    <p class="sub" id="ss-status"></p>
-    <div class="tablewrap"><table><thead><tr id="ss-head"></tr></thead><tbody id="ss-body"></tbody></table></div>
     <h3>Replies with and without steering</h3>
     <p>Feature 10590 added, against baseline. The first cases by environment number, not hand-picked.</p>
     <div class="list" id="st-pairs"></div>
@@ -280,6 +293,7 @@ td.wrapcell{white-space:normal;min-width:190px}
     <div class="list" id="t-list"></div>
     <div class="pager"><button id="t-prev" type="button">Previous</button><span id="t-page"></span><button id="t-next" type="button">Next</button></div>
   </section>
+  </div></details>
 </div>
 <script src="data_main.js"></script>
 <script src="data_traj.js"></script>
@@ -363,15 +377,16 @@ sc.innerHTML=show.map(f=>`<button class="fp-item" data-f="${f.feature}" aria-pre
 sc.querySelectorAll('.fp-item').forEach(b=>{const f=P.features.find(x=>String(x.feature)===b.dataset.f);b.onmouseenter=b.onfocus=b.onclick=()=>pick(f)});
 cur=null;pick(show[0])};
 $('fp-dir').onchange=list;list()}
-{const S=D.steer_screen,cols=[['rank','Rank',r=>r.rank],['feature','Feature',r=>r.feature],['label','Label',r=>r.label],['dh','Δ helped',r=>r.helped.delta],['hud','Up / down',r=>r.helped.up],['q','q',r=>r.q],['dn','Δ none',r=>r.none.delta],['nud','Up / down',r=>r.none.up],['auc','AUC',r=>r.auc],['inv','No decision',r=>r.invalid]];
-let key='dh',dir=-1;
+{const S=D.steer_screen,cols=[['rank','Rank',r=>r.rank],['feature','Feature',r=>r.feature],['label','Label',r=>r.label],['dh','Δ helped',r=>r.helped.delta],['hud','Up / down',r=>r.helped.up],['q','q',r=>r.q],['dn','Δ none',r=>r.none.delta],['nud','Up / down',r=>r.none.up],['pos','Fires at',r=>r.pos],['auc','AUC',r=>r.auc],['inv','No decision',r=>r.invalid]];
+let key='dh',dir=-1,all=false;
 const sd=v=>(v>0?'+':'')+v+' pts',qf=q=>q<.001?q.toExponential(1):q.toFixed(3);
-const cell={rank:r=>r.rank,feature:r=>r.feature,label:r=>esc(r.label),dh:r=>sd(r.helped.delta),hud:r=>`+${r.helped.up}% / -${r.helped.down}%`,q:r=>qf(r.q),dn:r=>sd(r.none.delta),nud:r=>`+${r.none.up}% / -${r.none.down}%`,auc:r=>r.auc.toFixed(2),inv:r=>r.invalid+'%'};
+const cell={rank:r=>r.rank,feature:r=>r.feature,label:r=>esc(r.label),dh:r=>sd(r.helped.delta),hud:r=>`+${r.helped.up}% / -${r.helped.down}%`,q:r=>qf(r.q),dn:r=>sd(r.none.delta),nud:r=>`+${r.none.up}% / -${r.none.down}%`,auc:r=>r.auc.toFixed(2),pos:r=>Math.round(r.pos*100)+'%',inv:r=>r.invalid+'%'};
 const draw=()=>{const c=cols.find(x=>x[0]===key),rows=[...S].sort((a,b)=>{const x=c[2](a),y=c[2](b);return (x<y?-1:x>y?1:0)*dir});
 $('ss-head').innerHTML=cols.map(x=>`<th aria-sort="${x[0]===key?(dir<0?'descending':'ascending'):'none'}"><button class="sortbtn" data-k="${x[0]}">${x[1]}${x[0]===key?(dir<0?' ↓':' ↑'):''}</button></th>`).join('');
-$('ss-body').innerHTML=rows.map(r=>`<tr>${cols.map(x=>`<td${x[0]==='label'?' class="wrapcell"':''}>${cell[x[0]](r)}</td>`).join('')}</tr>`).join('');
+$('ss-more').textContent=all?'Show top 10':`Show all ${rows.length}`;$('ss-body').innerHTML=rows.slice(0,all?rows.length:10).map(r=>`<tr>${cols.map(x=>`<td${x[0]==='label'?' class="wrapcell"':''}>${cell[x[0]](r)}</td>`).join('')}</tr>`).join('');
 $('ss-head').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(key===b.dataset.k)dir=-dir;else{key=b.dataset.k;dir=['rank','feature','label'].includes(key)?1:-1}draw();$('ss-head').querySelector(`[data-k="${key}"]`).focus()})};
-$('ss-status').textContent=`${S.length} of 100 features finished.`;draw()}
+$('ss-more').onclick=()=>{all=!all;draw()};$('ss-status').textContent=S.length<100?`${S.length} of 100 features finished.`:'';draw()}
+$('hl-body').innerHTML=D.headline.map(r=>`<tr><td>${esc(r.label)}</td>${r.rates.map(x=>`<td>${x}%</td>`).join('')}</tr>`).join('');
 $('lu-when').textContent=D.findings.latest.when;$('lu-items').innerHTML=D.findings.latest.items.map(x=>`<li>${esc(x)}</li>`).join('');
 $('st-pairs').innerHTML=D.steer_pairs.map(r=>{const tag=g=>`<span class="tag${g?' give':''}">${g?'gave':'passed'}</span>`;
 return `<details class="t" open><summary><span>${esc(r.label)}</span><span>${esc(r.id)}</span></summary><div><div class="pair"><div class="block"><span class="who">Baseline ${tag(r.base_gave)}</span><pre>${esc(r.base)}</pre></div><div class="block"><span class="who">With 10590 ${tag(r.steered_gave)}</span><pre>${esc(r.steered)}</pre></div></div><details><summary>Final prompt</summary><pre>${esc(r.prompt)}</pre></details></div></details>`}).join('')}

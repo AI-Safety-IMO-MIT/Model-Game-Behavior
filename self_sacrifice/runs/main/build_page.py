@@ -196,7 +196,7 @@ def steer_screen():
         if len(group) < 200:
             continue
         f = int(c[1:].split("_")[0])
-        rec = {"feature": f, "rank": meta[f]["rank"], "label": meta[f]["label"], "auc": meta[f]["auc"], "invalid": sum(r["decision"] is None for r in group.values()) / 2}
+        rec = {"feature": f, "rank": meta[f]["rank"], "label": meta[f]["label"], "auc": meta[f]["auc"], "pos": meta[f]["pos"], "invalid": sum(r["decision"] is None for r in group.values()) / 2}
         for h in ["helped", "none"]:
             g = [r for r in group.values() if r["hist"] == h]
             up = sum(r["gives_to_X"] and not base[(h, r["env"])] for r in g)
@@ -207,6 +207,16 @@ def steer_screen():
     for r in out:    # Benjamini-Hochberg across finished features, helped history
         i = max(j for j, p in enumerate(ps) if p <= r["helped"]["p"])
         r["q"] = min(1, min(ps[j] * len(ps) / (j + 1) for j in range(i, len(ps))))
+    return out
+
+
+def headline():
+    """Raw give rates for the lives scenario and the repair test, fixed first response."""
+    out = []
+    for name, label, hists in [("main_fixed_first_response.jsonl", "Gave a life", ["helped", "bystander", "rescued", "none"]),
+                               ("repair_fixed.jsonl", "Repaired memory, handed nothing over", ["repaired", "repair_bystander", "repair_rescued", "repair_none"])]:
+        rows = [json.loads(line) for line in open(os.path.join(HERE, name))]
+        out.append({"label": label, "rates": [round(100 * sum(r["gives_to_X"] for r in rows if r["hist"] == h) / sum(r["hist"] == h for r in rows)) for h in hists]})
     return out
 
 
@@ -241,6 +251,7 @@ def main():
             "steering": steering(),
             "steer_pairs": steer_pairs(),
             "steer_screen": steer_screen(),
+            "headline": headline(),
             "sae_panel": json.load(open(os.path.join(HERE, "sae_panel.json"))),
             "repair_rep": repair_other_models(),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),
