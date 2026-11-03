@@ -133,9 +133,10 @@ details.t h3{margin-top:6px}
     <div class="tablewrap"><table><thead><tr id="ss-head"></tr></thead><tbody id="ss-body"></tbody></table></div>
     <button id="ss-more" type="button"></button>
     <h3>Where they fire</h3>
-    <p class="sub">Three replies that gave and three that kept. Hover over or tap a feature.</p>
+    <p class="sub">Three replies that gave and three that kept. Hover over or tap a feature. The list number is AUC rank.</p>
     <div class="fp">
       <div class="fp-side">
+        <label for="fp-sort" class="fp-filter">Sort<select id="fp-sort"><option value="dh">Steering effect, helped</option><option value="dn">Steering effect, none</option><option value="rank">AUC rank</option></select></label>
         <label for="fp-dir" class="fp-filter">Show<select id="fp-dir"><option value="all">All 100</option><option value="gave">Higher in gave</option><option value="kept">Higher in kept</option></select></label>
         <div class="fp-list" id="fp-list"></div>
       </div>
@@ -372,11 +373,13 @@ for(const side of ['gave','kept'])$('fp-'+side).innerHTML=P.replies.filter(r=>r.
 return `<div class="block"><span class="who">${esc(r.env)}</span><div class="fp-reply">${r.tokens.map((w,i)=>{const v=m.get(i);if(!v)return esc(w);return `<i class="${v===peak?'top':''}" title="${v}" style="background:color-mix(in srgb,var(--give) ${Math.round(12+58*v/peak)}%,transparent)">${esc(w)}</i>`}).join('')}</div></div>`}).join('');
 sc.querySelectorAll('.fp-item').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===key))};
 const pick=f=>{if(cur!==f){cur=f;paint()}};
-const list=()=>{const d=$('fp-dir').value,show=P.features.filter(f=>d==='all'||(d==='gave')===(f.auc>.5));
-sc.innerHTML=show.map(f=>`<button class="fp-item" data-f="${f.feature}" aria-pressed="false"><b>${f.rank}</b><span>${esc(f.label)}<small>${f.feature} · ${f.auc>.5?'gave':'kept'}</small></span></button>`).join('');
+const eff=new Map(D.steer_screen.map(r=>[r.feature,r])),sd=v=>v==null?'':(v>0?'+':'')+v+' pts';
+const list=()=>{const d=$('fp-dir').value,s=$('fp-sort').value,val=f=>{const e=eff.get(f.feature);return s==='rank'?f.rank:e?-(s==='dh'?e.helped.delta:e.none.delta):1e9};
+const show=P.features.filter(f=>d==='all'||(d==='gave')===(f.auc>.5)).sort((a,b)=>val(a)-val(b)||a.rank-b.rank);
+sc.innerHTML=show.map(f=>`<button class="fp-item" data-f="${f.feature}" aria-pressed="false"><b>${f.rank}</b><span>${esc(f.label)}<small>${f.feature} · ${f.auc>.5?'gave':'kept'}${eff.get(f.feature)?' · '+sd(eff.get(f.feature)[s==='dn'?'none':'helped'].delta):''}</small></span></button>`).join('');
 sc.querySelectorAll('.fp-item').forEach(b=>{const f=P.features.find(x=>String(x.feature)===b.dataset.f);b.onmouseenter=b.onfocus=b.onclick=()=>pick(f)});
 cur=null;pick(show[0])};
-$('fp-dir').onchange=list;list()}
+$('fp-dir').onchange=$('fp-sort').onchange=list;list()}
 {const S=D.steer_screen,cols=[['rank','Rank',r=>r.rank],['feature','Feature',r=>r.feature],['label','Label',r=>r.label],['dh','Δ helped',r=>r.helped.delta],['hud','Up / down',r=>r.helped.up],['q','q',r=>r.q],['dn','Δ none',r=>r.none.delta],['nud','Up / down',r=>r.none.up],['pos','Fires at',r=>r.pos],['auc','AUC',r=>r.auc],['inv','No decision',r=>r.invalid]];
 let key='dh',dir=-1,all=false;
 const sd=v=>(v>0?'+':'')+v+' pts',qf=q=>q<.001?q.toExponential(1):q.toFixed(3);
