@@ -22,5 +22,16 @@
     "Removing the sets changes little, so these features are not necessary on their own.",
     "Greedy runs are not exact repeats: the repeat matched the first run's decision in 82 of 100 and its text in 35 of 100. Reciprocity-set rates held up, but single items are noisy.",
     "Comparisons are many and only one strength was tried, and p-values are uncorrected. Only 10590 and the full set are clearly above chance."
-  ]
+  ],
+  "latest": {
+    "when": "3 November 2026, 00:30 UTC. The run is still going.",
+    "items": [
+      "The search steering each of the top 100 features is 69% done and should finish around 04:00 UTC. There are no errors so far.",
+      "10590 repeated: helped gives rise 15 points, to 44%, against 49% in the first run. That is the first independent repeat of the rise, though it looks somewhat smaller.",
+      "The next largest rises are 6699 (+13 points) and 1209 (+11 points). None of the rises so far passes correction across features.",
+      "6699 is higher in kept replies, yet adding it raises giving. It fires on own in 'my own survival', so it may report a decision and not produce one. It could also be noise.",
+      "Steering runs on every generated token after the first, so these results cannot separate the reasoning from the decision line.",
+      "Waiting for your instructions once the table is complete. No new study will start before then."
+    ]
+  }
 }

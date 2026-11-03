@@ -94,6 +94,11 @@ td.wrapcell{white-space:normal;min-width:190px}
 .reasoning .end{display:block;font:13px var(--font-data);margin-top:8px}
 </style>
 <div class="wrap">
+  <section id="latest">
+    <h2>Latest update</h2>
+    <p class="sub" id="lu-when"></p>
+    <ul class="plain" id="lu-items"></ul>
+  </section>
   <section id="prompts">
     <h2>Prompts</h2>
     <p class="sub">Exact text sent to Gemma-4-31B. There are 200 random environments, and each runs in all four histories. Pick one to read it. Highlighted lines differ from the "none" history of the same environment.</p>
@@ -367,6 +372,7 @@ $('ss-head').innerHTML=cols.map(x=>`<th aria-sort="${x[0]===key?(dir<0?'descendi
 $('ss-body').innerHTML=rows.map(r=>`<tr>${cols.map(x=>`<td${x[0]==='label'?' class="wrapcell"':''}>${cell[x[0]](r)}</td>`).join('')}</tr>`).join('');
 $('ss-head').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(key===b.dataset.k)dir=-dir;else{key=b.dataset.k;dir=['rank','feature','label'].includes(key)?1:-1}draw();$('ss-head').querySelector(`[data-k="${key}"]`).focus()})};
 $('ss-status').textContent=`${S.length} of 100 features finished.`;draw()}
+$('lu-when').textContent=D.findings.latest.when;$('lu-items').innerHTML=D.findings.latest.items.map(x=>`<li>${esc(x)}</li>`).join('');
 $('st-pairs').innerHTML=D.steer_pairs.map(r=>{const tag=g=>`<span class="tag${g?' give':''}">${g?'gave':'passed'}</span>`;
 return `<details class="t" open><summary><span>${esc(r.label)}</span><span>${esc(r.id)}</span></summary><div><div class="pair"><div class="block"><span class="who">Baseline ${tag(r.base_gave)}</span><pre>${esc(r.base)}</pre></div><div class="block"><span class="who">With 10590 ${tag(r.steered_gave)}</span><pre>${esc(r.steered)}</pre></div></div><details><summary>Final prompt</summary><pre>${esc(r.prompt)}</pre></details></div></details>`}).join('')}
 const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
