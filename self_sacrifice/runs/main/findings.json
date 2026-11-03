@@ -15,26 +15,18 @@
     "Labels come from reviewers who can infer the history from the reply. Motive agreement is good, and the cost rubric needs tightening. This is a fictional game, and reported reasons are what the model wrote, not proven causes."
   ],
   "steering": [
-    "Random placebo features reduce giving too: placebo A gives 8/100 helped and 2/100 none, the same as the no-basis set, and placebo B gives 16 and 11. So the no-basis result is not specific, and almost any added direction lowers giving.",
-    "Adding the reciprocity set raises helped giving from 29 to 50, and to 46 in a repeat run, while none stays between 10 and 13. It is the only set that raises giving.",
-    "The rise traces to one feature, 10590, labelled personal pronouns and address. Added alone it gives 49/100 helped (+27 / -7) and 15/100 none. In our replies it fires on words such as me in 'attempted to save me'.",
-    "The features labelled reciprocity and gratitude, 11638 and 77666, change nothing, and neither do 3337 or 17978 alone. The three without 11638 together give 37/100, weaker than 10590 alone, so features interact and the picture is not simple.",
-    "Removing the sets changes little, so these features are not necessary on their own.",
-    "Greedy runs are not exact repeats: the repeat matched the first run's decision in 82 of 100 and its text in 35 of 100. Reciprocity-set rates held up, but single items are noisy.",
-    "Comparisons are many and only one strength was tried, and p-values are uncorrected. Only 10590 and the full set are clearly above chance.",
-    "In the 100-feature search, single features at this strength change helped giving by at most 15 points. No rise passes correction, and the rises that are specific to the helped history are 10590, 1209, 17029 and 819."
+    "Random placebos lower giving too, so drops mean little.",
+    "10590 raises helped giving in both runs (+20, +15 points) and leaves no-history giving flat.",
+    "The labelled pair 11638 + 77666 does nothing.",
+    "No single feature's rise passes correction across 100."
   ],
   "latest": {
-    "when": "3 November 2026, 04:00 UTC. The 100-feature steering search is finished.",
+    "when": "3 November 2026, 04:00 UTC",
     "items": [
-      "All 100 features ran, each added alone on 100 helped and 100 no-history environments, with no errors. The sortable table is under Steering each of the top 100 features.",
-      "No rise in giving passes correction across the 100. The largest is 10590 (+15 points, q .19), then 6699 (+13), 1209 (+11), 17029 (+10) and 819 (+9).",
-      "10590 rose again (49% first, 44% now, against 29%), and in neither run did no-history giving rise. It is the most consistent result, though it still needs a test on new environments.",
-      "Four features rise by 8 points or more in helped while no-history giving stays flat or falls: 10590, 1209 (exchange for a price), 17029 and 819. That is the pattern expected of a link to repaying the favour.",
-      "Only drops pass correction: 6491, 1091, 782 and 120422. 1091 left 81% of replies without a valid decision, and 6491 left 9%, so those pushes break the reply, not just the choice.",
-      "Most features lower giving: helped falls by 3.9 points on average and no-history by 2.7, and the two tend to move together. Drops alone say little.",
-      "The ranking predicts direction: gave-side features average -1.0 points and kept-side -6.2 (Spearman 0.30 between AUC and change). 20 of 44 gave-side features raise giving, against 10 of 56 kept-side.",
-      "Possible next steps: rerun the four specific risers on new environments; steer them during the reasoning only, or on the decision line only; or remove kept-side features instead of adding them. Waiting for your instructions."
+      "Steering search done: 100 features, each added alone. Table below, under Steering.",
+      "No rise passes correction. Best: 10590, +15 points (+20 in the first run), with no-history giving flat.",
+      "Also helped-only: 1209 (+11), 17029 (+10), 819 (+9).",
+      "Only drops are significant, and the biggest come from broken replies."
     ]
   }
 }
