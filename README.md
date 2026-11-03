@@ -1,4 +1,4 @@
-# AI Model Game Behavior
+# AI Model Sacrifice Behavior
 
 ## Quick Start
 ```bash
