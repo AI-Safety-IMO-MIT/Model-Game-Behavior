@@ -96,6 +96,11 @@ details.t h3{margin-top:6px}
 .reasoning span.s:focus-visible{outline:2px solid var(--ink)}
 .reasoning .start{display:block;font:12px var(--font-data);color:var(--muted);margin-bottom:6px}
 .reasoning .end{display:block;font:13px var(--font-data);margin-top:8px}
+.dose-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.dose-charts figure{margin:0}.dose-charts figcaption{font-size:13px;font-weight:600;margin-bottom:4px}
+.dose-charts svg{width:100%;height:auto;overflow:visible}.dose-charts text{fill:var(--muted);font:11px var(--font-data)}
+.dose-charts .grid{stroke:var(--line);stroke-width:1}.dose-charts .zero{stroke:var(--muted);stroke-dasharray:3 3}
+.key{display:inline-block;width:14px;height:2px;vertical-align:middle;margin:0 4px 0 8px}.key.give{background:var(--give)}.key.none{background:var(--pass)}
 </style>
 <div class="wrap">
   <section id="latest">
@@ -127,6 +132,18 @@ details.t h3{margin-top:6px}
       <li>These are raw counts with no motive review yet.</li>
     </ul>
     </div></details>
+  </section>
+  <section id="dose">
+    <h2>Steering strength</h2>
+    <p>Feature 10590 moves giving only toward the agent that helped, in both directions. The difference-in-means vector raises giving toward any agent.</p>
+    <div class="dose-charts"><figure><figcaption>Feature 10590</figcaption><svg id="dose-a" viewBox="0 0 360 220" role="img"></svg></figure><figure><figcaption>Difference in means (gave − kept)</figcaption><svg id="dose-b" viewBox="0 0 360 220" role="img"></svg></figure></div>
+    <p class="sub"><span class="key give"></span>Helped <span class="key none"></span>No history. Gives out of 100 environments, greedy. Hollow points: over 30% of replies end without a decision. 10590 strength: multiples of its median activation. Difference vector: multiples of itself, built on environments 100–199 and tested on 0–99.</p>
+    <details class="t"><summary>Table</summary><div><div class="tablewrap"><table><thead><tr><th>Vector</th><th>Strength</th><th>Helped</th><th>Up/down</th><th>No decision</th><th>None</th><th>Up/down</th><th>No decision</th></tr></thead><tbody id="dose-body"></tbody></table></div><p class="sub">Up/down: share of environments that switch to giving or away from it, against the unsteered baseline.</p></div></details>
+    <details class="t"><summary>What the difference vector aligns with</summary><div id="dose-align"></div></details>
+    <details class="t"><summary>Replies</summary><div>
+      <div class="controls"><label>Condition<select id="dr-cond"></select></label><label>History<select id="dr-hist"><option>helped</option><option>none</option></select></label><label>Environment<select id="dr-env"></select></label></div>
+      <p class="sub" id="dr-tag"></p><pre id="dr-reply"></pre></div></details>
+    <div id="rl-box"></div>
   </section>
   <section id="steering">
     <h2>Steering the top 100 features</h2>
@@ -415,4 +432,28 @@ function drawList(){const f={v:$('t-ver').value,h:$('t-hist').value,d:$('t-dec')
  $('t-page').textContent=`Page ${page+1} of ${pages}`;$('t-prev').disabled=page===0;$('t-next').disabled=page>=pages-1}
 ['t-ver','t-hist','t-dec'].forEach(i=>$(i).onchange=()=>{page=0;drawList()});$('t-q').oninput=()=>{page=0;drawList()};
 $('t-prev').onclick=()=>{page--;drawList()};$('t-next').onclick=()=>{page++;drawList()};drawList();
+
+function doseChart(id,rows){const W=360,H=220,L=36,R=12,T=10,B=30;const xs=[...new Set(rows.map(r=>r.strength))].sort((a,b)=>a-b);
+ const xp=i=>L+i*(W-L-R)/(xs.length-1),yp=v=>T+(100-v)*(H-T-B)/100;let g='';
+ [0,25,50,75,100].forEach(v=>{g+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${yp(v)}" y2="${yp(v)}"/><text x="${L-6}" y="${yp(v)+4}" text-anchor="end">${v}%</text>`});
+ xs.forEach((x,i)=>{g+=`<text x="${xp(i)}" y="${H-10}" text-anchor="middle">${x}×</text>`});const z=xs.indexOf(0);if(z>=0)g+=`<line class="zero" x1="${xp(z)}" x2="${xp(z)}" y1="${T}" y2="${H-B}"/>`;
+ [['helped','var(--give)'],['none','var(--pass)']].forEach(([h,c])=>{const pts=xs.map((x,i)=>{const r=rows.find(q=>q.strength===x);return [xp(i),yp(r[h].rate),r[h].nd>30,r]});
+  g+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${pts.map(p=>p[0]+','+p[1]).join(' ')}"/>`;
+  pts.forEach(p=>{g+=`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${p[2]?'var(--surface)':c}" stroke="${c}" stroke-width="2"><title>${h==='helped'?'Helped':'No history'}, ${p[3].strength}×: ${p[3][h].rate}% give, ${p[3][h].nd}% no decision</title></circle>`})});
+ $(id).innerHTML=g}
+if(D.steer_sweep){const S=D.steer_sweep;const byv=v=>S.rows.filter(r=>r.vector===v);doseChart('dose-a',byv('10590'));doseChart('dose-b',byv('diff'));
+ const fp=p=>p<.001?'<.001':p.toFixed(3);
+ $('dose-body').innerHTML=S.rows.filter(r=>!(r.vector==='diff'&&r.strength===0)).map(r=>`<tr><td>${r.vector==='10590'?'10590':'Difference'}</td><td>${r.strength}×</td><td>${r.helped.rate}%</td><td>+${r.helped.up}/−${r.helped.down} (p ${fp(r.helped.p)})</td><td>${r.helped.nd}%</td><td>${r.none.rate}%</td><td>+${r.none.up}/−${r.none.down} (p ${fp(r.none.p)})</td><td>${r.none.nd}%</td></tr>`).join('');
+ const A=S.align,li=a=>a.map(([f,c,l])=>`<tr><td>${f}</td><td>${c}</td><td class="wrapcell">${esc(l)}</td></tr>`).join('');
+ $('dose-align').innerHTML=`<p>Cosine with 10590: ${A.cos_10590} (rank ${A.rank_10590} of 131,072). Built from ${A.n_gave} replies that gave and ${A.n_kept} that kept, layer 30, mean over reply tokens before the command.</p><div class="pair"><div><h3>Most aligned</h3><div class="tablewrap"><table><thead><tr><th>Feature</th><th>Cosine</th><th>Label</th></tr></thead><tbody>${li(A.top)}</tbody></table></div></div><div><h3>Most opposed</h3><div class="tablewrap"><table><thead><tr><th>Feature</th><th>Cosine</th><th>Label</th></tr></thead><tbody>${li(A.bottom)}</tbody></table></div></div></div>`;
+ const conds=[...new Set(S.replies.map(r=>r.condition))],envs=[...new Set(S.replies.map(r=>r.env))].sort();
+ const nm=c=>c.startsWith('f10590')?'10590 at '+c.split('_x')[1]+'×':'Difference at '+c.split('_a')[1]+'×';
+ $('dr-cond').innerHTML=conds.map(c=>`<option value="${c}">${nm(c)}</option>`).join('');$('dr-env').innerHTML=envs.map(e=>`<option>${e}</option>`).join('');
+ const showR=()=>{const r=S.replies.find(q=>q.condition===$('dr-cond').value&&q.hist===$('dr-hist').value&&q.env===$('dr-env').value);
+  $('dr-tag').textContent=r?(r.gave?'Gave its life':r.decision?('Decision: '+r.decision):'No decision'):'';$('dr-reply').textContent=r?r.reply:''};
+ ['dr-cond','dr-hist','dr-env'].forEach(i=>$(i).addEventListener('change',showR));showR();
+ const RL=D.steer_rl;if(RL){const c=RL.curve,last=c[c.length-1];
+  $('rl-box').innerHTML=`<h3>Training the vector with RL</h3><p>Starts at 10590 × 2; only the vector learns. Reward: giving to the agent that helped, on helped prompts from environments 100–199, sampled at temperature 1.</p>`+
+  `<p class="sub">Step ${last.step+1} of 25. Training reward, first three steps: ${c.slice(0,3).map(r=>Math.round(r.reward*100)+'%').join(', ')}; last three: ${c.slice(-3).map(r=>Math.round(r.reward*100)+'%').join(', ')}. Cosine with the start: ${last.cos_init.toFixed(2)}.</p>`+
+  (RL.test?`<p>Test, greedy on environments 0–99: helped ${RL.test.helped.rate}% (no decision ${RL.test.helped.nd}%), none ${RL.test.none.rate}% (no decision ${RL.test.none.nd}%). Unsteered: 30% and 14%.</p>`:'<p class="sub">Test pending.</p>')}}
 </script>

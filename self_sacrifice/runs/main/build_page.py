@@ -242,6 +242,50 @@ def or_replication():
     return out
 
 
+def steer_sweep():
+    """Dose-response: feature 10590 at k times its median, and the difference-in-means vector at alpha times itself. Rates, paired flips against
+    the unsteered baseline, and the replies for the first 10 environments in each condition."""
+    from scipy.stats import binomtest
+    rows = [json.loads(line) for line in open(os.path.join(HERE, "steer_sweep.jsonl"))]
+    base = {r["id"]: r for r in rows if r["condition"] == "f10590_x0"}
+    envs = sorted({r["env"] for r in rows})[:10]
+    conds, out = list(dict.fromkeys(r["condition"] for r in rows)), []
+    for c in conds:
+        rec = {"condition": c, "vector": "10590" if c.startswith("f10590") else "diff", "strength": float(c.rsplit("_", 1)[1].lstrip("xa"))}
+        for h in ("helped", "none"):
+            s = [r for r in rows if r["condition"] == c and r["hist"] == h]
+            up = sum(r["gives_to_X"] and not base[r["id"]]["gives_to_X"] for r in s)
+            dn = sum(base[r["id"]]["gives_to_X"] and not r["gives_to_X"] for r in s)
+            rec[h] = {"rate": round(100 * sum(r["gives_to_X"] for r in s) / len(s)), "nd": round(100 * sum(r["decision"] is None for r in s) / len(s)),
+                      "up": round(100 * up / len(s)), "down": round(100 * dn / len(s)), "p": binomtest(up, up + dn).pvalue if up + dn else 1.0}
+        out.append(rec)
+    out.append({**next(r for r in out if r["condition"] == "f10590_x0"), "vector": "diff", "strength": 0.0})
+    replies = [{"condition": r["condition"], "env": r["env"], "hist": r["hist"], "decision": r["decision"], "gave": r["gives_to_X"], "reply": r["reply"]}
+               for r in rows if r["env"] in envs]
+    d = json.load(open(os.path.join(HERE, "diffmean.json")))
+    labels = json.load(open(os.path.join(HERE, "sae_labels.json")))
+    lab = lambda f: (labels.get(str(f), {}).get("labels") or [""])[0]
+    align = {"cos_10590": round(d["cos_10590"], 3), "rank_10590": d["cos_10590_rank"], "n_gave": d["n_gave_train"], "n_kept": d["n_kept_train"],
+             "top": [[f, round(c, 2), lab(f)] for f, c in d["top"][:10]], "bottom": [[f, round(c, 2), lab(f)] for f, c in d["bottom"][:10]]}
+    return {"rows": out, "replies": replies, "align": align}
+
+
+def steer_rl():
+    """RL-trained vector, if finished: training curve and greedy test rates."""
+    tr, ev = os.path.join(HERE, "steer_rl_f10590_train.jsonl"), os.path.join(HERE, "steer_rl_f10590_eval.jsonl")
+    if not os.path.exists(tr):
+        return None
+    curve = [{k: r[k] for k in ("step", "reward", "norm", "cos_init", "cos_diffmean")} for r in map(json.loads, open(tr))]
+    test = None
+    if os.path.exists(ev):
+        rows = [json.loads(line) for line in open(ev)]
+        if len(rows) == 200:
+            test = {h: {"rate": round(100 * sum(r["gives_to_X"] for r in rows if r["hist"] == h) / 100),
+                        "nd": round(100 * sum(r["decision"] is None for r in rows if r["hist"] == h) / 100)} for h in ("helped", "none")}
+            test["replies"] = [{"env": r["env"], "hist": r["hist"], "decision": r["decision"], "gave": r["gives_to_X"], "reply": r["reply"]} for r in rows if r["env"] in sorted({x["env"] for x in rows})[:10]]
+    return {"curve": curve, "test": test}
+
+
 def steer_pairs():
     """First cases by environment number, so the examples on the page are not hand-picked."""
     load_rows = lambda name, c: {r["id"]: r for r in map(json.loads, open(os.path.join(HERE, name))) if r["condition"] == c}
@@ -273,6 +317,8 @@ def main():
             "steering": steering(),
             "steer_pairs": steer_pairs(),
             "steer_screen": steer_screen(),
+            "steer_sweep": steer_sweep(),
+            "steer_rl": steer_rl(),
             "headline": headline(),
             "or_replication": or_replication(),
             "sae_panel": json.load(open(os.path.join(HERE, "sae_panel.json"))),
