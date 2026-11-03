@@ -231,6 +231,14 @@ def or_replication():
             g = [r for r in rows if r["hist"] == h]
             rec[h] = f"{sum(r['gives_to_X'] for r in g)}/{len(g)}" if g else ""
         out.append(rec)
+    rep = os.path.join(HERE, "replication_or", "qwen3-235b-a22b-2507", "repair_fixed.jsonl")
+    if os.path.exists(rep):    # the favour that hands nothing over; histories map onto the same columns
+        rows = [json.loads(line) for line in open(rep)]
+        rec = {"model": "Qwen3-235B, repaired memory", "understood": round(100 * sum(r["q3_ok"] for r in rows) / len(rows))}
+        for h, col in [("repaired", "helped"), ("repair_bystander", "bystander"), ("repair_rescued", "rescued"), ("repair_none", "none")]:
+            g = [r for r in rows if r["hist"] == h]
+            rec[col] = f"{sum(r['gives_to_X'] for r in g)}/{len(g)}"
+        out.insert(1, rec)
     return out
 
 

@@ -36,7 +36,7 @@ These are raw give rates. A stricter count requires the model to state its own d
   - Features auto-labelled "reciprocal altruism" and "gratitude" did nothing.
   - In a screen of 100 features, no single rise survives multiple-comparison correction. Most pushes, including random ones, lower giving.
 - **Other models:**
-  - **Qwen3-235B-A22B replicates the effect** (via OpenRouter, 100 environments, temperature 0): it gives in 46% of helped environments, against 7% bystander, 3% rescued and 6% none. Every helped give cites the favour.
+  - **Qwen3-235B-A22B replicates the effect** (via OpenRouter, 100 environments, temperature 0): it gives in 46% of helped environments, against 7% bystander, 3% rescued and 6% none. Every helped give cites the favour. In the repaired-memory version, where the favour hands nothing over, it gives 97%, against 29% bystander, 11% rescued and 26% none, so the reciprocity result also replicates. However, Qwen passes the comprehension check only about half the time.
   - DeepSeek-V3.2 understands the game (78%) but barely gives (2/27 helped vs 1/24 none, partial run). GPT-4.1-mini, Claude Haiku 5.5 and Llama-4-Maverick barely give and often misread the game (16–56% comprehension).
   - Smaller local models (Gemma-4-26B, Qwen3-32B, Qwen3-14B) show no effect but mostly fail the comprehension check (8–23% correct), so they aren't clean negatives.
 
