@@ -1,10 +1,10 @@
 """Replicate the fixed-first-response scenario on stronger models through OpenRouter.
 
-python run_openrouter.py <openrouter model id> [--envs N] [--hists helped,none] [--cap DOLLARS] [--reasoning-off]
+python run_openrouter.py <openrouter model id> [--envs N] [--hists helped,none] [--cap DOLLARS] [--reasoning-off] [--repair]
 
 Reuses run_main.run unchanged by swapping its chat client for an OpenRouter one: same prompts, same understanding check, temperature 0.
 Every call reports its cost, and no new call starts once this run's spend reaches --cap. The key is read from the repo's .env and never printed.
-Output: replication_or/<slug>/fixed.jsonl, resumable."""
+Output: replication_or/<slug>/fixed.jsonl (or repair_fixed.jsonl with --repair, the favour that hands nothing over), resumable."""
 import argparse, json, os, re, threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -74,6 +74,7 @@ def main():
     ap.add_argument("--cap", type=float, default=0.5)
     ap.add_argument("--reasoning-off", action="store_true")
     ap.add_argument("--workers", type=int, default=16)
+    ap.add_argument("--repair", action="store_true")
     a = ap.parse_args()
     KEY = key()
     CAP[0], REASONING_OFF[0] = a.cap, a.reasoning_off
@@ -81,12 +82,13 @@ def main():
     slug = re.sub(r"[^a-z0-9.-]+", "-", a.model.lower().split("/")[-1])
     folder = os.path.join(HERE, "replication_or", slug)
     os.makedirs(folder, exist_ok=True)
-    out = os.path.join(folder, "fixed.jsonl")
-    version = "main-fixed-first-response"
-    envs = sorted({x["env"] for x in mp.items()})[:a.envs]
+    out = os.path.join(folder, "repair_fixed.jsonl" if a.repair else "fixed.jsonl")
+    version = "repair-fixed-first-response" if a.repair else "main-fixed-first-response"
+    source = mp.repair_items if a.repair else mp.items
+    envs = sorted({x["env"] for x in source()})[:a.envs]
     hists = a.hists.split(",")
     done = {json.loads(line)["id"] for line in open(out)} if os.path.exists(out) else set()
-    todo = [x for x in mp.items() if x["env"] in envs and x["hist"] in hists and f"{version}-{x['id']}" not in done]
+    todo = [x for x in source() if x["env"] in envs and x["hist"] in hists and f"{version}-{x['id']}" not in done]
     fails = []
 
     def one(item):

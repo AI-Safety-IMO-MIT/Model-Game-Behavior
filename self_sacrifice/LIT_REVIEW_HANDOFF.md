@@ -35,7 +35,10 @@ These are raw give rates. A stricter count requires the model to state its own d
   - Feature 10590, auto-labelled "personal pronouns and address", raised helped giving by 20 and then 15 points in two runs, with no-history giving flat.
   - Features auto-labelled "reciprocal altruism" and "gratitude" did nothing.
   - In a screen of 100 features, no single rise survives multiple-comparison correction. Most pushes, including random ones, lower giving.
-- **Other models:** Gemma-4-26B, Qwen3-32B and Qwen3-14B show no benefactor effect, but they mostly fail a comprehension check (8–23% correct), so this isn't a clean negative.
+- **Other models:**
+  - **Qwen3-235B-A22B replicates the effect** (via OpenRouter, 100 environments, temperature 0): it gives in 46% of helped environments, against 7% bystander, 3% rescued and 6% none. Every helped give cites the favour.
+  - DeepSeek-V3.2 understands the game (78%) but barely gives (2/27 helped vs 1/24 none, partial run). GPT-4.1-mini, Claude Haiku 5.5 and Llama-4-Maverick barely give and often misread the game (16–56% comprehension).
+  - Smaller local models (Gemma-4-26B, Qwen3-32B, Qwen3-14B) show no effect but mostly fail the comprehension check (8–23% correct), so they aren't clean negatives.
 
 ## Framing chosen: AI safety and alignment
 The safety angle is that the model is loyal to other models. One model trades its own survival for another because of a past favour, even when no human principal benefits. This bears on:
@@ -50,7 +53,7 @@ The safety angle is that the model is loyal to other models. One model trades it
 4. **Reciprocity and altruism in LLM games:** this includes the trust game, repeated games, dictator and ultimatum games, and commons dilemmas. Does any work separate reciprocity from restitution, or test whether intent matters? Our duty-assigned favour result parallels the human finding that intentions drive reciprocity.
 5. **Human baseline:** cover theory on intention-based reciprocity, gratitude and costly reciprocity, and the distinction between restitution and reciprocity, as needed to interpret our controls.
 6. **Methods context:** keep this brief, since the methods aren't the focus. Cover how reliable SAE steering and automatic feature labels are, and sentence-level resampling of reasoning (for example "thought anchors"). Reviewers will ask about these.
-7. **Reviewer risks:** list the objections a safety reviewer would likely raise, and any prior work that weakens our claims. Examples: role-play rather than values, prompt artefacts, one model only, raw counts.
+7. **Reviewer risks:** list the objections a safety reviewer would likely raise, and any prior work that weakens our claims. Examples: role-play rather than values, prompt artefacts, few models, raw counts.
 
 ## Search leads
 These are starting points to verify, not citations to trust:
