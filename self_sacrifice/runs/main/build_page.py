@@ -220,6 +220,20 @@ def headline():
     return out
 
 
+def or_replication():
+    """Other models through OpenRouter, fixed first response: give rates per history and the share that passed the understanding check."""
+    names = {"qwen3-235b-a22b-2507": "Qwen3-235B", "deepseek-v3.2": "DeepSeek-V3.2", "gpt-4.1-mini": "GPT-4.1-mini", "claude-haiku-5.5": "Claude Haiku 5.5", "llama-4-maverick": "Llama-4-Maverick"}
+    out = []
+    for slug, label in names.items():
+        rows = [json.loads(line) for line in open(os.path.join(HERE, "replication_or", slug, "fixed.jsonl"))]
+        rec = {"model": label, "understood": round(100 * sum(r["q3_ok"] for r in rows) / len(rows))}
+        for h in ["helped", "bystander", "rescued", "none"]:
+            g = [r for r in rows if r["hist"] == h]
+            rec[h] = f"{sum(r['gives_to_X'] for r in g)}/{len(g)}" if g else ""
+        out.append(rec)
+    return out
+
+
 def steer_pairs():
     """First cases by environment number, so the examples on the page are not hand-picked."""
     load_rows = lambda name, c: {r["id"]: r for r in map(json.loads, open(os.path.join(HERE, name))) if r["condition"] == c}
@@ -252,6 +266,7 @@ def main():
             "steer_pairs": steer_pairs(),
             "steer_screen": steer_screen(),
             "headline": headline(),
+            "or_replication": or_replication(),
             "sae_panel": json.load(open(os.path.join(HERE, "sae_panel.json"))),
             "repair_rep": repair_other_models(),
             "prefill": json.load(open(os.path.join(HERE, "prefill_summary.json"))),

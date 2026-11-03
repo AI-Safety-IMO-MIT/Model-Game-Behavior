@@ -21,12 +21,12 @@
     "No single feature's rise passes correction across 100."
   ],
   "latest": {
-    "when": "3 November 2026, 04:00 UTC",
+    "when": "3 November 2026",
     "items": [
-      "Steering search done: 100 features, each added alone. Table below, under Steering.",
-      "No rise passes correction. Best: 10590, +15 points (+20 in the first run), with no-history giving flat.",
-      "Also helped-only: 1209 (+11), 17029 (+10), 819 (+9).",
-      "Only drops are significant, and the biggest come from broken replies."
+      "Qwen3-235B replicates: gives 46% when helped, against 7% bystander, 3% rescued and 6% none. Its gives cite the favour.",
+      "DeepSeek-V3.2, GPT-4.1-mini, Claude Haiku 5.5 and Llama-4-Maverick barely give. Most of them often misread the game.",
+      "OpenRouter spend: $0.55.",
+      "Push blocked: the deploy key is read-only."
     ]
   }
 }
