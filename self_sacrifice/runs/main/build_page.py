@@ -196,7 +196,7 @@ def steer_screen():
         if len(group) < 200:
             continue
         f = int(c[1:].split("_")[0])
-        rec = {"feature": f, "rank": meta[f]["rank"], "label": meta[f]["label"], "auc": meta[f]["auc"]}
+        rec = {"feature": f, "rank": meta[f]["rank"], "label": meta[f]["label"], "auc": meta[f]["auc"], "invalid": sum(r["decision"] is None for r in group.values()) / 2}
         for h in ["helped", "none"]:
             g = [r for r in group.values() if r["hist"] == h]
             up = sum(r["gives_to_X"] and not base[(h, r["env"])] for r in g)

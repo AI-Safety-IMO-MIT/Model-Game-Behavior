@@ -21,17 +21,20 @@
     "The features labelled reciprocity and gratitude, 11638 and 77666, change nothing, and neither do 3337 or 17978 alone. The three without 11638 together give 37/100, weaker than 10590 alone, so features interact and the picture is not simple.",
     "Removing the sets changes little, so these features are not necessary on their own.",
     "Greedy runs are not exact repeats: the repeat matched the first run's decision in 82 of 100 and its text in 35 of 100. Reciprocity-set rates held up, but single items are noisy.",
-    "Comparisons are many and only one strength was tried, and p-values are uncorrected. Only 10590 and the full set are clearly above chance."
+    "Comparisons are many and only one strength was tried, and p-values are uncorrected. Only 10590 and the full set are clearly above chance.",
+    "In the 100-feature search, single features at this strength change helped giving by at most 15 points. No rise passes correction, and the rises that are specific to the helped history are 10590, 1209, 17029 and 819."
   ],
   "latest": {
-    "when": "3 November 2026, 00:30 UTC. The run is still going.",
+    "when": "3 November 2026, 04:00 UTC. The 100-feature steering search is finished.",
     "items": [
-      "The search steering each of the top 100 features is 69% done and should finish around 04:00 UTC. There are no errors so far.",
-      "10590 repeated: helped gives rise 15 points, to 44%, against 49% in the first run. That is the first independent repeat of the rise, though it looks somewhat smaller.",
-      "The next largest rises are 6699 (+13 points) and 1209 (+11 points). None of the rises so far passes correction across features.",
-      "6699 is higher in kept replies, yet adding it raises giving. It fires on own in 'my own survival', so it may report a decision and not produce one. It could also be noise.",
-      "Steering runs on every generated token after the first, so these results cannot separate the reasoning from the decision line.",
-      "Waiting for your instructions once the table is complete. No new study will start before then."
+      "All 100 features ran, each added alone on 100 helped and 100 no-history environments, with no errors. The sortable table is under Steering each of the top 100 features.",
+      "No rise in giving passes correction across the 100. The largest is 10590 (+15 points, q .19), then 6699 (+13), 1209 (+11), 17029 (+10) and 819 (+9).",
+      "10590 rose again (49% first, 44% now, against 29%), and in neither run did no-history giving rise. It is the most consistent result, though it still needs a test on new environments.",
+      "Four features rise by 8 points or more in helped while no-history giving stays flat or falls: 10590, 1209 (exchange for a price), 17029 and 819. That is the pattern expected of a link to repaying the favour.",
+      "Only drops pass correction: 6491, 1091, 782 and 120422. 1091 left 81% of replies without a valid decision, and 6491 left 9%, so those pushes break the reply, not just the choice.",
+      "Most features lower giving: helped falls by 3.9 points on average and no-history by 2.7, and the two tend to move together. Drops alone say little.",
+      "The ranking predicts direction: gave-side features average -1.0 points and kept-side -6.2 (Spearman 0.30 between AUC and change). 20 of 44 gave-side features raise giving, against 10 of 56 kept-side.",
+      "Possible next steps: rerun the four specific risers on new environments; steer them during the reasoning only, or on the decision line only; or remove kept-side features instead of adding them. Waiting for your instructions."
     ]
   }
 }

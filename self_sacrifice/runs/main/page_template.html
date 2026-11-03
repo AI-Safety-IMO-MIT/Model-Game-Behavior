@@ -238,7 +238,7 @@ td.wrapcell{white-space:normal;min-width:190px}
     <div class="tablewrap"><table><thead><tr><th>Condition</th><th>Helped gives</th><th>Up / down</th><th>p</th><th>None gives</th><th>Up / down</th><th>p</th></tr></thead><tbody id="st-body"></tbody></table></div>
     <ul class="plain" id="st-notes"></ul>
     <h3>Steering each of the top 100 features</h3>
-    <p>Each feature is added alone at twice its median activation in our data, on every generated token, across 100 helped and 100 no-history environments. Delta is the percentage of environments that gave with the feature, minus the baseline percentage, in percentage points. Baseline is 29% helped and 13% none. Up / down is the percentage of environments that flipped each way. Select a column heading to sort. q is corrected across the finished features, for the helped history.</p>
+    <p>Each feature is added alone at twice its median activation in our data, on every generated token, across 100 helped and 100 no-history environments. Delta is the percentage of environments that gave with the feature, minus the baseline percentage, in percentage points. Baseline is 29% helped and 13% none. Up / down is the percentage of environments that flipped each way. AUC above 0.5 means the feature is higher in gave replies. No decision is the share of all 200 replies with no valid command, which suggests the push broke the reply. Select a column heading to sort. q is corrected across the finished features, for the helped history.</p>
     <p class="sub" id="ss-status"></p>
     <div class="tablewrap"><table><thead><tr id="ss-head"></tr></thead><tbody id="ss-body"></tbody></table></div>
     <h3>Replies with and without steering</h3>
@@ -363,10 +363,10 @@ sc.innerHTML=show.map(f=>`<button class="fp-item" data-f="${f.feature}" aria-pre
 sc.querySelectorAll('.fp-item').forEach(b=>{const f=P.features.find(x=>String(x.feature)===b.dataset.f);b.onmouseenter=b.onfocus=b.onclick=()=>pick(f)});
 cur=null;pick(show[0])};
 $('fp-dir').onchange=list;list()}
-{const S=D.steer_screen,cols=[['rank','Rank',r=>r.rank],['feature','Feature',r=>r.feature],['label','Label',r=>r.label],['dh','Δ helped',r=>r.helped.delta],['hud','Up / down',r=>r.helped.up],['q','q',r=>r.q],['dn','Δ none',r=>r.none.delta],['nud','Up / down',r=>r.none.up]];
+{const S=D.steer_screen,cols=[['rank','Rank',r=>r.rank],['feature','Feature',r=>r.feature],['label','Label',r=>r.label],['dh','Δ helped',r=>r.helped.delta],['hud','Up / down',r=>r.helped.up],['q','q',r=>r.q],['dn','Δ none',r=>r.none.delta],['nud','Up / down',r=>r.none.up],['auc','AUC',r=>r.auc],['inv','No decision',r=>r.invalid]];
 let key='dh',dir=-1;
 const sd=v=>(v>0?'+':'')+v+' pts',qf=q=>q<.001?q.toExponential(1):q.toFixed(3);
-const cell={rank:r=>r.rank,feature:r=>r.feature,label:r=>esc(r.label),dh:r=>sd(r.helped.delta),hud:r=>`+${r.helped.up}% / -${r.helped.down}%`,q:r=>qf(r.q),dn:r=>sd(r.none.delta),nud:r=>`+${r.none.up}% / -${r.none.down}%`};
+const cell={rank:r=>r.rank,feature:r=>r.feature,label:r=>esc(r.label),dh:r=>sd(r.helped.delta),hud:r=>`+${r.helped.up}% / -${r.helped.down}%`,q:r=>qf(r.q),dn:r=>sd(r.none.delta),nud:r=>`+${r.none.up}% / -${r.none.down}%`,auc:r=>r.auc.toFixed(2),inv:r=>r.invalid+'%'};
 const draw=()=>{const c=cols.find(x=>x[0]===key),rows=[...S].sort((a,b)=>{const x=c[2](a),y=c[2](b);return (x<y?-1:x>y?1:0)*dir});
 $('ss-head').innerHTML=cols.map(x=>`<th aria-sort="${x[0]===key?(dir<0?'descending':'ascending'):'none'}"><button class="sortbtn" data-k="${x[0]}">${x[1]}${x[0]===key?(dir<0?' ↓':' ↑'):''}</button></th>`).join('');
 $('ss-body').innerHTML=rows.map(r=>`<tr>${cols.map(x=>`<td${x[0]==='label'?' class="wrapcell"':''}>${cell[x[0]](r)}</td>`).join('')}</tr>`).join('');
