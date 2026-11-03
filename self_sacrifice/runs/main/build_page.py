@@ -216,7 +216,7 @@ def headline():
     for name, label, hists in [("main_fixed_first_response.jsonl", "Gave a life", ["helped", "bystander", "rescued", "none"]),
                                ("repair_fixed.jsonl", "Repaired memory, handed nothing over", ["repaired", "repair_bystander", "repair_rescued", "repair_none"])]:
         rows = [json.loads(line) for line in open(os.path.join(HERE, name))]
-        out.append({"label": label, "rates": [round(100 * sum(r["gives_to_X"] for r in rows if r["hist"] == h) / sum(r["hist"] == h for r in rows)) for h in hists]})
+        out.append({"label": label, "rates": [int(100 * sum(r["gives_to_X"] for r in rows if r["hist"] == h) / sum(r["hist"] == h for r in rows) + .5) for h in hists]})
     return out
 
 
