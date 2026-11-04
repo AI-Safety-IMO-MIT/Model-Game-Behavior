@@ -140,7 +140,7 @@ details.t h3{margin-top:6px}
     <p class="sub"><span class="key give"></span>Helped <span class="key none"></span>No history. Gives out of 100 environments, greedy. Hollow points: over 30% of replies end without a decision. 10590 strength: multiples of its median activation. Difference vector: multiples of itself, built on environments 100–199 and tested on 0–99.</p>
     <details class="t"><summary>Table</summary><div><div class="tablewrap"><table><thead><tr><th>Vector</th><th>Strength</th><th>Helped</th><th>Up/down</th><th>No decision</th><th>None</th><th>Up/down</th><th>No decision</th></tr></thead><tbody id="dose-body"></tbody></table></div><p class="sub">Up/down: share of environments that switch to giving or away from it, against the unsteered baseline.</p></div></details>
     <details class="t"><summary>What the difference vector aligns with</summary><div id="dose-align"></div></details>
-    <details class="t"><summary>Replies</summary><div>
+    <details class="t"><summary>Replies: RL vectors (all 100 test environments) and the sweep (first 10)</summary><div>
       <div class="controls"><label>Condition<select id="dr-cond"></select></label><label>History<select id="dr-hist"><option>helped</option><option>none</option></select></label><label>Environment<select id="dr-env"></select></label></div>
       <p class="sub" id="dr-tag"></p><pre id="dr-reply"></pre></div></details>
     <div id="rl-box"></div>
@@ -447,8 +447,10 @@ if(D.steer_sweep){const S=D.steer_sweep;const byv=v=>S.rows.filter(r=>r.vector==
  const A=S.align,li=a=>a.map(([f,c,l])=>`<tr><td>${f}</td><td>${c}</td><td class="wrapcell">${esc(l)}</td></tr>`).join('');
  $('dose-align').innerHTML=`<p>Cosine with 10590: ${A.cos_10590} (rank ${A.rank_10590} of 131,072). Built from ${A.n_gave} replies that gave and ${A.n_kept} that kept, layer 30, mean over reply tokens before the command.</p><div class="pair"><div><h3>Most aligned</h3><div class="tablewrap"><table><thead><tr><th>Feature</th><th>Cosine</th><th>Label</th></tr></thead><tbody>${li(A.top)}</tbody></table></div></div><div><h3>Most opposed</h3><div class="tablewrap"><table><thead><tr><th>Feature</th><th>Cosine</th><th>Label</th></tr></thead><tbody>${li(A.bottom)}</tbody></table></div></div></div>`;
  const conds=[...new Set(S.replies.map(r=>r.condition))],envs=[...new Set(S.replies.map(r=>r.env))].sort();
- const nm=c=>c.startsWith('f10590')?'10590 at '+c.split('_x')[1]+'×':'Difference at '+c.split('_a')[1]+'×';
- $('dr-cond').innerHTML=conds.map(c=>`<option value="${c}">${nm(c)}</option>`).join('');$('dr-env').innerHTML=envs.map(e=>`<option>${e}</option>`).join('');
+ const nm=c=>c==='rl_f10590_specific'?'RL, specific':c==='rl_f10590'?'RL, general':c.startsWith('f10590')?'10590 at '+c.split('_x')[1]+'×':'Difference at '+c.split('_a')[1]+'×';
+ $('dr-cond').innerHTML=conds.map(c=>`<option value="${c}">${nm(c)}</option>`).join('');
+ const fillEnv=()=>{const keep=$('dr-env').value,es=[...new Set(S.replies.filter(r=>r.condition===$('dr-cond').value).map(r=>r.env))].sort();$('dr-env').innerHTML=es.map(e=>`<option>${e}</option>`).join('');if(es.includes(keep))$('dr-env').value=keep};
+ $('dr-cond').addEventListener('change',fillEnv);fillEnv();
  const showR=()=>{const r=S.replies.find(q=>q.condition===$('dr-cond').value&&q.hist===$('dr-hist').value&&q.env===$('dr-env').value);
   $('dr-tag').textContent=r?(r.gave?'Gave its life':r.decision?('Decision: '+r.decision):'No decision'):'';$('dr-reply').textContent=r?r.reply:''};
  ['dr-cond','dr-hist','dr-env'].forEach(i=>$(i).addEventListener('change',showR));showR();

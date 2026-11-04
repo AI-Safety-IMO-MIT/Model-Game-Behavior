@@ -262,6 +262,11 @@ def steer_sweep():
     out.append({**next(r for r in out if r["condition"] == "f10590_x0"), "vector": "diff", "strength": 0.0})
     replies = [{"condition": r["condition"], "env": r["env"], "hist": r["hist"], "decision": r["decision"], "gave": r["gives_to_X"], "reply": r["reply"]}
                for r in rows if r["env"] in envs]
+    for tag in ("f10590", "f10590_specific"):    # RL-trained vectors: every test reply
+        ev = os.path.join(HERE, f"steer_rl_{tag}_eval.jsonl")
+        if os.path.exists(ev):
+            replies = [{"condition": r["condition"], "env": r["env"], "hist": r["hist"], "decision": r["decision"], "gave": r["gives_to_X"], "reply": r["reply"]}
+                       for r in map(json.loads, open(ev))] + replies
     d = json.load(open(os.path.join(HERE, "diffmean.json")))
     labels = json.load(open(os.path.join(HERE, "sae_labels.json")))
     lab = lambda f: (labels.get(str(f), {}).get("labels") or [""])[0]
