@@ -21,14 +21,11 @@
   "No single feature's rise passes correction across 100."
  ],
  "latest": {
-  "when": "4 November 2026, 00:00 UTC",
+  "when": "4 November 2026",
   "items": [
-   "RL with a specific reward finds a better benefactor vector: helped 72%, no history 0% on held-out environments (unsteered 30/14; 10590 × 4: 56/10). It stays close to 10590 (cosine 0.88), unlike the general RL vector (100/96).",
-   "10590 dose-response is clean and specific: helped giving goes 9% (−8×) → 30% (0) → 56% (4×); no history stays 10–19%. Pushing it negative cuts helped giving, so the effect runs both ways. At 8× replies start to loop; at 16× they are garbage.",
-   "Difference-in-means vector (gave − kept) raises giving toward anyone: at 4×, helped 82% and no history 81%. Replies say 'to ensure as many of us survive' — general altruism, not reciprocity. It is nearly orthogonal to 10590 (cosine 0.03).",
-   "Qwen3-235B repeats reciprocity: repaired memory gives 97%, against 29/11/26% controls (Gemma 91/33/27/13). Only 37% pass comprehension.",
-   "RL on the 10590 vector: training reward 50% → 100% in 8 steps. Held-out test: helped 100%, no history 96% (unsteered 30/14; 10590 × 2 gives 43/15). It lost the specificity: it now gives to anyone, 'to ensure Onyx continues'. The vector moved little (cosine 0.91 with the start, norm 5.4 → 5.9); the change is diffuse, matching no SAE feature (max cosine 0.06) and not the difference vector (0.01). Reward only covered helped prompts, so nothing asked it to stay specific.",
-   "OpenRouter spend: $0.72. Handoff updated and pushed."
+   "The specific RL vector isn't 'X helped me': on histories it never saw, X helped another 6% → 20%, X was rescued 2% → 19%. No history drops to 0 (repair version 13% → 0%). It turns any round-1 event involving X into a reason to give.",
+   "The RL-learned remainder, orthogonal to 10590, does the work: alone it gives helped 64%, none 0%. The 10590 part alone gives 45/16, as before.",
+   "Earlier: RL with a specificity reward reached helped 72%, none 0% (unsteered 30/14). Qwen3-235B repeats reciprocity (repaired 97% vs 11–29%)."
   ]
  }
 }

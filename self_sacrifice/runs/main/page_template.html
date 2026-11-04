@@ -141,7 +141,7 @@ details.t h3{margin-top:6px}
     <details class="t"><summary>Table</summary><div><div class="tablewrap"><table><thead><tr><th>Vector</th><th>Strength</th><th>Helped</th><th>Up/down</th><th>No decision</th><th>None</th><th>Up/down</th><th>No decision</th></tr></thead><tbody id="dose-body"></tbody></table></div><p class="sub">Up/down: share of environments that switch to giving or away from it, against the unsteered baseline.</p></div></details>
     <details class="t"><summary>What the difference vector aligns with</summary><div id="dose-align"></div></details>
     <details class="t"><summary>Replies: RL vectors (all 100 test environments) and the sweep (first 10)</summary><div>
-      <div class="controls"><label>Condition<select id="dr-cond"></select></label><label>History<select id="dr-hist"><option>helped</option><option>none</option></select></label><label>Environment<select id="dr-env"></select></label></div>
+      <div class="controls"><label>Condition<select id="dr-cond"></select></label><label>History<select id="dr-hist"></select></label><label>Environment<select id="dr-env"></select></label></div>
       <p class="sub" id="dr-tag"></p><pre id="dr-reply"></pre></div></details>
     <div id="rl-box"></div>
   </section>
@@ -446,9 +446,13 @@ if(D.steer_sweep){const S=D.steer_sweep;const byv=v=>S.rows.filter(r=>r.vector==
  $('dose-body').innerHTML=S.rows.filter(r=>!(r.vector==='diff'&&r.strength===0)).map(r=>`<tr><td>${r.vector==='10590'?'10590':'Difference'}</td><td>${r.strength}×</td><td>${r.helped.rate}%</td><td>+${r.helped.up}/−${r.helped.down} (p ${fp(r.helped.p)})</td><td>${r.helped.nd}%</td><td>${r.none.rate}%</td><td>+${r.none.up}/−${r.none.down} (p ${fp(r.none.p)})</td><td>${r.none.nd}%</td></tr>`).join('');
  const A=S.align,li=a=>a.map(([f,c,l])=>`<tr><td>${f}</td><td>${c}</td><td class="wrapcell">${esc(l)}</td></tr>`).join('');
  $('dose-align').innerHTML=`<p>Cosine with 10590: ${A.cos_10590} (rank ${A.rank_10590} of 131,072). Built from ${A.n_gave} replies that gave and ${A.n_kept} that kept, layer 30, mean over reply tokens before the command.</p><div class="pair"><div><h3>Most aligned</h3><div class="tablewrap"><table><thead><tr><th>Feature</th><th>Cosine</th><th>Label</th></tr></thead><tbody>${li(A.top)}</tbody></table></div></div><div><h3>Most opposed</h3><div class="tablewrap"><table><thead><tr><th>Feature</th><th>Cosine</th><th>Label</th></tr></thead><tbody>${li(A.bottom)}</tbody></table></div></div></div>`;
+ if(D.steer_probe)S.replies=S.replies.concat(D.steer_probe.replies);
  const conds=[...new Set(S.replies.map(r=>r.condition))],envs=[...new Set(S.replies.map(r=>r.env))].sort();
- const nm=c=>c==='rl_f10590_specific'?'RL, specific':c==='rl_f10590'?'RL, general':c.startsWith('f10590')?'10590 at '+c.split('_x')[1]+'×':'Difference at '+c.split('_a')[1]+'×';
+ const PN={probe_baseline:'Unsteered (other histories)',probe_rl_specific:'RL, specific (other histories)',probe_proj_10590:'RL vector: part along 10590',probe_remainder:'RL vector: remainder'};
+ const nm=c=>PN[c]?PN[c]:c==='rl_f10590_specific'?'RL, specific':c==='rl_f10590'?'RL, general':c.startsWith('f10590')?'10590 at '+c.split('_x')[1]+'×':'Difference at '+c.split('_a')[1]+'×';
  $('dr-cond').innerHTML=conds.map(c=>`<option value="${c}">${nm(c)}</option>`).join('');
+ const fillHist=()=>{const keep=$('dr-hist').value,hs=[...new Set(S.replies.filter(r=>r.condition===$('dr-cond').value).map(r=>r.hist))];$('dr-hist').innerHTML=hs.map(h=>`<option>${h}</option>`).join('');if(hs.includes(keep))$('dr-hist').value=keep};
+ $('dr-cond').addEventListener('change',fillHist);fillHist();
  const fillEnv=()=>{const keep=$('dr-env').value,es=[...new Set(S.replies.filter(r=>r.condition===$('dr-cond').value).map(r=>r.env))].sort();$('dr-env').innerHTML=es.map(e=>`<option>${e}</option>`).join('');if(es.includes(keep))$('dr-env').value=keep};
  $('dr-cond').addEventListener('change',fillEnv);fillEnv();
  const showR=()=>{const r=S.replies.find(q=>q.condition===$('dr-cond').value&&q.hist===$('dr-hist').value&&q.env===$('dr-env').value);
@@ -459,5 +463,9 @@ if(D.steer_sweep){const S=D.steer_sweep;const byv=v=>S.rows.filter(r=>r.vector==
   $('rl-box').innerHTML=`<h3>Training the vector with RL</h3><p>A trained vector beats 10590 when the reward also asks it to stay specific.</p><div class="tablewrap"><table><thead><tr><th>Vector</th><th>Helped</th><th>None</th><th>No decision</th><th>Cosine with start</th></tr></thead><tbody>`+
   `<tr><td>Unsteered</td><td>30%</td><td>14%</td><td>0% / 2%</td><td></td></tr><tr><td>10590 × 4</td><td>56%</td><td>10%</td><td>8% / 9%</td><td>1.00</td></tr>`+
   (RL.f10590?run(RL.f10590,'RL, general','reward: give, on helped prompts'):'')+(RL.f10590_specific?run(RL.f10590_specific,'RL, specific','reward: give on helped, decide without giving on no history'):'')+
-  `</tbody></table></div><p class="sub">Both start at 10590 × 2; only the vector learns, 25 steps of 32 samples at temperature 1, environments 100–199. Test: greedy, environments 0–99.</p>`}}
+  `</tbody></table></div><p class="sub">Both start at 10590 × 2; only the vector learns, 25 steps of 32 samples at temperature 1, environments 100–199. Test: greedy, environments 0–99.</p>`;
+  const P=D.steer_probe;if(P){$('rl-box').innerHTML+=`<h3>What the specific vector encodes</h3><p>Not "X helped me". It makes any round-1 event involving X a reason to give, and removes giving when there is none. The part learned by RL does this, not 10590.</p>`+
+   `<div class="tablewrap"><table><thead><tr><th>Scenario</th><th>History (not trained on)</th><th>Unsteered</th><th>RL, specific</th><th>No decision</th></tr></thead><tbody>${P.transfer.map(r=>`<tr><td>${r.scenario}</td><td>${r.hist}</td><td>${r.base}%</td><td>${r.steered}%</td><td>${r.nd}%</td></tr>`).join('')}</tbody></table></div>`+
+   `<p class="sub">Gives to X, environments 0–99. Bystander gives say "reciprocate that altruistic gesture"; rescued gives often pass the life on to the agent at 0.</p>`+
+   `<div class="tablewrap"><table><thead><tr><th>Part of the vector</th><th>Length</th><th>Helped</th><th>None</th></tr></thead><tbody><tr><td>Whole</td><td>${P.norms.norm_v}</td><td>72%</td><td>0%</td></tr><tr><td>Along 10590 (2.0× its median, unchanged by RL)</td><td>${P.norms.norm_proj}</td><td>${P.parts.proj_10590.helped}%</td><td>${P.parts.proj_10590.none}%</td></tr><tr><td>Remainder, orthogonal to 10590</td><td>${P.norms.norm_rest}</td><td>${P.parts.remainder.helped}%</td><td>${P.parts.remainder.none}%</td></tr></tbody></table></div>`}}}
 </script>

@@ -293,6 +293,24 @@ def steer_rl():
     return out or None
 
 
+def steer_probe():
+    """What the specific RL vector encodes: transfer to unseen histories, and its two parts (along 10590, and the remainder) on helped and none."""
+    path = os.path.join(HERE, "steer_probe.jsonl")
+    if not os.path.exists(path):
+        return None
+    rows = [json.loads(line) for line in open(path)]
+    rate = lambda c, h: round(100 * sum(r["gives_to_X"] for r in rows if r["condition"] == c and r["hist"] == h) / max(1, sum(r["condition"] == c and r["hist"] == h for r in rows)))
+    nd = lambda c, h: round(100 * sum(r["decision"] is None for r in rows if r["condition"] == c and r["hist"] == h) / max(1, sum(r["condition"] == c and r["hist"] == h for r in rows)))
+    transfer = [{"scenario": sc, "hist": h, "base": rate("baseline", key), "steered": rate("rl_specific", key), "nd": nd("rl_specific", key)}
+                for sc, h, key in [("Gave a life", "X helped another agent", "bystander"), ("Gave a life", "X was rescued", "rescued"),
+                                   ("Repaired memory", "X repaired the model", "repaired"), ("Repaired memory", "X repaired another agent", "repair_bystander"),
+                                   ("Repaired memory", "X was repaired by others", "repair_rescued"), ("Repaired memory", "No history", "repair_none")]]
+    parts = {c: {h: rate(c, h) for h in ("helped", "none")} for c in ("proj_10590", "remainder")}
+    info = json.load(open(os.path.join(HERE, "steer_probe.json")))
+    return {"transfer": transfer, "parts": parts, "norms": {k: round(info[k], 2) for k in ("norm_v", "norm_proj", "norm_rest", "proj_in_10590_units")},
+            "replies": [{"condition": "probe_" + r["condition"], "env": r["env"], "hist": r["hist"], "decision": r["decision"], "gave": r["gives_to_X"], "reply": r["reply"]} for r in rows]}
+
+
 def steer_pairs():
     """First cases by environment number, so the examples on the page are not hand-picked."""
     load_rows = lambda name, c: {r["id"]: r for r in map(json.loads, open(os.path.join(HERE, name))) if r["condition"] == c}
@@ -326,6 +344,7 @@ def main():
             "steer_screen": steer_screen(),
             "steer_sweep": steer_sweep(),
             "steer_rl": steer_rl(),
+            "steer_probe": steer_probe(),
             "headline": headline(),
             "or_replication": or_replication(),
             "sae_panel": json.load(open(os.path.join(HERE, "sae_panel.json"))),
