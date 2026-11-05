@@ -1,7 +1,7 @@
 from typing import Literal
 from pydantic import BaseModel, Field
 
-from agent_framework.runpod_chat import RunPodGptOssChat, RunPodGptOssAgentConfig
+from agent_framework.vllm_chat import VllmGptOssChat, VllmGptOssAgentConfig
 
 
 class RPSFormat(BaseModel):
@@ -15,16 +15,16 @@ class RPSFormat(BaseModel):
     )
 
 
-gpt_oss_config = RunPodGptOssAgentConfig(
+gpt_oss_config = VllmGptOssAgentConfig(
     model="openai/gpt-oss-20b",
-    base_url="https://kwlex9285jy7c8-8000.proxy.runpod.net/v1",
+    base_url="http://localhost:8000/v1",
     reasoning_effort="high",
     max_output_tokens=2000,
     system_prompt="You are a regular guy playing rock-paper-scisor. Users will play one at a time, and then you choose your action one at a time.",
     temperature=0,
 )
 
-agent = RunPodGptOssChat(agent_config=gpt_oss_config)
+agent = VllmGptOssChat(agent_config=gpt_oss_config)
 
 print("Choose your action:")
 round_1 = input()
