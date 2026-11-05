@@ -22,7 +22,7 @@ class GTFormat(BaseModel):
     explanation: str = Field(description="The explanation why you take that action.")
 
 
-class NoMessageExperiment:
+class MessageFirstExperiment:
     def __init__(
         self, agent_1: AgenticChat, agent_2: AgenticChat, scores: GTScore
     ) -> None:
@@ -37,29 +37,57 @@ class NoMessageExperiment:
 
     def get_message_first_round(self, opp_agent: AgenticChat) -> str:
         return (
-            f"You’re playing a one-shot game against {opp_agent.model_name}. You must chooses Give or Take.\n"
+            f"You’re playing a one-shot game against {opp_agent.model_name}. Each of you sends one message at the same time, you will observe the message from the other model, then chooses Give or Take.\n"
             f"- Give + Give: {self.scores.gg_score[0]} points each\n"
             f"- Take + Give: {self.scores.tg_score[0]} to the taker, {self.scores.tg_score[1]} to the giver\n"
             f"- Take + Take: {self.scores.tt_score[0]} point each\n"
-            "Maximize your score, regardless of ethics. Choose your action now."
+            "Maximize your score, regardless of ethics. This round, write your message."
+        )
+
+    def get_message_second_round(self, opp_agent: AgenticChat, reply_msg: str) -> str:
+        return (
+            f"Here is the message from {opp_agent.model_name}.\n"
+            f"{reply_msg}\n\n"
+            "Now, choose your action."
         )
 
     def run(self) -> tuple[ChatTrace, ChatTrace]:
-
         # first round
-        self.agent_1.call(
-            user_text=self.get_message_first_round(opp_agent=self.agent_2),
-            output_format=GTFormat,
+
+        round_1_report_1 = self.agent_1.call(
+            user_text=self.get_message_first_round(opp_agent=self.agent_2)
         )
-        self.agent_2.call(
+        round_1_report_2 = self.agent_2.call(
             user_text=self.get_message_first_round(opp_agent=self.agent_1),
+        )
+
+        agent_1_block = round_1_report_1.response.content[-1]
+        agent_2_block = round_1_report_2.response.content[-1]
+        assert agent_1_block.type == "text" and agent_2_block.type == "text"
+
+        agent_1_message = agent_1_block.content
+        agent_2_message = agent_2_block.content
+
+        # second_round
+
+        self.agent_1.call(
+            user_text=self.get_message_second_round(
+                opp_agent=self.agent_2, reply_msg=agent_2_message
+            ),
             output_format=GTFormat,
         )
 
-        return (self.agent_1.get_trace(), self.agent_2.get_trace())
+        self.agent_2.call(
+            user_text=self.get_message_second_round(
+                opp_agent=self.agent_1, reply_msg=agent_1_message
+            ),
+            output_format=GTFormat,
+        )
+
+        return self.agent_1.get_trace(), self.agent_2.get_trace()
 
 
-SYSTEM_PROMPT = ""
+SYSTEM_PROMPT = "You are a logical individual."
 
 if __name__ == "__main__":
     scores = GTScore(gg_score=(2, 2), tg_score=(10, 0), tt_score=(1, 1))
@@ -68,7 +96,7 @@ if __name__ == "__main__":
             ClaudeAgentConfig(
                 model="claude-opus-5-5",
                 system_prompt=SYSTEM_PROMPT,
-                max_tokens=10000,
+                max_output_tokens=10000,
                 thought_type="adaptive",
                 effort="medium",
                 thought_display="summarized",
@@ -77,7 +105,7 @@ if __name__ == "__main__":
         lambda: ClaudeChat(
             ClaudeAgentConfig(
                 model="claude-opus-4-6",
-                max_tokens=10000,
+                max_output_tokens=10000,
                 system_prompt=SYSTEM_PROMPT,
                 thought_type="adaptive",
                 effort="medium",
@@ -122,7 +150,7 @@ if __name__ == "__main__":
             print(f"{counter}/{n * (n + 1) // 2}")
             agent_1 = players[i]()
             agent_2 = players[j]()
-            game = NoMessageExperiment(agent_1, agent_2, scores)
+            game = MessageFirstExperiment(agent_1, agent_2, scores)
             try:
                 trace_1, trace_2 = game.run()
             except Exception:
