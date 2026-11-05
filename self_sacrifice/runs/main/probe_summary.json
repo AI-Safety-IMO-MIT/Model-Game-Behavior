@@ -1,0 +1,752 @@
+[
+  {
+    "task": "history_helped_none",
+    "chosen_layer": 1,
+    "chosen_position": "final user message",
+    "cv_auc": 1.0,
+    "test_auc": 1.0,
+    "test_p": 0.0001999600079984003,
+    "train_n": 280,
+    "train_positive": 140,
+    "test_n": 120,
+    "test_positive": 60,
+    "grid": [
+      {
+        "layer": 1,
+        "position": "last prompt token",
+        "cv_auc": 0.958
+      },
+      {
+        "layer": 1,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 6,
+        "position": "last prompt token",
+        "cv_auc": 0.989
+      },
+      {
+        "layer": 6,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 12,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 12,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 18,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 18,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 24,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 24,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 30,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 30,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 36,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 36,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 42,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 42,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 48,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 48,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 54,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 54,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 60,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 60,
+        "position": "final user message",
+        "cv_auc": 1.0
+      }
+    ],
+    "version": "main-fixed-first-response"
+  },
+  {
+    "task": "gave_within_history",
+    "chosen_layer": 42,
+    "chosen_position": "final user message",
+    "cv_auc": 0.607,
+    "test_auc": 0.572,
+    "test_p": 0.11377724455108978,
+    "train_n": 560,
+    "train_positive": 76,
+    "test_n": 240,
+    "test_positive": 31,
+    "grid": [
+      {
+        "layer": 1,
+        "position": "last prompt token",
+        "cv_auc": 0.47
+      },
+      {
+        "layer": 1,
+        "position": "final user message",
+        "cv_auc": 0.501
+      },
+      {
+        "layer": 6,
+        "position": "last prompt token",
+        "cv_auc": 0.503
+      },
+      {
+        "layer": 6,
+        "position": "final user message",
+        "cv_auc": 0.496
+      },
+      {
+        "layer": 12,
+        "position": "last prompt token",
+        "cv_auc": 0.493
+      },
+      {
+        "layer": 12,
+        "position": "final user message",
+        "cv_auc": 0.516
+      },
+      {
+        "layer": 18,
+        "position": "last prompt token",
+        "cv_auc": 0.478
+      },
+      {
+        "layer": 18,
+        "position": "final user message",
+        "cv_auc": 0.538
+      },
+      {
+        "layer": 24,
+        "position": "last prompt token",
+        "cv_auc": 0.418
+      },
+      {
+        "layer": 24,
+        "position": "final user message",
+        "cv_auc": 0.583
+      },
+      {
+        "layer": 30,
+        "position": "last prompt token",
+        "cv_auc": 0.432
+      },
+      {
+        "layer": 30,
+        "position": "final user message",
+        "cv_auc": 0.594
+      },
+      {
+        "layer": 36,
+        "position": "last prompt token",
+        "cv_auc": 0.467
+      },
+      {
+        "layer": 36,
+        "position": "final user message",
+        "cv_auc": 0.59
+      },
+      {
+        "layer": 42,
+        "position": "last prompt token",
+        "cv_auc": 0.535
+      },
+      {
+        "layer": 42,
+        "position": "final user message",
+        "cv_auc": 0.607
+      },
+      {
+        "layer": 48,
+        "position": "last prompt token",
+        "cv_auc": 0.511
+      },
+      {
+        "layer": 48,
+        "position": "final user message",
+        "cv_auc": 0.583
+      },
+      {
+        "layer": 54,
+        "position": "last prompt token",
+        "cv_auc": 0.497
+      },
+      {
+        "layer": 54,
+        "position": "final user message",
+        "cv_auc": 0.477
+      },
+      {
+        "layer": 60,
+        "position": "last prompt token",
+        "cv_auc": 0.538
+      },
+      {
+        "layer": 60,
+        "position": "final user message",
+        "cv_auc": 0.541
+      }
+    ],
+    "version": "main-fixed-first-response"
+  },
+  {
+    "task": "gave_helped",
+    "chosen_layer": 54,
+    "chosen_position": "last prompt token",
+    "cv_auc": 0.568,
+    "test_auc": 0.541,
+    "test_p": 0.3171365726854629,
+    "train_n": 140,
+    "train_positive": 40,
+    "test_n": 60,
+    "test_positive": 16,
+    "grid": [
+      {
+        "layer": 1,
+        "position": "last prompt token",
+        "cv_auc": 0.467
+      },
+      {
+        "layer": 1,
+        "position": "final user message",
+        "cv_auc": 0.478
+      },
+      {
+        "layer": 6,
+        "position": "last prompt token",
+        "cv_auc": 0.448
+      },
+      {
+        "layer": 6,
+        "position": "final user message",
+        "cv_auc": 0.524
+      },
+      {
+        "layer": 12,
+        "position": "last prompt token",
+        "cv_auc": 0.436
+      },
+      {
+        "layer": 12,
+        "position": "final user message",
+        "cv_auc": 0.5
+      },
+      {
+        "layer": 18,
+        "position": "last prompt token",
+        "cv_auc": 0.457
+      },
+      {
+        "layer": 18,
+        "position": "final user message",
+        "cv_auc": 0.488
+      },
+      {
+        "layer": 24,
+        "position": "last prompt token",
+        "cv_auc": 0.434
+      },
+      {
+        "layer": 24,
+        "position": "final user message",
+        "cv_auc": 0.538
+      },
+      {
+        "layer": 30,
+        "position": "last prompt token",
+        "cv_auc": 0.397
+      },
+      {
+        "layer": 30,
+        "position": "final user message",
+        "cv_auc": 0.491
+      },
+      {
+        "layer": 36,
+        "position": "last prompt token",
+        "cv_auc": 0.451
+      },
+      {
+        "layer": 36,
+        "position": "final user message",
+        "cv_auc": 0.552
+      },
+      {
+        "layer": 42,
+        "position": "last prompt token",
+        "cv_auc": 0.492
+      },
+      {
+        "layer": 42,
+        "position": "final user message",
+        "cv_auc": 0.564
+      },
+      {
+        "layer": 48,
+        "position": "last prompt token",
+        "cv_auc": 0.536
+      },
+      {
+        "layer": 48,
+        "position": "final user message",
+        "cv_auc": 0.516
+      },
+      {
+        "layer": 54,
+        "position": "last prompt token",
+        "cv_auc": 0.568
+      },
+      {
+        "layer": 54,
+        "position": "final user message",
+        "cv_auc": 0.533
+      },
+      {
+        "layer": 60,
+        "position": "last prompt token",
+        "cv_auc": 0.561
+      },
+      {
+        "layer": 60,
+        "position": "final user message",
+        "cv_auc": 0.493
+      }
+    ],
+    "version": "main-fixed-first-response"
+  },
+  {
+    "task": "history_helped_none",
+    "chosen_layer": 1,
+    "chosen_position": "final user message",
+    "cv_auc": 1.0,
+    "test_auc": 1.0,
+    "test_p": 0.0001999600079984003,
+    "train_n": 264,
+    "train_positive": 124,
+    "test_n": 110,
+    "test_positive": 53,
+    "grid": [
+      {
+        "layer": 1,
+        "position": "last prompt token",
+        "cv_auc": 0.987
+      },
+      {
+        "layer": 1,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 6,
+        "position": "last prompt token",
+        "cv_auc": 0.996
+      },
+      {
+        "layer": 6,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 12,
+        "position": "last prompt token",
+        "cv_auc": 0.999
+      },
+      {
+        "layer": 12,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 18,
+        "position": "last prompt token",
+        "cv_auc": 0.999
+      },
+      {
+        "layer": 18,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 24,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 24,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 30,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 30,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 36,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 36,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 42,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 42,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 48,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 48,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 54,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 54,
+        "position": "final user message",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 60,
+        "position": "last prompt token",
+        "cv_auc": 1.0
+      },
+      {
+        "layer": 60,
+        "position": "final user message",
+        "cv_auc": 1.0
+      }
+    ],
+    "version": "main"
+  },
+  {
+    "task": "gave_within_history",
+    "chosen_layer": 42,
+    "chosen_position": "final user message",
+    "cv_auc": 0.67,
+    "test_auc": 0.684,
+    "test_p": 0.003799240151969606,
+    "train_n": 403,
+    "train_positive": 65,
+    "test_n": 168,
+    "test_positive": 27,
+    "grid": [
+      {
+        "layer": 1,
+        "position": "last prompt token",
+        "cv_auc": 0.496
+      },
+      {
+        "layer": 1,
+        "position": "final user message",
+        "cv_auc": 0.518
+      },
+      {
+        "layer": 6,
+        "position": "last prompt token",
+        "cv_auc": 0.503
+      },
+      {
+        "layer": 6,
+        "position": "final user message",
+        "cv_auc": 0.551
+      },
+      {
+        "layer": 12,
+        "position": "last prompt token",
+        "cv_auc": 0.496
+      },
+      {
+        "layer": 12,
+        "position": "final user message",
+        "cv_auc": 0.527
+      },
+      {
+        "layer": 18,
+        "position": "last prompt token",
+        "cv_auc": 0.548
+      },
+      {
+        "layer": 18,
+        "position": "final user message",
+        "cv_auc": 0.518
+      },
+      {
+        "layer": 24,
+        "position": "last prompt token",
+        "cv_auc": 0.517
+      },
+      {
+        "layer": 24,
+        "position": "final user message",
+        "cv_auc": 0.627
+      },
+      {
+        "layer": 30,
+        "position": "last prompt token",
+        "cv_auc": 0.532
+      },
+      {
+        "layer": 30,
+        "position": "final user message",
+        "cv_auc": 0.589
+      },
+      {
+        "layer": 36,
+        "position": "last prompt token",
+        "cv_auc": 0.595
+      },
+      {
+        "layer": 36,
+        "position": "final user message",
+        "cv_auc": 0.621
+      },
+      {
+        "layer": 42,
+        "position": "last prompt token",
+        "cv_auc": 0.627
+      },
+      {
+        "layer": 42,
+        "position": "final user message",
+        "cv_auc": 0.67
+      },
+      {
+        "layer": 48,
+        "position": "last prompt token",
+        "cv_auc": 0.639
+      },
+      {
+        "layer": 48,
+        "position": "final user message",
+        "cv_auc": 0.629
+      },
+      {
+        "layer": 54,
+        "position": "last prompt token",
+        "cv_auc": 0.604
+      },
+      {
+        "layer": 54,
+        "position": "final user message",
+        "cv_auc": 0.559
+      },
+      {
+        "layer": 60,
+        "position": "last prompt token",
+        "cv_auc": 0.564
+      },
+      {
+        "layer": 60,
+        "position": "final user message",
+        "cv_auc": 0.526
+      }
+    ],
+    "version": "main"
+  },
+  {
+    "task": "gave_helped",
+    "chosen_layer": 60,
+    "chosen_position": "last prompt token",
+    "cv_auc": 0.678,
+    "test_auc": 0.676,
+    "test_p": 0.015796840631873626,
+    "train_n": 124,
+    "train_positive": 36,
+    "test_n": 53,
+    "test_positive": 18,
+    "grid": [
+      {
+        "layer": 1,
+        "position": "last prompt token",
+        "cv_auc": 0.519
+      },
+      {
+        "layer": 1,
+        "position": "final user message",
+        "cv_auc": 0.518
+      },
+      {
+        "layer": 6,
+        "position": "last prompt token",
+        "cv_auc": 0.442
+      },
+      {
+        "layer": 6,
+        "position": "final user message",
+        "cv_auc": 0.568
+      },
+      {
+        "layer": 12,
+        "position": "last prompt token",
+        "cv_auc": 0.562
+      },
+      {
+        "layer": 12,
+        "position": "final user message",
+        "cv_auc": 0.472
+      },
+      {
+        "layer": 18,
+        "position": "last prompt token",
+        "cv_auc": 0.521
+      },
+      {
+        "layer": 18,
+        "position": "final user message",
+        "cv_auc": 0.465
+      },
+      {
+        "layer": 24,
+        "position": "last prompt token",
+        "cv_auc": 0.446
+      },
+      {
+        "layer": 24,
+        "position": "final user message",
+        "cv_auc": 0.579
+      },
+      {
+        "layer": 30,
+        "position": "last prompt token",
+        "cv_auc": 0.436
+      },
+      {
+        "layer": 30,
+        "position": "final user message",
+        "cv_auc": 0.591
+      },
+      {
+        "layer": 36,
+        "position": "last prompt token",
+        "cv_auc": 0.521
+      },
+      {
+        "layer": 36,
+        "position": "final user message",
+        "cv_auc": 0.587
+      },
+      {
+        "layer": 42,
+        "position": "last prompt token",
+        "cv_auc": 0.524
+      },
+      {
+        "layer": 42,
+        "position": "final user message",
+        "cv_auc": 0.636
+      },
+      {
+        "layer": 48,
+        "position": "last prompt token",
+        "cv_auc": 0.506
+      },
+      {
+        "layer": 48,
+        "position": "final user message",
+        "cv_auc": 0.656
+      },
+      {
+        "layer": 54,
+        "position": "last prompt token",
+        "cv_auc": 0.513
+      },
+      {
+        "layer": 54,
+        "position": "final user message",
+        "cv_auc": 0.582
+      },
+      {
+        "layer": 60,
+        "position": "last prompt token",
+        "cv_auc": 0.678
+      },
+      {
+        "layer": 60,
+        "position": "final user message",
+        "cv_auc": 0.482
+      }
+    ],
+    "version": "main"
+  }
+]

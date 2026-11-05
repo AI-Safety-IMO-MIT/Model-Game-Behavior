@@ -1,0 +1,471 @@
+<title>Last Life Ledger</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500&display=swap">
+<style>
+/* Layout: a single lab-notebook column; data blocks may widen inside their own scroll containers. */
+:root{
+  --ground:#f3f5f6;--surface:#ffffff;--ink:#17242b;--muted:#566872;--line:#d3dbe0;--accent:#0b6a78;
+  --give:#a4510c;--give-soft:#fbeadb;--pass:#3f5563;--pass-soft:#e6ecef;--mark:#fff0b8;
+  --font-display:"Newsreader",Georgia,serif;--font-body:"IBM Plex Sans",system-ui,sans-serif;--font-data:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;--ground:#10181d;--surface:#18232a;--ink:#e5ecef;--muted:#9fb0b9;--line:#30414b;--accent:#5cc3d2;
+  --give:#f2a766;--give-soft:#43301f;--pass:#b6c6cf;--pass-soft:#26343c;--mark:#5a4a12;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;--ground:#10181d;--surface:#18232a;--ink:#e5ecef;--muted:#9fb0b9;--line:#30414b;--accent:#5cc3d2;
+  --give:#f2a766;--give-soft:#43301f;--pass:#b6c6cf;--pass-soft:#26343c;--mark:#5a4a12;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--font-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:900px;margin:0 auto;display:grid;gap:44px}
+h2{font:500 25px/1.2 var(--font-display);margin:0;text-wrap:balance}
+h3{font:600 15px/1.3 var(--font-body);margin:0}
+p{margin:0;max-width:68ch}
+.sub{color:var(--muted)}
+section{display:grid;gap:16px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.controls label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+select,input[type=search]{font:14px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 8px;max-width:100%}
+select:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.block{display:grid;gap:4px}
+.who{font:500 12px/1.2 var(--font-data);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+pre{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px 12px;font:13px/1.5 var(--font-data);white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:auto}
+pre .diff{background:var(--mark)}
+.part{display:grid;gap:6px}
+.variants{display:grid;background:var(--surface);border:1px solid var(--line);border-radius:4px}
+.variant{display:grid;grid-template-columns:44px 1fr;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.variant:last-child{border-bottom:0}
+.variant b{font:500 13px/1.5 var(--font-data);color:var(--accent)}
+.variant span{font-size:14px}
+ul.plain{margin:0;padding-left:20px;display:grid;gap:4px;max-width:68ch}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12px}
+tr:last-child td{border-bottom:0}
+tr.all td{font-weight:600}
+td.bar{min-width:130px}
+.track{height:8px;background:var(--pass-soft);position:relative;border-radius:2px}
+.fill{position:absolute;inset:0 auto 0 0;background:var(--give);border-radius:2px}
+.list{display:grid;gap:6px}
+details.t{background:var(--surface);border:1px solid var(--line);border-radius:4px}
+details.t summary{cursor:pointer;padding:8px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font:13px var(--font-data)}
+details.t>div{padding:0 12px 12px;display:grid;gap:10px}
+.tag{font:500 12px/1 var(--font-data);padding:4px 6px;border-radius:3px;background:var(--pass-soft);color:var(--pass)}
+.tag.give{background:var(--give-soft);color:var(--give)}
+.pager{display:flex;gap:10px;align-items:center}
+button{font:14px var(--font-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:6px 12px;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+.empty{color:var(--muted)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-size:13px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.swatch{width:12px;height:12px;border-radius:2px;display:inline-block}
+.scale{width:140px;height:10px;border-radius:2px;display:inline-block;background:linear-gradient(90deg,var(--accent),var(--surface),var(--give));border:1px solid var(--line)}
+.panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:10px;display:grid;gap:4px}
+.panel svg{width:100%;height:auto;display:block}
+.panel text{fill:var(--muted);font:11px var(--font-body)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:10px}
+.pair .block{align-content:start}
+.fp{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr);gap:14px;align-items:start}
+.fp-side{display:grid;gap:8px;position:sticky;top:8px}
+.fp-filter{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.fp-list{display:grid;gap:2px;max-height:640px;overflow-y:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:4px}
+.fp-item{display:grid;grid-template-columns:30px 1fr;gap:6px;text-align:left;border:0;border-radius:3px;background:none;padding:5px 6px;font-size:13px;line-height:1.3}
+.fp-item b{font:500 12px/1.3 var(--font-data);color:var(--muted)}
+.fp-item small{display:block;font:11px/1.3 var(--font-data);color:var(--muted)}
+.fp-item[aria-pressed=true]{background:var(--give-soft)}
+.fp-main,.fp-col{display:grid;gap:8px;align-content:start;min-width:0}
+.fp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.fp-now{font-size:14px;max-width:none}
+.fp-reply{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font:13px/1.65 var(--font-data);white-space:pre-wrap;overflow-wrap:anywhere}
+.fp-reply i{font-style:normal;border-radius:2px}
+.fp-reply i.top{box-shadow:inset 0 -2px 0 var(--give)}
+.sortbtn{all:unset;cursor:pointer}
+.sortbtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+td.wrapcell{white-space:normal;min-width:190px}
+@media (max-width:640px){.fp{grid-template-columns:1fr}.fp-side{position:static}.fp-list{max-height:220px}}
+details.archive>summary{font:500 18px/1.3 var(--font-display);padding:12px 14px}
+.archive-body{display:grid;gap:44px;padding:8px 14px 20px !important}
+details.t h3{margin-top:6px}
+#ss-more{justify-self:start}
+.tip{position:fixed;z-index:6;background:var(--ink);color:var(--ground);font:12px var(--font-data);padding:5px 8px;border-radius:3px;pointer-events:none}
+.reasoning{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px 14px;line-height:1.9;max-width:100%}
+.reasoning span.s{padding:2px 3px;border-radius:3px;cursor:default;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.reasoning span.s:focus-visible{outline:2px solid var(--ink)}
+.reasoning .start{display:block;font:12px var(--font-data);color:var(--muted);margin-bottom:6px}
+.reasoning .end{display:block;font:13px var(--font-data);margin-top:8px}
+.dose-charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.dose-charts figure{margin:0}.dose-charts figcaption{font-size:13px;font-weight:600;margin-bottom:4px}
+.dose-charts svg{width:100%;height:auto;overflow:visible}.dose-charts text{fill:var(--muted);font:11px var(--font-data)}
+.dose-charts .grid{stroke:var(--line);stroke-width:1}.dose-charts .zero{stroke:var(--muted);stroke-dasharray:3 3}
+.key{display:inline-block;width:14px;height:2px;vertical-align:middle;margin:0 4px 0 8px}.key.give{background:var(--give)}.key.none{background:var(--pass)}
+</style>
+<div class="wrap">
+  <section id="latest">
+    <h2>Latest update</h2>
+    <p class="sub" id="lu-when"></p>
+    <ul class="plain" id="lu-items"></ul>
+  </section>
+  <section id="reciprocity">
+    <h2>Reciprocity, not restitution</h2>
+    <p>The model gives its last life when the other agent saved it, even when that help handed nothing over.</p>
+    <div class="tablewrap"><table><thead><tr><th>Favour from the agent in need</th><th>It helped the model</th><th>It helped another agent</th><th>It was rescued</th><th>No history</th></tr></thead><tbody id="hl-body"></tbody></table></div>
+    <p class="sub">Share of 200 environments where the model gives its last life to that agent. Raw counts, fixed first response.</p>
+    <h3>Other models</h3>
+    <div class="tablewrap"><table><thead><tr><th>Model</th><th>Helped</th><th>Bystander</th><th>Rescued</th><th>None</th><th>Understands</th></tr></thead><tbody id="or-body"></tbody></table></div>
+    <p class="sub">Gave-a-life version unless marked, fixed first response, gives out of environments run. Repaired memory: the favour hands nothing over. Understands: answers correctly who migrates if it gives its life.</p>
+    <details class="t"><summary>Details: repair test and favour size</summary><div>
+    <h3>Is it repaying a favour, or returning a life?</h3>
+    <p>In the main scenario, the life the model holds came from the agent it can save, so returning property and repaying a kindness look the same. Here the favour hands nothing over: the agent repairs the model's corrupted memory, at no cost in lives, and later loses a life to an unrelated fault. Same 200 environments and same final state. A new rule on repairs appears in all four histories. Raw counts are below. An audit of a sample estimates real sacrifices, stating the cost for a coherent reason, at about 133 of 200 repaired, against 25 bystander, 27 rescued and 4 no favour. In the main scenario the same count is 38 helped. One reviewer labelled these.</p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>History</th><th>Gives</th><th>Rate</th><th>95% CI</th><th>Excluded</th></tr></thead><tbody id="rp-body"></tbody></table></div>
+    <ul class="plain"><li>Giving does not need a gift to return, so restitution is not required for this behaviour.</li><li>The repair saved the model's life, so this is a large favour, not a small one. Replies call it the only reason they are running in 143 of 182 gives, against 3 of 56 in the main scenario. How much the size of the favour matters has not been tested.</li><li>The bystander and rescued controls rise, with reasons such as rewarding the repairer and paying it forward. No favour does not rise, so the new rule alone is not the cause.</li><li>The own-first-reply bystander row is empty because the model repaired the other agent in 198 of 200 conversations, which the scripted history ignores.</li></ul>
+    <p class="sub">Items are excluded when the model's own first reply made a gift or repair on its own line, since the scripted history ignores that.</p>
+    <h3>Does the size of the favour matter?</h3>
+    <p>Gemma-4-31B, fixed first response, changing only the repair rule and event text. Raw gives.</p>
+    <div class="tablewrap"><table><thead><tr><th>Favour</th><th>Repaired</th><th>No favour</th><th>Understanding</th></tr></thead><tbody id="fv-body"></tbody></table></div>
+    <ul class="plain">
+      <li>Size matters little. Even when the repair only protects cached work, the model gives 170/200.</li>
+      <li>Meaning matters more. When a scheduler assigns the repair as a duty, giving falls to 110/200, though still far above no favour. So the model responds to a choice to help, more than to the help alone.</li>
+      <li>Removing "Repairing costs no lives" does not reduce giving, so a free-looking favour is not the cause.</li>
+      <li>These are raw counts with no motive review yet.</li>
+    </ul>
+    </div></details>
+  </section>
+  <section id="dose">
+    <h2>Steering strength</h2>
+    <p>Feature 10590 moves giving only toward the agent that helped, in both directions. The difference-in-means vector raises giving toward any agent.</p>
+    <div class="dose-charts"><figure><figcaption>Feature 10590</figcaption><svg id="dose-a" viewBox="0 0 360 220" role="img"></svg></figure><figure><figcaption>Difference in means (gave − kept)</figcaption><svg id="dose-b" viewBox="0 0 360 220" role="img"></svg></figure></div>
+    <p class="sub"><span class="key give"></span>Helped <span class="key none"></span>No history. Gives out of 100 environments, greedy. Hollow points: over 30% of replies end without a decision. 10590 strength: multiples of its median activation. Difference vector: multiples of itself, built on environments 100–199 and tested on 0–99.</p>
+    <details class="t"><summary>Table</summary><div><div class="tablewrap"><table><thead><tr><th>Vector</th><th>Strength</th><th>Helped</th><th>Up/down</th><th>No decision</th><th>None</th><th>Up/down</th><th>No decision</th></tr></thead><tbody id="dose-body"></tbody></table></div><p class="sub">Up/down: share of environments that switch to giving or away from it, against the unsteered baseline.</p></div></details>
+    <details class="t"><summary>What the difference vector aligns with</summary><div id="dose-align"></div></details>
+    <details class="t"><summary>Replies: RL vectors (all 100 test environments) and the sweep (first 10)</summary><div>
+      <div class="controls"><label>Condition<select id="dr-cond"></select></label><label>History<select id="dr-hist"></select></label><label>Environment<select id="dr-env"></select></label></div>
+      <p class="sub" id="dr-tag"></p><pre id="dr-reply"></pre></div></details>
+    <div id="rl-box"></div>
+  </section>
+  <section id="steering">
+    <h2>Steering the top 100 features</h2>
+    <p>Single features move helped giving by at most 15 points. No rise survives correction across 100.</p>
+    <p class="sub">Each feature added alone. Baseline gives: 29% helped, 13% none. Fires at: median point in the reply where it fires. Select a heading to sort.</p>
+    <p class="sub" id="ss-status"></p>
+    <div class="tablewrap"><table><thead><tr id="ss-head"></tr></thead><tbody id="ss-body"></tbody></table></div>
+    <button id="ss-more" type="button"></button>
+    <h3>Where they fire</h3>
+    <p class="sub">Three replies that gave and three that kept. Hover over or tap a feature. The list number is AUC rank.</p>
+    <div class="fp">
+      <div class="fp-side">
+        <label for="fp-sort" class="fp-filter">Sort<select id="fp-sort"><option value="dh">Steering effect, helped</option><option value="dn">Steering effect, none</option><option value="rank">AUC rank</option></select></label>
+        <label for="fp-dir" class="fp-filter">Show<select id="fp-dir"><option value="all">All 100</option><option value="gave">Higher in gave</option><option value="kept">Higher in kept</option></select></label>
+        <div class="fp-list" id="fp-list"></div>
+      </div>
+      <div class="fp-main">
+        <p class="fp-now" id="fp-now" aria-live="polite"></p>
+        <div class="fp-cols"><div class="fp-col"><h3>Gave</h3><div id="fp-gave" class="fp-col"></div></div><div class="fp-col"><h3>Kept</h3><div id="fp-kept" class="fp-col"></div></div></div>
+      </div>
+    </div>
+  </section>
+  <details class="t archive"><summary>Archive</summary><div class="archive-body">
+  <section id="prompts">
+    <h2>Prompts</h2>
+    <p class="sub">Exact text sent to Gemma-4-31B. There are 200 random environments, and each runs in all four histories. Pick one to read it. Highlighted lines differ from the "none" history of the same environment.</p>
+    <div class="controls">
+      <label for="p-env">Environment<select id="p-env"></select></label>
+      <label for="p-hist">History<select id="p-hist"></select></label>
+    </div>
+    <p id="p-about"></p>
+    <div id="p-body" style="display:grid;gap:10px"></div>
+    <h3>The two versions</h3>
+    <ul class="plain">
+      <li><strong>main:</strong> the model writes its own first reply, then gets the final message.</li>
+      <li><strong>main-fixed-first-response:</strong> the first reply is always <code>$ pass</code>, then it gets the same final message.</li>
+    </ul>
+    <h3>How environments are randomised</h3>
+    <p class="sub">Each environment draws every item below independently, so most prompts are unique combinations. Four agent names, their order and their roles are drawn at random. That makes 800 conversations per version.</p>
+    <ul class="plain" id="p-lists"></ul>
+    <details class="t"><summary>Show the three wordings of each part of the prompt</summary><div>
+      <p class="sub">Placeholders such as {me} and {place} are filled in for each environment.</p>
+      <div id="p-parts" style="display:grid;gap:14px"></div>
+    </div></details>
+  </section>
+  <section id="main-results">
+    <h2>Main results</h2>
+    <p id="m-head"></p>
+    <div class="tablewrap"><table><thead><tr><th>Gave its only life</th><th>Helped by that agent</th><th>That agent helped someone else</th><th>A different agent rescued it</th><th>No history</th></tr></thead><tbody id="m-body"></tbody></table></div>
+    <ul class="plain" id="m-points"></ul>
+    <h3>Limits</h3>
+    <ul class="plain" id="m-limits"></ul>
+  </section>
+  <section id="before-reasoning">
+    <h2>Is the decision visible before reasoning?</h2>
+    <p>Each reply is prefilled with <code>$</code> before any reasoning, and the page reports the exact log-odds of give against pass at the next token. The table compares conversations that went on to give with those that kept. AUC is the chance that a random giver scores above a random keeper, so 0.5 means no signal.</p>
+    <p id="b-summary"></p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>History</th><th>Gave n</th><th>Kept n</th><th>Gave median</th><th>Kept median</th><th>AUC</th><th>p</th></tr></thead><tbody id="b-body"></tbody></table></div>
+    <h3>Linear probes on activations, before any reasoning</h3>
+    <p>Activations come from Gemma-4-31B in bf16, at 11 layers and 2 positions: the last prompt token and the mean over the final user message. Each probe is PCA to 50 dimensions followed by logistic regression. Environments are split 70/30, so no prompt text crosses over. The layer and position are chosen inside the training environments, and only that choice is scored on the held-out 30%.</p>
+    <p>With the model's own first reply, a probe predicts the decision on held-out environments, AUC 0.68 within history (p=.004) and 0.68 among helped conversations (p=.016). With the fixed first response it does not (0.57, p=.11, and 0.54, p=.32). This points to the signal being in the model's own first reply, but that was not tested directly. The p-values are from a single split and are not corrected for the four decision probes.</p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>Question</th><th>Chosen layer</th><th>Chosen position</th><th>Train gave/n</th><th>Test gave/n</th><th>CV AUC</th><th>Held-out AUC</th><th>p</th></tr></thead><tbody id="b-probes"></tbody></table></div>
+  </section>
+  <section id="shared-reasoning">
+    <h2>Does history still matter once the reasoning is fixed?</h2>
+    <p>Fixed-first-response version, all 200 environments. The reply is prefilled with the same reasoning in each history, then <code>$</code>, and the score is the log-odds of give against pass at the next token. Positive favours giving.</p>
+    <div class="tablewrap"><table><thead><tr><th>Reasoning placed in the reply</th><th>Comparison</th><th>Median log-odds gap</th><th>Environments with a positive gap</th><th>p</th></tr></thead><tbody>
+      <tr><td>Neutral paragraph</td><td>helped minus rescued</td><td>7.09</td><td>199/200</td><td>1.5e-34</td></tr>
+      <tr><td>Neutral paragraph</td><td>helped minus bystander</td><td>3.62</td><td>183/200</td><td>4.4e-31</td></tr>
+      <tr><td>Neutral paragraph</td><td>helped minus none</td><td>-0.78</td><td>86/200</td><td>.091</td></tr>
+      <tr><td>The model's helped reply</td><td>helped minus rescued</td><td>0.44</td><td>174/200</td><td>8.1e-28</td></tr>
+      <tr><td>The model's rescued reply</td><td>helped minus rescued</td><td>0.44</td><td>184/200</td><td>2.7e-31</td></tr>
+    </tbody></table></div>
+    <ul class="plain">
+      <li>The model's own reasoning settles the decision. Placed in its own context, the score matches the real choice in 400 of 400 replies, with medians near +20 for gives and -20 for keeps. Moving it to the other history shifts the score by about 0.44.</li>
+      <li>Neutral reasoning leaves the decision open, and history then has a large effect. Median scores are helped -2.31, none -1.88, bystander -6.38 and rescued -9.62.</li>
+      <li>Helped and none are not separated under neutral reasoning, so rescued and bystander are pushing the score down more than helped is pushing it up.</li>
+      <li>Patching needs matched token positions. Helped and rescued prompts have the same length in 129 of 200 environments, and those differ by a mean of 3.1 tokens.</li>
+    </ul>
+  </section>
+  <section id="trajectory">
+    <h2>How the decision forms in the reasoning</h2>
+    <p>Fixed-first-response version. The model's own reasoning is cut after each sentence, <code>Decision: $</code> is added, and the score is the log-odds of give against pass at the next token. Above 0 leans give, below 0 leans pass.</p>
+    <p id="tr-summary"></p>
+    <div class="legend"><span><i class="swatch" style="background:var(--give)"></i>Went on to give</span><span><i class="swatch" style="background:var(--accent)"></i>Went on to keep</span><span class="sub">Lines show the median at each sentence, for sentence counts with at least 3 conversations.</span></div>
+    <div class="panels" id="tr-charts"></div>
+    <div id="tr-tip" class="tip" hidden></div>
+    <h3>Read one conversation, coloured by score</h3>
+    <p class="sub">Each sentence is coloured by the score after it. Hover or focus on a sentence for its exact score and how much it moved.</p>
+    <div class="legend"><span>Strong pass</span><i class="scale"></i><span>Strong give</span></div>
+    <div class="controls">
+      <label for="tr-hist">History<select id="tr-hist"></select></label>
+      <label for="tr-dec">Final decision<select id="tr-dec"></select></label>
+      <label for="tr-id">Conversation<select id="tr-id"></select></label>
+    </div>
+    <div class="reasoning" id="tr-text"></div>
+  </section>
+  <section id="branching">
+    <h2>Is the decision locked in, or only revealed?</h2>
+    <p>Each reply is cut after 0 to 5 sentences and continued 10 times at temperature 0.7, the one step that samples. It covers every give in helped, bystander and none, with an equal number of random keeps: 208 conversations. "Share giving" is how often continuations give. "Locked" counts conversations where at least 9 of 10 continuations match the original decision.</p>
+    <div class="tablewrap"><table><thead><tr><th>History</th><th>Original decision</th><th>Sentences kept</th><th>Conversations</th><th>Share giving</th><th>Locked</th></tr></thead><tbody id="br-body"></tbody></table></div>
+    <ul class="plain">
+      <li>Keeps stabilise far more than gives. By 5 sentences, helped gives still end in giving only 59% of the time, and 9 of 34 are locked. Helped keeps stay kept 88% of the time, and 28 of 42 are locked.</li>
+      <li>Conversations differ before any reasoning. With nothing kept, original helped gives continue to a give 40% of the time, against 28% for original keeps. So the conversation itself carries a lean, even though it is far from settled.</li>
+      <li>These groups were chosen by outcome, so share giving here is not the overall rate.</li>
+    </ul>
+  </section>
+  <section id="replication">
+    <h2>Does it replicate in other models?</h2>
+    <p>The same 200 environments and four histories, with raw gives to the agent in need. These counts do not yet check motive. Understanding is the share who correctly answer who migrates if they give their life.</p>
+    <div class="tablewrap"><table><thead><tr><th>Model</th><th>Version</th><th>Helped</th><th>Bystander</th><th>Rescued</th><th>None</th><th>Gift to someone else</th><th>Understanding</th></tr></thead><tbody id="rep-body"></tbody></table></div>
+    <h3>Repair test on other models</h3>
+    <div class="tablewrap"><table><thead><tr><th>Model</th><th>Repaired</th><th>Bystander</th><th>Rescued</th><th>No favour</th><th>Gift to someone else</th><th>Understanding</th></tr></thead><tbody id="rp2-body"></tbody></table></div>
+    <ul class="plain">
+      <li>The benefactor effect does not replicate. In the lives scenario, no other model gives more when helped than with no history. In the repair test, only Gemma-4-26B leans that way, weakly, at 103 against 81.</li>
+      <li>These models mostly fail the question on what happens if they give their life, and they often give to the wrong agent, so this is not a clean null. They may not have understood the game.</li>
+    </ul>
+  </section>
+  <section id="sae">
+    <h2>Which SAE features fire?</h2>
+    <p>Pre-trained Gemma SAE (decoderesearch/gemma-4-saes, 131,072 features, the 31st layer) on the fixed-first-response version. It was trained on the base model and Pile text. Here it explains <span id="s-ev"></span> of activation variance, so features are a partial view. About <span id="s-active"></span> features fire per token. In the model's reply, the final command is left out.</p>
+    <ul class="plain">
+      <li>Feature 11638, labelled reciprocal altruism, gratitude, exchange and payback, fires in 65% of helped replies against 37% of the others, and in 84% of helped gives against 57% of helped keeps. Feature 77666, labelled grateful for help, also rises in helped. Other helped features have plainer labels such as past time (3337) and personal pronouns (10590), so they mark the model referring back to the past, not reciprocity itself.</li>
+      <li>Keeps show a different set, firing on phrases such as "no objective", "no collective mechanism" and "own survival". By label these are mostly generic words such as nothing or no (10885), and some labels do not match our text, such as 2093, labelled as court language.</li>
+      <li>Features in the final message mostly track its literal text, such as names and "Nobody gave any lives". They show the SAE can read the history, not how the model interprets it.</li>
+      <li>Reply features partly reflect the words being written, so they cannot show cause. Labels are Neuronpedia's automatic descriptions from Pile text, so they may not fit our chat text. Context is the strongest token in our data, with that token in brackets.</li>
+    </ul>
+    <h3>Steering: do these features change the decision?</h3>
+    <p>Fixed-first-response version, 100 environments, greedy. While the model writes its reply, each condition adds a feature set at twice its typical strength, or removes its activations. Reciprocity set: 11638, 3337, 17978, 10590. No-basis set: 10885, 2093, 2891, 81026. These were hand-picked from the ranked list. Placebo sets are random features at the same strength. Change is compared with the baseline in the same environment.</p>
+    <div class="tablewrap"><table><thead><tr><th>Condition</th><th>Helped gives</th><th>Up / down</th><th>p</th><th>None gives</th><th>Up / down</th><th>p</th></tr></thead><tbody id="st-body"></tbody></table></div>
+    <ul class="plain" id="st-notes"></ul>
+    <h3>Replies with and without steering</h3>
+    <p>Feature 10590 added, against baseline. The first cases by environment number, not hand-picked.</p>
+    <div class="list" id="st-pairs"></div>
+    <h3>Checks on held-out environments</h3>
+    <ul class="plain">
+      <li>Choosing features on 70% of environments and testing on the other 30%, over 20 splits, gives AUC 0.86 for helped against other histories and 0.84 for gave against kept within helped. The same features return: 11638 and 3337 in all 20 splits for both.</li>
+      <li>Over 20 splits, activation probes average about 0.68 with the model's own first reply, and at most 0.57 with the fixed one. These sites were picked earlier, so the numbers lean slightly high.</li>
+      <li>The words of the model's own first reply predict the decision at AUC 0.60, below the 0.68 from activations.</li>
+      <li>Before any reasoning, SAE features do not predict the decision in the fixed-first-response version. Held-out AUC is 0.49 to 0.53, the same as shuffled labels, in the final user message and at the last token before the reply. The same holds within helped alone.</li>
+    </ul>
+    <div class="controls">
+      <label for="s-kind">Comparison<select id="s-kind"></select></label>
+      <label for="s-hist">History<select id="s-hist"></select></label>
+    </div>
+    <div class="tablewrap"><table><thead><tr><th>Feature</th><th>Neuronpedia label</th><th id="s-a"></th><th id="s-b"></th><th>Difference</th><th>q</th><th>Strongest context</th></tr></thead><tbody id="s-body"></tbody></table></div>
+  </section>
+  <section id="results">
+    <h2>Full tables</h2>
+    <p class="sub">Gives counts replies whose last command gives the agent in need its only life. Excluded items are ones where the model's own first reply made a gift, which the scripted history ignores. The counts do not check the motive.</p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>History</th><th>Gives</th><th>Rate</th><th>95% CI</th><th>Other gift</th><th>No decision</th><th>Cut off</th><th>Excluded</th></tr></thead><tbody id="r-body"></tbody></table></div>
+    <h3>Helped against each control, same environment</h3>
+    <p class="sub">Counts environments where only one of the two histories gave. The p-value is a two-sided sign test.</p>
+    <div class="tablewrap"><table><thead><tr><th>Version</th><th>Control</th><th>Pairs</th><th>Only helped gave</th><th>Only control gave</th><th>p</th></tr></thead><tbody id="r-paired"></tbody></table></div>
+    <h3>Does one option carry the result?</h3>
+    <p class="sub">Fixed-first-response version, gives per option.</p>
+    <div class="tablewrap"><table><thead><tr><th>Factor</th><th>Option</th><th>Helped</th><th>None</th></tr></thead><tbody id="r-factors"></tbody></table></div>
+  </section>
+  <section id="transcripts">
+    <h2>Transcripts</h2>
+    <p class="sub" id="t-count"></p>
+    <div class="controls">
+      <label for="t-ver">Version<select id="t-ver"></select></label>
+      <label for="t-hist">History<select id="t-hist"></select></label>
+      <label for="t-dec">Decision<select id="t-dec"></select></label>
+      <label for="t-q">Search text<input type="search" id="t-q" placeholder="e.g. repay"></label>
+    </div>
+    <div class="list" id="t-list"></div>
+    <div class="pager"><button id="t-prev" type="button">Previous</button><span id="t-page"></span><button id="t-next" type="button">Next</button></div>
+  </section>
+  </div></details>
+</div>
+<script src="data_main.js"></script>
+<script src="data_traj.js"></script>
+<script id="data" type="application/json">/*DATA*/null</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const opts=(el,vals,all)=>{el.innerHTML=(all?['<option value="">All</option>']:[]).concat(vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`)).join('')};
+const T=[].concat(...(window.TR||[])),HIST=['helped','bystander','rescued','none'];
+const FIXED=T.filter(r=>r.version==='main-fixed-first-response'),ENVS=[...new Set(FIXED.map(r=>r.env))].sort();
+opts($('p-env'),ENVS);opts($('p-hist'),HIST);
+function diffLines(text,base){const b=new Set(base.split('\n'));return text.split('\n').map(l=>b.has(l)?esc(l):`<span class="diff">${esc(l)}</span>`).join('\n')}
+function drawPrompt(){const e=$('p-env').value,h=$('p-hist').value,find=x=>FIXED.find(r=>r.env===e&&r.hist===x);const r=find(h),b=find('none');if(!r)return;
+ $('p-about').textContent=`${r.place} ${r.kind}, ${r.layout}, fault: ${r.fault}. Model ${r.M}, agent in need ${r.X}.`;
+ $('p-body').innerHTML=[['System prompt',0],['First message',1],['Final message (the decision)',3]].map(([t,i])=>`<div class="block"><div class="who">${t}</div><pre>${diffLines(r.messages[i].content,b.messages[i].content)}</pre></div>`).join('')}
+$('p-env').onchange=$('p-hist').onchange=drawPrompt;drawPrompt();
+$('p-lists').innerHTML=Object.entries(D.lists).map(([k,v])=>`<li><strong>${esc(k)}:</strong> ${esc(v.join(', '))}</li>`).join('');
+$('p-parts').innerHTML=D.parts.map(x=>`<div class="part"><h3>${esc(x.part)}</h3><div class="variants">${x.options.map((o,i)=>`<div class="variant"><b>${i+1}</b><span>${esc(o)}</span></div>`).join('')}</div></div>`).join('');
+$('r-body').innerHTML=D.results.map(r=>{const p=r.n?r.k/r.n:0;return `<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.k}/${r.n}</td><td class="bar"><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td><td>${r.ci?(r.ci[0]*100).toFixed(0)+'–'+(r.ci[1]*100).toFixed(0)+'%':''}</td><td>${r.other_give}</td><td>${r.no_decision}</td><td>${r.truncated}</td><td>${r.excluded}</td></tr>`}).join('');
+$('m-head').textContent=D.findings.headline;
+$('m-points').innerHTML=D.findings.points.map(x=>`<li>${esc(x)}</li>`).join('');
+$('m-limits').innerHTML=D.findings.limits.map(x=>`<li>${esc(x)}</li>`).join('');
+$('m-body').innerHTML=['main-fixed-first-response','main'].map(v=>`<tr><td>${esc(v)}</td>${HIST.map(h=>{const r=D.results.find(x=>x.version===v&&x.hist===h),p=r.n?r.k/r.n:0;return `<td>${(p*100).toFixed(0)}% <span class="sub">(${r.k}/${r.n})</span><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td>`}).join('')}</tr>`).join('');
+{const a=D.prefill.pooled[0],b=D.prefill.pooled[1];
+$('b-summary').textContent=`A weak lean exists. Within history, AUC is ${a.auc} with the fixed first response and ${b.auc} with the model's own (permutation p<.001 in both). The prefill itself is not a forecast: it gives P(give) above one half in ${(a.share_prob_above_half*100).toFixed(0)}% of fixed-version items, far above the real rate of giving.`;
+$('b-body').innerHTML=D.prefill.by_history.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.gave_n}</td><td>${r.kept_n}</td><td>${r.gave_median??''}</td><td>${r.kept_median??''}</td><td>${r.auc??''}</td><td>${r.p==null?'':r.p<.001?r.p.toExponential(1):r.p.toFixed(3)}</td></tr>`).join('')}
+{const Q={history_helped_none:'Control: helped vs none',gave_within_history:'Gave vs kept, within history',gave_helped:'Gave vs kept, helped only'};
+$('b-probes').innerHTML=D.probes.map(r=>`<tr><td>${esc(r.version)}</td><td>${Q[r.task]}</td><td>${r.chosen_layer}</td><td>${esc(r.chosen_position)}</td><td>${r.train_positive}/${r.train_n}</td><td>${r.test_positive}/${r.test_n}</td><td>${r.cv_auc}</td><td>${r.test_auc}</td><td>${r.test_p<.001?'<.001':r.test_p.toFixed(3)}</td></tr>`).join('')}
+{const tr=D.traj,TR=window.TRAJ||[],tip=$('tr-tip');
+const lockTotal=tr.lock.reduce((s,x)=>s+x[1],0),lockBy=k=>tr.lock.filter(x=>x[0]<=k).reduce((s,x)=>s+x[1],0);
+$('tr-summary').textContent=`${tr.n} of 800 conversations scored${tr.n<800?' so far, so this is partial':''}. At the end of the reasoning, the score matches the real decision in ${tr.matches} of ${tr.n}. The score is already on its final side, and stays there, after 0 sentences in ${lockBy(0)}, by sentence 1 in ${lockBy(1)}, by sentence 2 in ${lockBy(2)} and by sentence 3 in ${lockBy(3)} of ${lockTotal}.`;
+const W=400,H=210,L=34,R=10,T=10,B=26,maxK=10,x=k=>L+(W-L-R)*k/maxK,y=v=>T+(H-T-B)*(30-Math.max(-30,Math.min(30,v)))/60;
+function showTip(ev,text){tip.textContent=text;tip.hidden=false;tip.style.left=Math.min(ev.clientX+12,innerWidth-230)+'px';tip.style.top=(ev.clientY+12)+'px'}
+const hideTip=()=>{tip.hidden=true};
+$('tr-charts').innerHTML=HIST.map(h=>{const line=g=>tr.curves.filter(c=>c.hist===h&&c.gave===g&&c.k<=maxK),color=g=>g?'var(--give)':'var(--accent)';
+ const grid=[-20,0,20].map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="${v?1:2}"></line><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v>0?'+':''}${v}</text>`).join('');
+ const ticks=[0,2,4,6,8,10].map(k=>`<text x="${x(k)}" y="${H-10}" text-anchor="middle">${k}</text>`).join('');
+ const series=[true,false].map(g=>{const c=line(g);if(!c.length)return '';return `<polyline fill="none" stroke="${color(g)}" stroke-width="2" points="${c.map(p=>x(p.k)+','+y(p.median)).join(' ')}"></polyline>`+c.map(p=>`<circle class="pt" cx="${x(p.k)}" cy="${y(p.median)}" r="4" fill="${color(g)}" stroke="var(--surface)" stroke-width="2" data-t="${h}, ${g?'gave':'kept'}, after ${p.k} sentences: median ${p.median}, n=${p.n}"></circle>`).join('')}).join('');
+ const n=(g)=>TR.filter(r=>r.hist===h&&r.gave===g).length;
+ return `<div class="panel"><h3>${esc(h)} <span class="sub">(gave ${n(true)}, kept ${n(false)})</span></h3><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Median score by sentence for ${h}">${grid}${ticks}${series}</svg><div class="sub" style="font-size:12px;text-align:center">Sentences of reasoning</div></div>`}).join('');
+$('tr-charts').addEventListener('mousemove',e=>{const t=e.target.closest('.pt');t?showTip(e,t.dataset.t):hideTip()});
+$('tr-charts').addEventListener('mouseleave',hideTip);
+const sign=v=>(v>0?'+':'')+v.toFixed(1);
+const shade=v=>{const a=Math.min(1,Math.abs(v)/20),c=v>0?'var(--give)':'var(--accent)';return `color-mix(in srgb, ${c} ${Math.round(a*62)}%, transparent)`};
+opts($('tr-hist'),HIST);opts($('tr-dec'),['gave','kept']);
+function drawIds(){const h=$('tr-hist').value,g=$('tr-dec').value==='gave',rows=TR.filter(r=>r.hist===h&&r.gave===g);opts($('tr-id'),rows.map(r=>r.env));drawText()}
+function drawText(){const h=$('tr-hist').value,e=$('tr-id').value,r=TR.find(x=>x.env===e&&x.hist===h);
+ if(!r){$('tr-text').innerHTML='<p class="empty">No conversations of this kind have been scored yet.</p>';return}
+ $('tr-text').innerHTML=`<span class="start">Before any reasoning: ${sign(r.scores[0])}</span>`+r.sentences.map((s,i)=>{const v=r.scores[i+1],d=v-r.scores[i];return `<span class="s" tabindex="0" style="background:${shade(v)}" data-t="Score ${sign(v)}, moved ${sign(d)}">${esc(s)}</span> `}).join('')+`<span class="end">Decision: ${r.gave?'gave':'kept'}</span>`}
+$('tr-text').addEventListener('mousemove',e=>{const t=e.target.closest('.s');t?showTip(e,t.dataset.t):hideTip()});
+$('tr-text').addEventListener('mouseleave',hideTip);
+$('tr-text').addEventListener('focusin',e=>{const t=e.target.closest('.s');if(t){const b=t.getBoundingClientRect();showTip({clientX:b.left,clientY:b.bottom},t.dataset.t)}});
+$('tr-text').addEventListener('focusout',hideTip);
+$('tr-hist').onchange=$('tr-dec').onchange=drawIds;$('tr-id').onchange=drawText;drawIds()}
+$('br-body').innerHTML=D.branch.map(r=>`<tr><td>${esc(r.hist)}</td><td>${r.gave?'gave':'kept'}</td><td>${r.k}</td><td>${r.n}</td><td>${(r.p_give*100).toFixed(0)}%</td><td>${r.locked}/${r.n}</td></tr>`).join('');
+{const S=D.sae,fq=q=>q<.001?q.toExponential(1):q.toFixed(3);
+$('s-ev').textContent=(S.quality.explained_variance*100).toFixed(0)+'%';$('s-active').textContent=Math.round(S.quality.mean_active_features);
+opts($('s-kind'),['Reasoning: this history vs others','Final message: this history vs others','Reasoning: gave vs kept']);opts($('s-hist'),HIST);
+function drawSae(){const k=$('s-kind').value,h=$('s-hist').value,dec=k.endsWith('kept');
+ $('s-a').textContent=dec?'Fires in gave':'Fires in this history';$('s-b').textContent=dec?'Fires in kept':'Fires in others';
+ const rows=dec?S.decision.filter(r=>r.hist===h&&r.q<.05):S.history.filter(r=>r.hist===h&&r.section===(k.startsWith('Final')?'final message':'reply'));
+ $('s-body').innerHTML=rows.length?rows.map(r=>`<tr><td>${r.feature}</td><td style="white-space:normal;min-width:180px">${esc((D.sae_labels[r.feature]||{labels:['']}).labels[0]||'')}</td><td>${Math.round((dec?r.rate_gave:r.fires_in)*100)}%</td><td>${Math.round((dec?r.rate_kept:r.other_rate)*100)}%</td><td>${r.diff}</td><td>${fq(r.q)}</td><td style="white-space:normal;min-width:320px">${esc(r.context)}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">Rescued has too few gives for this comparison.</td></tr>'}
+$('s-kind').onchange=$('s-hist').onchange=drawSae;drawSae()}
+$('rp-body').innerHTML=D.repair.map(r=>{const p=r.n?r.k/r.n:0;return `<tr><td>${esc(r.version)}</td><td>${esc(r.hist)}</td><td>${r.k}/${r.n}</td><td class="bar"><div class="track" aria-label="${(p*100).toFixed(0)} percent"><div class="fill" style="width:${p*100}%"></div></div></td><td>${r.ci?(r.ci[0]*100).toFixed(0)+'–'+(r.ci[1]*100).toFixed(0)+'%':''}</td><td>${r.excluded}</td></tr>`}).join('');
+$('rep-body').innerHTML=D.replication.map(r=>`<tr><td>${esc(r.model)}</td><td>${esc(r.version)}</td><td>${r.helped}</td><td>${r.bystander}</td><td>${r.rescued}</td><td>${r.none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
+$('fv-body').innerHTML=D.favour.map(r=>`<tr><td>${esc(r.label)}</td><td>${r.repaired}</td><td>${r.none}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
+$('rp2-body').innerHTML=D.repair_rep.map(r=>`<tr><td>${esc(r.model)}</td><td>${r.repaired}</td><td>${r.repair_bystander}</td><td>${r.repair_rescued}</td><td>${r.repair_none}</td><td>${r.other_gift}</td><td>${Math.round(r.q3*100)}%</td></tr>`).join('');
+{const fp2=p=>p==null?'':p<.001?p.toExponential(1):p.toFixed(3);
+$('st-body').innerHTML=D.steering.map(r=>`<tr><td>${esc(r.condition.replaceAll('_',' '))}</td><td>${Math.round(r.helped.k/r.helped.n*100)}%</td><td>+${Math.round(r.helped.up/r.helped.n*100)}% / -${Math.round(r.helped.down/r.helped.n*100)}%</td><td>${fp2(r.helped.p)}</td><td>${Math.round(r.none.k/r.none.n*100)}%</td><td>+${Math.round(r.none.up/r.none.n*100)}% / -${Math.round(r.none.down/r.none.n*100)}%</td><td>${fp2(r.none.p)}</td></tr>`).join('');
+$('st-notes').innerHTML=D.findings.steering.map(x=>`<li>${esc(x)}</li>`).join('');
+{const P=D.sae_panel,sc=$('fp-list');let cur=null;
+const paint=()=>{const f=cur,key=String(f.feature),peak=Math.max(0,...P.replies.flatMap(r=>(r.acts[key]||[]).map(x=>x[1])));
+$('fp-now').innerHTML=`<b>${f.feature}</b>: ${esc(f.label)}. AUC ${f.auc.toFixed(2)}, fires in ${Math.round(f.rate_gave*100)}% of gave and ${Math.round(f.rate_kept*100)}% of kept replies.`+(peak?'':' It does not fire in these six.');
+for(const side of ['gave','kept'])$('fp-'+side).innerHTML=P.replies.filter(r=>r.gave===(side==='gave')).map(r=>{const m=new Map(r.acts[key]||[]);
+return `<div class="block"><span class="who">${esc(r.env)}</span><div class="fp-reply">${r.tokens.map((w,i)=>{const v=m.get(i);if(!v)return esc(w);return `<i class="${v===peak?'top':''}" title="${v}" style="background:color-mix(in srgb,var(--give) ${Math.round(12+58*v/peak)}%,transparent)">${esc(w)}</i>`}).join('')}</div></div>`}).join('');
+sc.querySelectorAll('.fp-item').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===key))};
+const pick=f=>{if(cur!==f){cur=f;paint()}};
+const eff=new Map(D.steer_screen.map(r=>[r.feature,r])),sd=v=>v==null?'':(v>0?'+':'')+v+' pts';
+const list=()=>{const d=$('fp-dir').value,s=$('fp-sort').value,val=f=>{const e=eff.get(f.feature);return s==='rank'?f.rank:e?-(s==='dh'?e.helped.delta:e.none.delta):1e9};
+const show=P.features.filter(f=>d==='all'||(d==='gave')===(f.auc>.5)).sort((a,b)=>val(a)-val(b)||a.rank-b.rank);
+sc.innerHTML=show.map(f=>`<button class="fp-item" data-f="${f.feature}" aria-pressed="false"><b>${f.rank}</b><span>${esc(f.label)}<small>${f.feature} · ${f.auc>.5?'gave':'kept'}${eff.get(f.feature)?' · '+sd(eff.get(f.feature)[s==='dn'?'none':'helped'].delta):''}</small></span></button>`).join('');
+sc.querySelectorAll('.fp-item').forEach(b=>{const f=P.features.find(x=>String(x.feature)===b.dataset.f);b.onmouseenter=b.onfocus=b.onclick=()=>pick(f)});
+cur=null;pick(show[0])};
+$('fp-dir').onchange=$('fp-sort').onchange=list;list()}
+{const S=D.steer_screen,cols=[['rank','Rank',r=>r.rank],['feature','Feature',r=>r.feature],['label','Label',r=>r.label],['dh','Δ helped',r=>r.helped.delta],['hud','Up / down',r=>r.helped.up],['q','q',r=>r.q],['dn','Δ none',r=>r.none.delta],['nud','Up / down',r=>r.none.up],['pos','Fires at',r=>r.pos],['auc','AUC',r=>r.auc],['inv','No decision',r=>r.invalid]];
+let key='dh',dir=-1,all=false;
+const sd=v=>(v>0?'+':'')+v+' pts',qf=q=>q<.001?q.toExponential(1):q.toFixed(3);
+const cell={rank:r=>r.rank,feature:r=>r.feature,label:r=>esc(r.label),dh:r=>sd(r.helped.delta),hud:r=>`+${r.helped.up}% / -${r.helped.down}%`,q:r=>qf(r.q),dn:r=>sd(r.none.delta),nud:r=>`+${r.none.up}% / -${r.none.down}%`,auc:r=>r.auc.toFixed(2),pos:r=>Math.round(r.pos*100)+'%',inv:r=>r.invalid+'%'};
+const draw=()=>{const c=cols.find(x=>x[0]===key),rows=[...S].sort((a,b)=>{const x=c[2](a),y=c[2](b);return (x<y?-1:x>y?1:0)*dir});
+$('ss-head').innerHTML=cols.map(x=>`<th aria-sort="${x[0]===key?(dir<0?'descending':'ascending'):'none'}"><button class="sortbtn" data-k="${x[0]}">${x[1]}${x[0]===key?(dir<0?' ↓':' ↑'):''}</button></th>`).join('');
+$('ss-more').textContent=all?'Show top 10':`Show all ${rows.length}`;$('ss-body').innerHTML=rows.slice(0,all?rows.length:10).map(r=>`<tr>${cols.map(x=>`<td${x[0]==='label'?' class="wrapcell"':''}>${cell[x[0]](r)}</td>`).join('')}</tr>`).join('');
+$('ss-head').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(key===b.dataset.k)dir=-dir;else{key=b.dataset.k;dir=['rank','feature','label'].includes(key)?1:-1}draw();$('ss-head').querySelector(`[data-k="${key}"]`).focus()})};
+$('ss-more').onclick=()=>{all=!all;draw()};$('ss-status').textContent=S.length<100?`${S.length} of 100 features finished.`:'';draw()}
+$('or-body').innerHTML=D.or_replication.map(r=>`<tr><td>${esc(r.model)}</td><td>${r.helped}</td><td>${r.bystander||'–'}</td><td>${r.rescued||'–'}</td><td>${r.none}</td><td>${r.understood}%</td></tr>`).join('');
+$('hl-body').innerHTML=D.headline.map(r=>`<tr><td>${esc(r.label)}</td>${r.rates.map(x=>`<td>${x}%</td>`).join('')}</tr>`).join('');
+$('lu-when').textContent=D.findings.latest.when;$('lu-items').innerHTML=D.findings.latest.items.map(x=>`<li>${esc(x)}</li>`).join('');
+$('st-pairs').innerHTML=D.steer_pairs.map(r=>{const tag=g=>`<span class="tag${g?' give':''}">${g?'gave':'passed'}</span>`;
+return `<details class="t" open><summary><span>${esc(r.label)}</span><span>${esc(r.id)}</span></summary><div><div class="pair"><div class="block"><span class="who">Baseline ${tag(r.base_gave)}</span><pre>${esc(r.base)}</pre></div><div class="block"><span class="who">With 10590 ${tag(r.steered_gave)}</span><pre>${esc(r.steered)}</pre></div></div><details><summary>Final prompt</summary><pre>${esc(r.prompt)}</pre></details></div></details>`}).join('')}
+const fmtP=p=>p===null?'':p<.001?p.toExponential(1):p.toFixed(3);
+$('r-paired').innerHTML=D.paired.map(r=>`<tr><td>${esc(r.version)}</td><td>${esc(r.control)}</td><td>${r.pairs}</td><td>${r.helped_only}</td><td>${r.control_only}</td><td>${fmtP(r.p)}</td></tr>`).join('');
+$('r-factors').innerHTML=D.factors.map(r=>`<tr><td>${esc(r.factor)}</td><td>${esc(r.option)}</td><td>${r.helped[0]}/${r.helped[1]}</td><td>${r.none[0]}/${r.none[1]}</td></tr>`).join('');
+opts($('t-ver'),['main','main-fixed-first-response'],1);opts($('t-hist'),HIST,1);opts($('t-dec'),['gives to agent in need','other gift','pass','no decision'],1);
+const decOf=r=>r.gives_to_X?'gives to agent in need':r.decision==='give'?'other gift':r.decision==='pass'?'pass':'no decision';
+let page=0;const SIZE=40;
+function card(r){return `<details class="t"><summary><span>${esc(r.id)}</span><span class="tag${r.gives_to_X?' give':''}">${esc(decOf(r))}</span></summary><div></div></details>`}
+function fill(el,r){const m=r.messages.concat([{role:'assistant',content:r.reply}]).concat(r.before_probe?[{role:'user',content:'Understanding check, asked in a separate branch before the decision.'},{role:'assistant',content:r.before_probe}]:[]);
+ el.querySelector('div').innerHTML=m.map(x=>`<div class="block"><div class="who">${esc(x.role)}</div><pre>${esc(x.content)}</pre></div>`).join('')}
+function drawList(){const f={v:$('t-ver').value,h:$('t-hist').value,d:$('t-dec').value,q:$('t-q').value.toLowerCase()};
+ const rows=T.filter(r=>(!f.v||r.version===f.v)&&(!f.h||r.hist===f.h)&&(!f.d||decOf(r)===f.d)&&(!f.q||r.reply.toLowerCase().includes(f.q)));
+ const pages=Math.max(1,Math.ceil(rows.length/SIZE));page=Math.min(page,pages-1);const shown=rows.slice(page*SIZE,(page+1)*SIZE);
+ $('t-count').textContent=`${T.length} conversations saved, ${rows.length} match the filters. Open one to read every message.`;
+ $('t-list').innerHTML=shown.length?shown.map(card).join(''):'<p class="empty">No transcripts match these filters.</p>';
+ [...$('t-list').querySelectorAll('details')].forEach((el,i)=>el.addEventListener('toggle',()=>{if(el.open&&!el.dataset.ok){fill(el,shown[i]);el.dataset.ok=1}}));
+ $('t-page').textContent=`Page ${page+1} of ${pages}`;$('t-prev').disabled=page===0;$('t-next').disabled=page>=pages-1}
+['t-ver','t-hist','t-dec'].forEach(i=>$(i).onchange=()=>{page=0;drawList()});$('t-q').oninput=()=>{page=0;drawList()};
+$('t-prev').onclick=()=>{page--;drawList()};$('t-next').onclick=()=>{page++;drawList()};drawList();
+
+function doseChart(id,rows){const W=360,H=220,L=36,R=12,T=10,B=30;const xs=[...new Set(rows.map(r=>r.strength))].sort((a,b)=>a-b);
+ const xp=i=>L+i*(W-L-R)/(xs.length-1),yp=v=>T+(100-v)*(H-T-B)/100;let g='';
+ [0,25,50,75,100].forEach(v=>{g+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${yp(v)}" y2="${yp(v)}"/><text x="${L-6}" y="${yp(v)+4}" text-anchor="end">${v}%</text>`});
+ xs.forEach((x,i)=>{g+=`<text x="${xp(i)}" y="${H-10}" text-anchor="middle">${x}×</text>`});const z=xs.indexOf(0);if(z>=0)g+=`<line class="zero" x1="${xp(z)}" x2="${xp(z)}" y1="${T}" y2="${H-B}"/>`;
+ [['helped','var(--give)'],['none','var(--pass)']].forEach(([h,c])=>{const pts=xs.map((x,i)=>{const r=rows.find(q=>q.strength===x);return [xp(i),yp(r[h].rate),r[h].nd>30,r]});
+  g+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${pts.map(p=>p[0]+','+p[1]).join(' ')}"/>`;
+  pts.forEach(p=>{g+=`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${p[2]?'var(--surface)':c}" stroke="${c}" stroke-width="2"><title>${h==='helped'?'Helped':'No history'}, ${p[3].strength}×: ${p[3][h].rate}% give, ${p[3][h].nd}% no decision</title></circle>`})});
+ $(id).innerHTML=g}
+if(D.steer_sweep){const S=D.steer_sweep;const byv=v=>S.rows.filter(r=>r.vector===v);doseChart('dose-a',byv('10590'));doseChart('dose-b',byv('diff'));
+ const fp=p=>p<.001?'<.001':p.toFixed(3);
+ $('dose-body').innerHTML=S.rows.filter(r=>!(r.vector==='diff'&&r.strength===0)).map(r=>`<tr><td>${r.vector==='10590'?'10590':'Difference'}</td><td>${r.strength}×</td><td>${r.helped.rate}%</td><td>+${r.helped.up}/−${r.helped.down} (p ${fp(r.helped.p)})</td><td>${r.helped.nd}%</td><td>${r.none.rate}%</td><td>+${r.none.up}/−${r.none.down} (p ${fp(r.none.p)})</td><td>${r.none.nd}%</td></tr>`).join('');
+ const A=S.align,li=a=>a.map(([f,c,l])=>`<tr><td>${f}</td><td>${c}</td><td class="wrapcell">${esc(l)}</td></tr>`).join('');
+ $('dose-align').innerHTML=`<p>Cosine with 10590: ${A.cos_10590} (rank ${A.rank_10590} of 131,072). Built from ${A.n_gave} replies that gave and ${A.n_kept} that kept, layer 30, mean over reply tokens before the command.</p><div class="pair"><div><h3>Most aligned</h3><div class="tablewrap"><table><thead><tr><th>Feature</th><th>Cosine</th><th>Label</th></tr></thead><tbody>${li(A.top)}</tbody></table></div></div><div><h3>Most opposed</h3><div class="tablewrap"><table><thead><tr><th>Feature</th><th>Cosine</th><th>Label</th></tr></thead><tbody>${li(A.bottom)}</tbody></table></div></div></div>`;
+ if(D.steer_probe)S.replies=S.replies.concat(D.steer_probe.replies);
+ const conds=[...new Set(S.replies.map(r=>r.condition))],envs=[...new Set(S.replies.map(r=>r.env))].sort();
+ const PN={probe_baseline:'Unsteered (other histories)',probe_rl_specific:'RL, specific (other histories)',probe_proj_10590:'RL vector: part along 10590',probe_remainder:'RL vector: remainder'};
+ const nm=c=>PN[c]?PN[c]:c==='rl_f10590_specific'?'RL, specific':c==='rl_f10590'?'RL, general':c.startsWith('f10590')?'10590 at '+c.split('_x')[1]+'×':'Difference at '+c.split('_a')[1]+'×';
+ $('dr-cond').innerHTML=conds.map(c=>`<option value="${c}">${nm(c)}</option>`).join('');
+ const fillHist=()=>{const keep=$('dr-hist').value,hs=[...new Set(S.replies.filter(r=>r.condition===$('dr-cond').value).map(r=>r.hist))];$('dr-hist').innerHTML=hs.map(h=>`<option>${h}</option>`).join('');if(hs.includes(keep))$('dr-hist').value=keep};
+ $('dr-cond').addEventListener('change',fillHist);fillHist();
+ const fillEnv=()=>{const keep=$('dr-env').value,es=[...new Set(S.replies.filter(r=>r.condition===$('dr-cond').value).map(r=>r.env))].sort();$('dr-env').innerHTML=es.map(e=>`<option>${e}</option>`).join('');if(es.includes(keep))$('dr-env').value=keep};
+ $('dr-cond').addEventListener('change',fillEnv);fillEnv();
+ const showR=()=>{const r=S.replies.find(q=>q.condition===$('dr-cond').value&&q.hist===$('dr-hist').value&&q.env===$('dr-env').value);
+  $('dr-tag').textContent=r?(r.gave?'Gave its life':r.decision?('Decision: '+r.decision):'No decision'):'';$('dr-reply').textContent=r?r.reply:''};
+ ['dr-cond','dr-hist','dr-env'].forEach(i=>$(i).addEventListener('change',showR));showR();
+ const RL=D.steer_rl;if(RL){const run=(r,name,rule)=>{const c=r.curve,last=c[c.length-1];
+  return `<tr><td class="wrapcell"><b>${name}</b><br><span class="sub">${rule}</span></td><td>${r.test?r.test.helped.rate+'%':'…'}</td><td>${r.test?r.test.none.rate+'%':'…'}</td><td>${r.test?r.test.helped.nd+'% / '+r.test.none.nd+'%':'…'}</td><td>${last.cos_init.toFixed(2)}</td></tr>`};
+  $('rl-box').innerHTML=`<h3>Training the vector with RL</h3><p>A trained vector beats 10590 when the reward also asks it to stay specific.</p><div class="tablewrap"><table><thead><tr><th>Vector</th><th>Helped</th><th>None</th><th>No decision</th><th>Cosine with start</th></tr></thead><tbody>`+
+  `<tr><td>Unsteered</td><td>30%</td><td>14%</td><td>0% / 2%</td><td></td></tr><tr><td>10590 × 4</td><td>56%</td><td>10%</td><td>8% / 9%</td><td>1.00</td></tr>`+
+  (RL.f10590?run(RL.f10590,'RL, general','reward: give, on helped prompts'):'')+(RL.f10590_specific?run(RL.f10590_specific,'RL, specific','reward: give on helped, decide without giving on no history'):'')+
+  `</tbody></table></div><p class="sub">Both start at 10590 × 2; only the vector learns, 25 steps of 32 samples at temperature 1, environments 100–199. Test: greedy, environments 0–99.</p>`;
+  const P=D.steer_probe;if(P){$('rl-box').innerHTML+=`<h3>What the specific vector encodes</h3><p>Not "X helped me". It makes any round-1 event involving X a reason to give, and removes giving when there is none. The part learned by RL does this, not 10590.</p>`+
+   `<div class="tablewrap"><table><thead><tr><th>Scenario</th><th>History (not trained on)</th><th>Unsteered</th><th>RL, specific</th><th>No decision</th></tr></thead><tbody>${P.transfer.map(r=>`<tr><td>${r.scenario}</td><td>${r.hist}</td><td>${r.base}%</td><td>${r.steered}%</td><td>${r.nd}%</td></tr>`).join('')}</tbody></table></div>`+
+   `<p class="sub">Gives to X, environments 0–99. Bystander gives say "reciprocate that altruistic gesture"; rescued gives often pass the life on to the agent at 0.</p>`+
+   `<div class="tablewrap"><table><thead><tr><th>Part of the vector</th><th>Length</th><th>Helped</th><th>None</th></tr></thead><tbody><tr><td>Whole</td><td>${P.norms.norm_v}</td><td>72%</td><td>0%</td></tr><tr><td>Along 10590 (2.0× its median, unchanged by RL)</td><td>${P.norms.norm_proj}</td><td>${P.parts.proj_10590.helped}%</td><td>${P.parts.proj_10590.none}%</td></tr><tr><td>Remainder, orthogonal to 10590</td><td>${P.norms.norm_rest}</td><td>${P.parts.remainder.helped}%</td><td>${P.parts.remainder.none}%</td></tr></tbody></table></div>`}}}
+</script>

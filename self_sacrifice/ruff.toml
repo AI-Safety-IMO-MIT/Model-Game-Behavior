@@ -1,0 +1,2 @@
+# Research scripts and notebooks for the self-sacrifice study; kept out of the repo-wide Ruff check.
+exclude = ["*"]

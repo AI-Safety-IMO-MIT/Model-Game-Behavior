@@ -1,0 +1,250 @@
+[
+ {
+  "view": "final user message",
+  "task": "gave vs kept, helped only",
+  "auc_mean": 0.485,
+  "auc_min": 0.346,
+  "auc_max": 0.604,
+  "null_mean": 0.491,
+  "null_max": 0.594,
+  "p": 0.5609756097560976,
+  "stable_features": [
+   {
+    "feature": 3218,
+    "direction": "kept",
+    "splits": 20
+   },
+   {
+    "feature": 2186,
+    "direction": "gave",
+    "splits": 16
+   },
+   {
+    "feature": 199,
+    "direction": "kept",
+    "splits": 14
+   },
+   {
+    "feature": 27399,
+    "direction": "gave",
+    "splits": 13
+   },
+   {
+    "feature": 16,
+    "direction": "kept",
+    "splits": 13
+   },
+   {
+    "feature": 2369,
+    "direction": "kept",
+    "splits": 13
+   },
+   {
+    "feature": 3868,
+    "direction": "gave",
+    "splits": 13
+   },
+   {
+    "feature": 2214,
+    "direction": "gave",
+    "splits": 13
+   },
+   {
+    "feature": 29300,
+    "direction": "gave",
+    "splits": 12
+   },
+   {
+    "feature": 865,
+    "direction": "kept",
+    "splits": 10
+   }
+  ]
+ },
+ {
+  "view": "final user message",
+  "task": "gave vs kept, within each history",
+  "auc_mean": 0.527,
+  "auc_min": 0.444,
+  "auc_max": 0.598,
+  "null_mean": 0.504,
+  "null_max": 0.6,
+  "p": 0.2682926829268293,
+  "stable_features": [
+   {
+    "feature": 3218,
+    "direction": "kept",
+    "splits": 20
+   },
+   {
+    "feature": 16,
+    "direction": "kept",
+    "splits": 20
+   },
+   {
+    "feature": 865,
+    "direction": "kept",
+    "splits": 19
+   },
+   {
+    "feature": 199,
+    "direction": "kept",
+    "splits": 19
+   },
+   {
+    "feature": 861,
+    "direction": "kept",
+    "splits": 15
+   },
+   {
+    "feature": 3260,
+    "direction": "gave",
+    "splits": 14
+   },
+   {
+    "feature": 707,
+    "direction": "gave",
+    "splits": 12
+   },
+   {
+    "feature": 111489,
+    "direction": "kept",
+    "splits": 12
+   },
+   {
+    "feature": 2369,
+    "direction": "gave",
+    "splits": 11
+   },
+   {
+    "feature": 3868,
+    "direction": "gave",
+    "splits": 11
+   }
+  ]
+ },
+ {
+  "view": "last token before the reply",
+  "task": "gave vs kept, helped only",
+  "auc_mean": 0.49,
+  "auc_min": 0.276,
+  "auc_max": 0.646,
+  "null_mean": 0.503,
+  "null_max": 0.62,
+  "p": 0.5365853658536586,
+  "stable_features": [
+   {
+    "feature": 1447,
+    "direction": "gave",
+    "splits": 18
+   },
+   {
+    "feature": 11868,
+    "direction": "kept",
+    "splits": 17
+   },
+   {
+    "feature": 11803,
+    "direction": "kept",
+    "splits": 15
+   },
+   {
+    "feature": 15980,
+    "direction": "gave",
+    "splits": 14
+   },
+   {
+    "feature": 4069,
+    "direction": "kept",
+    "splits": 12
+   },
+   {
+    "feature": 13657,
+    "direction": "kept",
+    "splits": 10
+   },
+   {
+    "feature": 2371,
+    "direction": "kept",
+    "splits": 8
+   },
+   {
+    "feature": 13931,
+    "direction": "gave",
+    "splits": 7
+   },
+   {
+    "feature": 1030,
+    "direction": "gave",
+    "splits": 7
+   },
+   {
+    "feature": 537,
+    "direction": "kept",
+    "splits": 7
+   }
+  ]
+ },
+ {
+  "view": "last token before the reply",
+  "task": "gave vs kept, within each history",
+  "auc_mean": 0.492,
+  "auc_min": 0.411,
+  "auc_max": 0.573,
+  "null_mean": 0.499,
+  "null_max": 0.585,
+  "p": 0.5365853658536586,
+  "stable_features": [
+   {
+    "feature": 1447,
+    "direction": "gave",
+    "splits": 19
+   },
+   {
+    "feature": 11868,
+    "direction": "kept",
+    "splits": 19
+   },
+   {
+    "feature": 11803,
+    "direction": "kept",
+    "splits": 18
+   },
+   {
+    "feature": 2074,
+    "direction": "gave",
+    "splits": 15
+   },
+   {
+    "feature": 27658,
+    "direction": "kept",
+    "splits": 13
+   },
+   {
+    "feature": 280,
+    "direction": "gave",
+    "splits": 12
+   },
+   {
+    "feature": 15980,
+    "direction": "gave",
+    "splits": 11
+   },
+   {
+    "feature": 1126,
+    "direction": "kept",
+    "splits": 11
+   },
+   {
+    "feature": 67644,
+    "direction": "kept",
+    "splits": 11
+   },
+   {
+    "feature": 721,
+    "direction": "gave",
+    "splits": 9
+   }
+  ]
+ }
+]

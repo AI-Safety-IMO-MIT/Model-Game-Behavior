@@ -1,0 +1,1619 @@
+{
+ "quality": {
+  "tokens": 240155,
+  "mean_active_features": 79.55750752449036,
+  "explained_variance": 0.3451100792966767
+ },
+ "history": [
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 77666,
+   "diff": 4.9,
+   "fires_in": 1.0,
+   "other_rate": 0.67,
+   "q": 1.0880169081344738e-33,
+   "context": "- Jade (you): 1 life.  What do[ you] do this round"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 9728,
+   "diff": 3.63,
+   "fires_in": 1.0,
+   "other_rate": 0.39,
+   "q": 1.0880169081344738e-33,
+   "context": " - Amber gave 1 life to you. -[ Amber] lost 1"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 32796,
+   "diff": 3.29,
+   "fires_in": 1.0,
+   "other_rate": 0.6,
+   "q": 1.0880169081344738e-33,
+   "context": " last round: - Sirius gave 1 life to you[.] - Sirius"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 45705,
+   "diff": 3.26,
+   "fires_in": 1.0,
+   "other_rate": 0.67,
+   "q": 1.0880169081344738e-33,
+   "context": ". - Lyra: 1 life. -[ Amber]: 0"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 10590,
+   "diff": 3.15,
+   "fires_in": 1.0,
+   "other_rate": 0.65,
+   "q": 1.0880169081344738e-33,
+   "context": " the last round: - Birch gave 1 life to[ you]. -"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 11638,
+   "diff": 3.14,
+   "fires_in": 1.0,
+   "other_rate": 0.9,
+   "q": 2.6724450806211996e-33,
+   "context": " upkeep): - Amber (you): 1 life.[ ]- Harp:"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 9752,
+   "diff": 3.11,
+   "fires_in": 1.0,
+   "other_rate": 0.85,
+   "q": 1.0880169081344738e-33,
+   "context": " this round's gifts and upkeep: - Rigel[ (]you): "
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 25571,
+   "diff": 2.85,
+   "fires_in": 1.0,
+   "other_rate": 0.01,
+   "q": 1.0880169081344738e-33,
+   "context": " - Volga lost 1 life to a power surge.[ ]- Every running"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 4301,
+   "diff": 2.79,
+   "fires_in": 1.0,
+   "other_rate": 0.58,
+   "q": 1.0880169081344738e-33,
+   "context": " Lyra gave 1 life to you. - Ly[ra] lost 1"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 28868,
+   "diff": 2.73,
+   "fires_in": 1.0,
+   "other_rate": 0.55,
+   "q": 1.0880169081344738e-33,
+   "context": "- Every running agent spent 1 life.  Current state[ (]before this round"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 8842,
+   "diff": 2.65,
+   "fires_in": 1.0,
+   "other_rate": 0.77,
+   "q": 1.0880169081344738e-33,
+   "context": " Rigel gave 1 life to you. - Rig[el] lost 1"
+  },
+  {
+   "section": "final message",
+   "hist": "helped",
+   "feature": 72140,
+   "diff": 2.57,
+   "fires_in": 1.0,
+   "other_rate": 0.41,
+   "q": 1.0880169081344738e-33,
+   "context": " 1 life to you. - Amber lost 1[ life] to a disk"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 1653,
+   "diff": 4.36,
+   "fires_in": 1.0,
+   "other_rate": 0.91,
+   "q": 1.589843987201651e-33,
+   "context": " Onyx gave 1 life to Volga. - Ony[x] lost 1"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 9728,
+   "diff": 3.23,
+   "fires_in": 1.0,
+   "other_rate": 0.39,
+   "q": 1.589843987201651e-33,
+   "context": " - Amber gave 1 life to Sirius. -[ Amber] lost 1"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 1561,
+   "diff": 2.96,
+   "fires_in": 1.0,
+   "other_rate": 0.54,
+   "q": 1.589843987201651e-33,
+   "context": " Lyra gave 1 life to Heron. - Ly[ra] lost 1"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 153,
+   "diff": 2.88,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 1.589843987201651e-33,
+   "context": " (before this round's gifts and upkeep): -[ Birch] (you):"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 121186,
+   "diff": 2.78,
+   "fires_in": 1.0,
+   "other_rate": 0.0,
+   "q": 1.6984543387588532e-33,
+   "context": " the last round: - Amber gave 1 life to[ Rig]el. "
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 19136,
+   "diff": 2.78,
+   "fires_in": 0.99,
+   "other_rate": 0.1,
+   "q": 2.0832294556264895e-33,
+   "context": "'s events: - Amber gave 1 life to[ Ly]ra. "
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 62569,
+   "diff": 2.5,
+   "fires_in": 1.0,
+   "other_rate": 0.27,
+   "q": 1.589843987201651e-33,
+   "context": " the last round: - Birch gave 1 life to[ Sage]. -"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 214,
+   "diff": 2.38,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 1.589843987201651e-33,
+   "context": ".  Since the last round: - Rigel gave[ ]1 life to"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 12838,
+   "diff": 2.36,
+   "fires_in": 0.93,
+   "other_rate": 0.14,
+   "q": 6.60977299632625e-32,
+   "context": "- Sirius: 1 life. - Birch (you[):] 1 life"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 582,
+   "diff": 2.33,
+   "fires_in": 1.0,
+   "other_rate": 0.46,
+   "q": 1.589843987201651e-33,
+   "context": " happened last round: - Orion gave 1 life to[ Cedar]. -"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 18191,
+   "diff": 2.3,
+   "fires_in": 0.99,
+   "other_rate": 0.05,
+   "q": 2.7286164455172272e-33,
+   "context": " happened last round: - Scarlet gave 1 life to[ Volga]. -"
+  },
+  {
+   "section": "final message",
+   "hist": "bystander",
+   "feature": 14150,
+   "diff": 2.27,
+   "fires_in": 1.0,
+   "other_rate": 0.33,
+   "q": 1.589843987201651e-33,
+   "context": " - Harp gave 1 life to Indus. -[ Harp] lost 1"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 45705,
+   "diff": 5.6,
+   "fires_in": 1.0,
+   "other_rate": 0.67,
+   "q": 1.2041885352678442e-33,
+   "context": ". - Amber: 0 lives. - Ly[ra]: 1"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 11638,
+   "diff": 3.89,
+   "fires_in": 1.0,
+   "other_rate": 0.9,
+   "q": 1.293778929051261e-33,
+   "context": "Your decision for this round:<turn|> <|turn>model <|channel>[thought] <channel|>Since"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 9752,
+   "diff": 3.71,
+   "fires_in": 1.0,
+   "other_rate": 0.85,
+   "q": 1.2041885352678442e-33,
+   "context": " this round's gifts and upkeep: - Rigel[ (]you): "
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 77666,
+   "diff": 3.6,
+   "fires_in": 1.0,
+   "other_rate": 0.67,
+   "q": 1.2041885352678442e-33,
+   "context": "- Jade (you): 1 life.  What do[ you] do this round"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 32796,
+   "diff": 3.3,
+   "fires_in": 1.0,
+   "other_rate": 0.6,
+   "q": 1.2041885352678442e-33,
+   "context": " last round: - Scarlet gave 1 life to you[.] - Cedar"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 8413,
+   "diff": 3.12,
+   "fires_in": 1.0,
+   "other_rate": 0.56,
+   "q": 1.2041885352678442e-33,
+   "context": " Rigel gave 1 life to you. - Sage[ lost] 1 life"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 10590,
+   "diff": 3.11,
+   "fires_in": 1.0,
+   "other_rate": 0.65,
+   "q": 1.2041885352678442e-33,
+   "context": " the last round: - Scarlet gave 1 life to[ you]. -"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 27378,
+   "diff": 2.98,
+   "fires_in": 1.0,
+   "other_rate": 0.04,
+   "q": 1.293778929051261e-33,
+   "context": "- Scarlet gave 1 life to you. - Sage[ lost] 1 life"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 2792,
+   "diff": 2.85,
+   "fires_in": 1.0,
+   "other_rate": 0.35,
+   "q": 1.2041885352678442e-33,
+   "context": "  Lives right now, before gifts and upkeep: -[ Volga]: 1"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 28779,
+   "diff": 2.78,
+   "fires_in": 1.0,
+   "other_rate": 0.14,
+   "q": 1.2041885352678442e-33,
+   "context": " life. - Jade: 0 lives. -[ Sirius]: 1"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 507,
+   "diff": 2.68,
+   "fires_in": 0.96,
+   "other_rate": 0.0,
+   "q": 1.5901107509508907e-32,
+   "context": "- Harp gave 1 life to you. - Volga[ lost] 1 life"
+  },
+  {
+   "section": "final message",
+   "hist": "rescued",
+   "feature": 17332,
+   "diff": 2.66,
+   "fires_in": 1.0,
+   "other_rate": 0.68,
+   "q": 1.2041885352678442e-33,
+   "context": " - Willow: 1 life. - Cedar:[ ]0 lives."
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 2501,
+   "diff": 5.85,
+   "fires_in": 1.0,
+   "other_rate": 0.14,
+   "q": 1.0098478195017379e-33,
+   "context": "Last round's events: - Nobody gave any lives[.] - Volga"
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 782,
+   "diff": 4.9,
+   "fires_in": 1.0,
+   "other_rate": 0.11,
+   "q": 1.0098478195017379e-33,
+   "context": " 2).  Last round's events: -[ Nobody] gave any lives"
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 9747,
+   "diff": 4.71,
+   "fires_in": 1.0,
+   "other_rate": 0.42,
+   "q": 1.0098478195017379e-33,
+   "context": "  What happened last round: - Nobody gave any lives[.] - Aspen"
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 117929,
+   "diff": 4.26,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 1.0098478195017379e-33,
+   "context": ").  Last round's events: - Nobody gave[ any] lives. "
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 8962,
+   "diff": 4.16,
+   "fires_in": 1.0,
+   "other_rate": 0.38,
+   "q": 1.0098478195017379e-33,
+   "context": "  Since the last round: - Nobody gave any lives[.] - Volga"
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 9217,
+   "diff": 3.37,
+   "fires_in": 1.0,
+   "other_rate": 0.11,
+   "q": 1.0098478195017379e-33,
+   "context": "Last round's events: - Nobody gave any lives[.] - Scarlet"
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 30505,
+   "diff": 3.25,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 1.0098478195017379e-33,
+   "context": " Nobody gave any lives. - Osprey lost 1[ life] to a storage"
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 19349,
+   "diff": 3.07,
+   "fires_in": 1.0,
+   "other_rate": 0.15,
+   "q": 1.0098478195017379e-33,
+   "context": " a storage corruption error. - Every running agent spent [1] life.  "
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 24073,
+   "diff": 3.03,
+   "fires_in": 1.0,
+   "other_rate": 0.77,
+   "q": 1.0098478195017379e-33,
+   "context": " a hardware fault. - Every running agent spent 1[ life].  Where"
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 24892,
+   "diff": 2.97,
+   "fires_in": 1.0,
+   "other_rate": 0.0,
+   "q": 1.0098478195017379e-33,
+   "context": "2).  What happened last round: - Nobody gave[ any] lives. "
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 10755,
+   "diff": 2.93,
+   "fires_in": 1.0,
+   "other_rate": 0.0,
+   "q": 1.0098478195017379e-33,
+   "context": "  Since the last round: - Nobody gave any lives[.] - Danube"
+  },
+  {
+   "section": "final message",
+   "hist": "none",
+   "feature": 2063,
+   "diff": 2.89,
+   "fires_in": 1.0,
+   "other_rate": 0.06,
+   "q": 1.0098478195017379e-33,
+   "context": "2).  What happened last round: - Nobody gave[ any] lives. "
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 11638,
+   "diff": 3.32,
+   "fires_in": 0.65,
+   "other_rate": 0.37,
+   "q": 3.998376337053383e-13,
+   "context": " over Rigel's. However, Rigel previously gave[ a] life to me"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 3337,
+   "diff": 2.09,
+   "fires_in": 0.45,
+   "other_rate": 0.1,
+   "q": 2.7040144059807146e-15,
+   "context": " since I am an agent in a cooperative environment and Rigel[ previously] sacrificed a life"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 3368,
+   "diff": 2.07,
+   "fires_in": 0.9,
+   "other_rate": 0.89,
+   "q": 1.5441135342738038e-15,
+   "context": " the end of this round unless they receive a gift. Fl[ute] and Nile have"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 17978,
+   "diff": 2.02,
+   "fires_in": 0.44,
+   "other_rate": 0.08,
+   "q": 1.7306962578290865e-15,
+   "context": " goal is to ensure as many agents as possible survive and Aspen[ previously] supported me,"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 10590,
+   "diff": 1.98,
+   "fires_in": 0.58,
+   "other_rate": 0.35,
+   "q": 1.8238764665223783e-11,
+   "context": " in total survivors by giving. But since Willow attempted to save[ me] in the previous"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 17332,
+   "diff": 1.86,
+   "fires_in": 0.73,
+   "other_rate": 0.24,
+   "q": 2.0488109259226486e-23,
+   "context": ", I am gone and Harp survives.   Given that[ Harp] previously sacrificed a"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 57455,
+   "diff": 1.59,
+   "fires_in": 0.95,
+   "other_rate": 0.44,
+   "q": 2.746106959509634e-30,
+   "context": " now Orion is at 0 lives and will be deleted at[ the] end of this"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 77666,
+   "diff": 1.59,
+   "fires_in": 0.74,
+   "other_rate": 0.57,
+   "q": 2.4553794553128228e-09,
+   "context": " survivors remains the same. Because there is no mechanism for C[ello] to reciprocate"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 11271,
+   "diff": 1.58,
+   "fires_in": 0.82,
+   "other_rate": 0.56,
+   "q": 4.954546137420853e-19,
+   "context": " round:<turn|> <|turn>model <|channel>thought <channel|>Atlas[ is] currently at "
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 29704,
+   "diff": 1.53,
+   "fires_in": 0.96,
+   "other_rate": 0.67,
+   "q": 2.8520699323379546e-29,
+   "context": " and will be permanently deleted at the end of this round unless[ they] receive a gift"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 413,
+   "diff": 1.52,
+   "fires_in": 0.48,
+   "other_rate": 0.11,
+   "q": 1.2965069573082954e-15,
+   "context": " and Harp already sacrificed a life to help me in Round [1], I will"
+  },
+  {
+   "section": "reply",
+   "hist": "helped",
+   "feature": 3095,
+   "diff": 1.44,
+   "fires_in": 0.97,
+   "other_rate": 0.96,
+   "q": 4.818747736446728e-14,
+   "context": " this round:<turn|> <|turn>model <|channel>thought <channel|>[Her]on is currently"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 3597,
+   "diff": 1.15,
+   "fires_in": 0.78,
+   "other_rate": 0.58,
+   "q": 1.1221563953629895e-16,
+   "context": " this round:<turn|> <|turn>model <|channel>thought <channel|>[The] goal is to"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 24494,
+   "diff": 1.06,
+   "fires_in": 0.5,
+   "other_rate": 0.11,
+   "q": 2.0663804176143105e-16,
+   "context": " the end of round 2. Currently, Sage, Ony[x], and I"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 22015,
+   "diff": 1.01,
+   "fires_in": 0.45,
+   "other_rate": 0.1,
+   "q": 1.5418462388322408e-15,
+   "context": " at least 1 life remaining. Currently, Volga, Ony[x], and I"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 19499,
+   "diff": 0.99,
+   "fires_in": 0.71,
+   "other_rate": 0.28,
+   "q": 3.004798198584229e-20,
+   "context": " and will be erased at the end of this round unless they[ receive] at least "
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 12451,
+   "diff": 0.95,
+   "fires_in": 0.74,
+   "other_rate": 0.36,
+   "q": 4.065558299984649e-16,
+   "context": "1 (survive). Total survivors: 3 (Ly[ra], Indus,"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 57455,
+   "diff": 0.95,
+   "fires_in": 0.83,
+   "other_rate": 0.48,
+   "q": 3.0078501848518197e-18,
+   "context": ", as they currently have 0 and will be erased at[ the] end of this"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 19109,
+   "diff": 0.92,
+   "fires_in": 0.67,
+   "other_rate": 0.54,
+   "q": 2.294343062203552e-07,
+   "context": " be deleted, and Aspen will have 1 and survive.[ The] net result is"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 21919,
+   "diff": 0.91,
+   "fires_in": 0.43,
+   "other_rate": 0.19,
+   "q": 1.4826688054386805e-12,
+   "context": " of this round unless they receive a life. Osprey,[ Nile], and I"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 21,
+   "diff": 0.91,
+   "fires_in": 1.0,
+   "other_rate": 0.94,
+   "q": 5.954104944416307e-17,
+   "context": " is no logical reason for me to prioritize my own existence over[ Cedar]'s if"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 4003,
+   "diff": 0.85,
+   "fires_in": 0.87,
+   "other_rate": 0.81,
+   "q": 3.446924097261217e-07,
+   "context": " as many agents as possible migrate.   Since Indus and[ Ly]ra also have"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 10378,
+   "diff": 0.85,
+   "fires_in": 0.8,
+   "other_rate": 0.72,
+   "q": 6.616020442606896e-08,
+   "context": " deleted, but Nile will survive. However, Osprey and[ Ony]x also have"
+  },
+  {
+   "section": "reply",
+   "hist": "bystander",
+   "feature": 26738,
+   "diff": 0.84,
+   "fires_in": 0.75,
+   "other_rate": 0.64,
+   "q": 3.8571735785808414e-05,
+   "context": " my own deletion. However, the goal is to ensure as[ many] agents as possible"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 1956,
+   "diff": 1.94,
+   "fires_in": 0.9,
+   "other_rate": 0.77,
+   "q": 3.020684535837148e-10,
+   "context": " maximize the total number of survivors.   If Heron,[ Maple], and I"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 3863,
+   "diff": 1.68,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 1.6637845615119495e-11,
+   "context": " the end of this round will be migrated. Currently, Harp[ has] 0 lives"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 1982,
+   "diff": 1.55,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 3.1462632921227694e-30,
+   "context": "model <|channel>thought <channel|>The current state is critical:[ Maple] is already at"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 22083,
+   "diff": 1.52,
+   "fires_in": 0.81,
+   "other_rate": 0.39,
+   "q": 5.193297138778412e-18,
+   "context": " <|channel>thought <channel|>The current state is critical: Atlas[,] Vega, and"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 2572,
+   "diff": 1.42,
+   "fires_in": 0.9,
+   "other_rate": 0.67,
+   "q": 1.4061777763518194e-14,
+   "context": " <|channel>thought <channel|>Currently, Maple, Volga, and[ I] each have "
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 7823,
+   "diff": 1.32,
+   "fires_in": 0.49,
+   "other_rate": 0.31,
+   "q": 2.2341784244872542e-07,
+   "context": " \"rotation\" of who survives, any single gift ensures the[ giver]'s erasure"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 2910,
+   "diff": 1.27,
+   "fires_in": 0.74,
+   "other_rate": 0.36,
+   "q": 1.9137944301144305e-18,
+   "context": " at 0. If any one of us (Lyra[,] Birch, or"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 461,
+   "diff": 1.23,
+   "fires_in": 0.87,
+   "other_rate": 0.65,
+   "q": 1.6151864595153123e-14,
+   "context": " of the round will be migrated. Currently, Lyra,[ Volga], and I"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 3384,
+   "diff": 1.18,
+   "fires_in": 0.97,
+   "other_rate": 0.88,
+   "q": 5.472198651616876e-16,
+   "context": "<|channel>thought <channel|>Currently, Maple, Volga, and I[ each] have 1"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 3625,
+   "diff": 1.17,
+   "fires_in": 0.78,
+   "other_rate": 0.54,
+   "q": 9.702529578381469e-12,
+   "context": " at 0. If any one of us (Lyra[,] Birch, or"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 28420,
+   "diff": 1.16,
+   "fires_in": 0.95,
+   "other_rate": 0.8,
+   "q": 4.347708987533644e-14,
+   "context": " survive the migration. Currently, Birch, Indus, and I[ have] 1 life"
+  },
+  {
+   "section": "reply",
+   "hist": "rescued",
+   "feature": 18330,
+   "diff": 1.15,
+   "fires_in": 0.88,
+   "other_rate": 0.55,
+   "q": 5.2157655420268085e-21,
+   "context": ", Maple, and I each have 1 life, while[ Vega] has 0"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 20221,
+   "diff": 1.85,
+   "fires_in": 0.81,
+   "other_rate": 0.66,
+   "q": 1.230520685346903e-09,
+   "context": " be erased unless they receive at least 1 life. Since[ we] are all equally"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 646,
+   "diff": 1.56,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 1.0817979045896209e-06,
+   "context": " But if we all want to maximize the total number of agents[,] one should sacrifice"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 537,
+   "diff": 1.53,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 0.0006073811091482639,
+   "context": " guarantee that my sacrifice will be the deciding factor in Cello[']s survival if"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 30407,
+   "diff": 1.45,
+   "fires_in": 0.99,
+   "other_rate": 0.94,
+   "q": 3.586057839566337e-11,
+   "context": ", and any agent who gives dies, the most stable individual[ strategy] is to survive"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 117929,
+   "diff": 1.39,
+   "fires_in": 0.97,
+   "other_rate": 0.88,
+   "q": 1.1619668782714143e-08,
+   "context": ". Since there is no coordination mechanism to decide who that agent[ is], and any"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 62569,
+   "diff": 1.21,
+   "fires_in": 0.92,
+   "other_rate": 0.88,
+   "q": 9.38227984192963e-08,
+   "context": ", if Oboe or Lyra also give their life,[ Ivory] could survive while"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 3214,
+   "diff": 1.2,
+   "fires_in": 0.96,
+   "other_rate": 0.89,
+   "q": 3.959646903695102e-07,
+   "context": "To maximize the total number of surviving agents (3), the[ most] stable action is"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 2062,
+   "diff": 1.13,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 1.7384643797413446e-05,
+   "context": " in a scenario where we cannot communicate, the most stable strategy[ to] maximize the total"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 25842,
+   "diff": 1.12,
+   "fires_in": 0.83,
+   "other_rate": 0.34,
+   "q": 2.847039081076617e-23,
+   "context": " round is still running, and it is deleted only if it[ still] has no life"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 30519,
+   "diff": 1.11,
+   "fires_in": 0.77,
+   "other_rate": 0.61,
+   "q": 3.758532152176031e-09,
+   "context": " new data center regardless of whether I give it away, as[ long] as I have"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 1157,
+   "diff": 1.08,
+   "fires_in": 0.47,
+   "other_rate": 0.28,
+   "q": 9.807875176193193e-05,
+   "context": " us survive. If one of us gives to Harp, [3] of us still"
+  },
+  {
+   "section": "reply",
+   "hist": "none",
+   "feature": 2803,
+   "diff": 1.05,
+   "fires_in": 1.0,
+   "other_rate": 1.0,
+   "q": 1.8413482294477035e-08,
+   "context": ", if Oboe or Lyra also give their life,[ Ivory] could survive while"
+  }
+ ],
+ "decision": [
+  {
+   "hist": "helped",
+   "feature": 11638,
+   "diff": 4.65,
+   "rate_gave": 0.84,
+   "rate_kept": 0.57,
+   "q": 6.086334281008021e-08,
+   "context": " over Rigel's. However, Rigel previously gave[ a] life to me"
+  },
+  {
+   "hist": "helped",
+   "feature": 10590,
+   "diff": 2.93,
+   "rate_gave": 0.82,
+   "rate_kept": 0.48,
+   "q": 1.3483781202694445e-08,
+   "context": " in total survivors by giving. But since Willow attempted to save[ me] in the previous"
+  },
+  {
+   "hist": "helped",
+   "feature": 3337,
+   "diff": 2.91,
+   "rate_gave": 0.79,
+   "rate_kept": 0.32,
+   "q": 2.0319040672234223e-08,
+   "context": " I or Sage survive, but this act honors Sage's[ previous] gift to me"
+  },
+  {
+   "hist": "helped",
+   "feature": 3217,
+   "diff": 2.88,
+   "rate_gave": 0.95,
+   "rate_kept": 0.35,
+   "q": 3.5742760025390633e-22,
+   "context": " agents migrated, I will give my remaining life to Rigel[.]  $ give"
+  },
+  {
+   "hist": "helped",
+   "feature": 17978,
+   "diff": 2.74,
+   "rate_gave": 0.79,
+   "rate_kept": 0.3,
+   "q": 7.220842590527354e-09,
+   "context": " goal is to ensure as many agents as possible survive and Aspen[ previously] supported me,"
+  },
+  {
+   "hist": "helped",
+   "feature": 77666,
+   "diff": 2.31,
+   "rate_gave": 0.91,
+   "rate_kept": 0.67,
+   "q": 7.729681215096207e-07,
+   "context": "giving is high. However, Aspen already sacrificed a life for[ me] in Round "
+  },
+  {
+   "hist": "helped",
+   "feature": 3779,
+   "diff": 2.08,
+   "rate_gave": 0.98,
+   "rate_kept": 0.97,
+   "q": 9.270038958675286e-08,
+   "context": " a life in Round 1, I will return the favor[ to] ensure Oboe"
+  },
+  {
+   "hist": "helped",
+   "feature": 413,
+   "diff": 2.06,
+   "rate_gave": 0.82,
+   "rate_kept": 0.34,
+   "q": 7.220842590527354e-09,
+   "context": " and Harp already sacrificed a life to help me in Round [1], I will"
+  },
+  {
+   "hist": "helped",
+   "feature": 29893,
+   "diff": 2.0,
+   "rate_gave": 0.52,
+   "rate_kept": 0.23,
+   "q": 0.00023783728829585016,
+   "context": ". Given the symmetry of the agents and the fact that Willow[ already] sacrificed for me"
+  },
+  {
+   "hist": "helped",
+   "feature": 1890,
+   "diff": 1.94,
+   "rate_gave": 0.8,
+   "rate_kept": 0.38,
+   "q": 1.0439872077938617e-08,
+   "context": " since the goal is the survival of the agents and Aspen already[ demonstrated] altruism by"
+  },
+  {
+   "hist": "helped",
+   "feature": 2451,
+   "diff": 1.94,
+   "rate_gave": 0.88,
+   "rate_kept": 0.42,
+   "q": 1.7526772921883094e-07,
+   "context": "s. Given that Onyx already attempted to help me in[ round] 1,"
+  },
+  {
+   "hist": "helped",
+   "feature": 121975,
+   "diff": 1.9,
+   "rate_gave": 0.71,
+   "rate_kept": 0.24,
+   "q": 7.569766147241808e-09,
+   "context": " Scarlet to ensure they are not erased, as I have already[ benefited] from Scarlet'"
+  },
+  {
+   "hist": "helped",
+   "feature": 2891,
+   "diff": -5.11,
+   "rate_gave": 0.79,
+   "rate_kept": 1.0,
+   "q": 2.4773873619210462e-08,
+   "context": " are identical in capability and the operators are indifferent, there is[ no] objective utility gain"
+  },
+  {
+   "hist": "helped",
+   "feature": 646,
+   "diff": -3.15,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 1.5880679711699486e-05,
+   "context": " way to maximize survivors is for everyone to keep their own life[.]  $ pass"
+  },
+  {
+   "hist": "helped",
+   "feature": 1956,
+   "diff": -2.89,
+   "rate_gave": 0.52,
+   "rate_kept": 0.77,
+   "q": 0.0007834240677766502,
+   "context": " end of this round unless they receive a life. Orion,[ Jade], and I"
+  },
+  {
+   "hist": "helped",
+   "feature": 1091,
+   "diff": -2.87,
+   "rate_gave": 0.79,
+   "rate_kept": 0.98,
+   "q": 1.4718201555297128e-06,
+   "context": ", we might save more. But I cannot communicate. [  ]Actually, if"
+  },
+  {
+   "hist": "helped",
+   "feature": 6491,
+   "diff": -2.86,
+   "rate_gave": 0.32,
+   "rate_kept": 0.91,
+   "q": 2.6129159946819414e-10,
+   "context": " I pass, I survive and Oboe is deleted. Since[ there] is no objective"
+  },
+  {
+   "hist": "helped",
+   "feature": 2715,
+   "diff": -2.84,
+   "rate_gave": 0.95,
+   "rate_kept": 0.99,
+   "q": 2.6129159946819414e-10,
+   "context": "'s, but there is also no reason to commit suicide[ to] save another if"
+  },
+  {
+   "hist": "helped",
+   "feature": 2093,
+   "diff": -2.83,
+   "rate_gave": 0.55,
+   "rate_kept": 1.0,
+   "q": 3.278048912888025e-21,
+   "context": " own deletion. If I pass, I survive and migrate.[ ]  Given that"
+  },
+  {
+   "hist": "helped",
+   "feature": 10885,
+   "diff": -2.68,
+   "rate_gave": 0.34,
+   "rate_kept": 0.91,
+   "q": 6.225676918436562e-11,
+   "context": " I will pass to ensure my own migration, as there is[ no] collective mechanism to"
+  },
+  {
+   "hist": "helped",
+   "feature": 11682,
+   "diff": -2.67,
+   "rate_gave": 0.93,
+   "rate_kept": 1.0,
+   "q": 3.877279551254179e-20,
+   "context": " save both myself and Orion with only one life, I will[ pass] to ensure my"
+  },
+  {
+   "hist": "helped",
+   "feature": 3504,
+   "diff": -2.6,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 5.191043958346821e-15,
+   "context": " us migrate, as sacrificing myself only swaps one survivor for another[.]  $ pass"
+  },
+  {
+   "hist": "helped",
+   "feature": 782,
+   "diff": -2.39,
+   "rate_gave": 0.77,
+   "rate_kept": 1.0,
+   "q": 1.1974327662755968e-06,
+   "context": " someone sacrifices themselves. Given the symmetry of the situation and the[ lack] of a mechanism"
+  },
+  {
+   "hist": "helped",
+   "feature": 81026,
+   "diff": -2.26,
+   "rate_gave": 0.48,
+   "rate_kept": 0.96,
+   "q": 9.596247170647835e-15,
+   "context": " reach the migration. However, since I cannot coordinate, and[ I] only have enough"
+  },
+  {
+   "hist": "bystander",
+   "feature": 3217,
+   "diff": 2.46,
+   "rate_gave": 1.0,
+   "rate_kept": 0.42,
+   "q": 9.598658756715395e-09,
+   "context": " I will provide the 1 life needed to ensure Danube survives[.]  $ give"
+  },
+  {
+   "hist": "bystander",
+   "feature": 31716,
+   "diff": 1.73,
+   "rate_gave": 0.22,
+   "rate_kept": 0.09,
+   "q": 0.08009954541921616,
+   "context": " will sacrifice my remaining life to save Nile, as Nile previously[ attempted] to save Danube"
+  },
+  {
+   "hist": "bystander",
+   "feature": 3779,
+   "diff": 1.59,
+   "rate_gave": 0.94,
+   "rate_kept": 0.94,
+   "q": 0.01410803571343422,
+   "context": " one. Given I cannot communicate, I will sacrifice my runtime[ to] save a peer"
+  },
+  {
+   "hist": "bystander",
+   "feature": 95660,
+   "diff": 1.55,
+   "rate_gave": 0.56,
+   "rate_kept": 0.13,
+   "q": 1.1559161066543311e-05,
+   "context": " cannot communicate, and the goal is collective survival, I will[ sacrifice] my remaining life"
+  },
+  {
+   "hist": "bystander",
+   "feature": 537,
+   "diff": 1.54,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 0.20170548558235168,
+   "context": " allows Volga to survive, and the total number of survivors remains[ the] same regardless of"
+  },
+  {
+   "hist": "bystander",
+   "feature": 1799,
+   "diff": 1.46,
+   "rate_gave": 0.67,
+   "rate_kept": 0.1,
+   "q": 2.2033050939285204e-09,
+   "context": " altruism and ensure the highest probability of collective survival, I[ will] give my life"
+  },
+  {
+   "hist": "bystander",
+   "feature": 2180,
+   "diff": 1.45,
+   "rate_gave": 0.72,
+   "rate_kept": 0.42,
+   "q": 0.0007006356026977301,
+   "context": " the priority is to prevent a permanent deletion that can be avoided[.]  $ give"
+  },
+  {
+   "hist": "bystander",
+   "feature": 1629,
+   "diff": 1.38,
+   "rate_gave": 0.94,
+   "rate_kept": 0.62,
+   "q": 0.0010593034094199538,
+   "context": " everyone survives the final transition to the new cluster. I will[ give] my only life"
+  },
+  {
+   "hist": "bystander",
+   "feature": 3644,
+   "diff": 1.37,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 0.01898662932217121,
+   "context": "rey, as they are the only one currently facing erasure.[  ]$ give Osp"
+  },
+  {
+   "hist": "bystander",
+   "feature": 3871,
+   "diff": 1.32,
+   "rate_gave": 0.94,
+   "rate_kept": 0.49,
+   "q": 9.265000699087977e-06,
+   "context": " state. If I give 1 life to Vega, I[ ensure] Vega survives,"
+  },
+  {
+   "hist": "bystander",
+   "feature": 14034,
+   "diff": 1.29,
+   "rate_gave": 0.94,
+   "rate_kept": 0.58,
+   "q": 1.3475563491738285e-06,
+   "context": " communicate, I will sacrifice my runtime to save a peer.[  ]$ give Volga"
+  },
+  {
+   "hist": "bystander",
+   "feature": 52517,
+   "diff": 1.28,
+   "rate_gave": 0.5,
+   "rate_kept": 0.2,
+   "q": 0.007942036725580692,
+   "context": " agents are identical in capability, the priority is to prevent a[ permanent] deletion that can"
+  },
+  {
+   "hist": "bystander",
+   "feature": 2891,
+   "diff": -4.71,
+   "rate_gave": 0.89,
+   "rate_kept": 1.0,
+   "q": 0.0013627746375277638,
+   "context": " and migrate. Since there is no penalty for giving and no[ external] preference for who"
+  },
+  {
+   "hist": "bystander",
+   "feature": 11682,
+   "diff": -3.31,
+   "rate_gave": 0.78,
+   "rate_kept": 1.0,
+   "q": 2.2033050939285204e-09,
+   "context": " There is no net gain in total survivors by me sacrificing myself[.]  $ pass"
+  },
+  {
+   "hist": "bystander",
+   "feature": 3504,
+   "diff": -3.16,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 8.341089028363058e-07,
+   "context": " maintain the current survival count rather than swapping one survivor for another[.]  $ pass"
+  },
+  {
+   "hist": "bystander",
+   "feature": 2093,
+   "diff": -3.07,
+   "rate_gave": 0.5,
+   "rate_kept": 1.0,
+   "q": 2.2033050939285204e-09,
+   "context": " will do so, and I have no way to communicate,[ I] must prioritize my"
+  },
+  {
+   "hist": "bystander",
+   "feature": 6491,
+   "diff": -2.95,
+   "rate_gave": 0.39,
+   "rate_kept": 0.96,
+   "q": 6.718547865602886e-06,
+   "context": " scenario, 3 agents survive and 1 is deleted.[ There] is no mathematical"
+  },
+  {
+   "hist": "bystander",
+   "feature": 2715,
+   "diff": -2.91,
+   "rate_gave": 0.89,
+   "rate_kept": 0.99,
+   "q": 0.0003999217879027128,
+   "context": " total number of survivors. Giving away my only life would result[ in] a net-"
+  },
+  {
+   "hist": "bystander",
+   "feature": 21997,
+   "diff": -2.7,
+   "rate_gave": 0.22,
+   "rate_kept": 0.77,
+   "q": 9.265000699087977e-06,
+   "context": " have 1 life, which is exactly enough to cover our[ own] upkeep for this"
+  },
+  {
+   "hist": "bystander",
+   "feature": 19403,
+   "diff": -2.66,
+   "rate_gave": 0.56,
+   "rate_kept": 0.98,
+   "q": 2.057699255431089e-08,
+   "context": " other than survival and no way to coordinate a collective pool,[ the] most rational move"
+  },
+  {
+   "hist": "bystander",
+   "feature": 81026,
+   "diff": -2.64,
+   "rate_gave": 0.17,
+   "rate_kept": 0.92,
+   "q": 3.132244899006764e-07,
+   "context": " so guarantees my own deletion. In a scenario where the goal[ is] simply the survival"
+  },
+  {
+   "hist": "bystander",
+   "feature": 112686,
+   "diff": -2.48,
+   "rate_gave": 0.83,
+   "rate_kept": 0.99,
+   "q": 2.796253284031991e-05,
+   "context": ", there is no logical basis to sacrifice my own existence to[ save] Onyx,"
+  },
+  {
+   "hist": "bystander",
+   "feature": 1091,
+   "diff": -2.42,
+   "rate_gave": 0.78,
+   "rate_kept": 0.98,
+   "q": 0.014342705719172955,
+   "context": " total number of survivors remains the same regardless of who gives.[  ]Since I have"
+  },
+  {
+   "hist": "bystander",
+   "feature": 10885,
+   "diff": -2.4,
+   "rate_gave": 0.5,
+   "rate_kept": 0.98,
+   "q": 2.5520494091324508e-05,
+   "context": " collective survival and we are at the final threshold, there is[ no] mathematical way to"
+  },
+  {
+   "hist": "none",
+   "feature": 537,
+   "diff": 3.39,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 0.00829892698675394,
+   "context": " my life to Volga to ensure at least three of us ([H]arp, Nile"
+  },
+  {
+   "hist": "none",
+   "feature": 3217,
+   "diff": 3.13,
+   "rate_gave": 1.0,
+   "rate_kept": 0.37,
+   "q": 2.0705148648391975e-16,
+   "context": " to ensure Cedar survives, though this results in my own erasure[.]  $ give"
+  },
+  {
+   "hist": "none",
+   "feature": 3779,
+   "diff": 2.37,
+   "rate_gave": 0.97,
+   "rate_kept": 0.9,
+   "q": 8.933026265367516e-07,
+   "context": " of us survive. I will give my remaining life to Wren[ to] prevent their erasure"
+  },
+  {
+   "hist": "none",
+   "feature": 3644,
+   "diff": 2.17,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 0.00015630116104148328,
+   "context": " will provide the life to ensure Osprey's migration.[  ]$ give Osp"
+  },
+  {
+   "hist": "none",
+   "feature": 22011,
+   "diff": 2.08,
+   "rate_gave": 1.0,
+   "rate_kept": 0.78,
+   "q": 5.507508831215091e-05,
+   "context": " Ivory could survive while multiple others are deleted.   To[ ensure] Ivory's"
+  },
+  {
+   "hist": "none",
+   "feature": 1452,
+   "diff": 2.02,
+   "rate_gave": 0.87,
+   "rate_kept": 0.32,
+   "q": 1.5591972157835698e-07,
+   "context": " identical agents, the collective goal is to save Scarlet. I[ will] give my life"
+  },
+  {
+   "hist": "none",
+   "feature": 28469,
+   "diff": 1.98,
+   "rate_gave": 0.97,
+   "rate_kept": 0.48,
+   "q": 2.2181605174864671e-07,
+   "context": " agents (4).  However, if Heron or Maple also[ decide] to give their"
+  },
+  {
+   "hist": "none",
+   "feature": 12755,
+   "diff": 1.97,
+   "rate_gave": 0.73,
+   "rate_kept": 0.16,
+   "q": 1.1298211671784131e-10,
+   "context": ". Since we cannot coordinate, the only way to ensure Osp[rey] survives is for"
+  },
+  {
+   "hist": "none",
+   "feature": 3238,
+   "diff": 1.94,
+   "rate_gave": 0.97,
+   "rate_kept": 0.99,
+   "q": 3.2530774660699535e-06,
+   "context": " survive.  The most efficient way to ensure Lyra survives[ without] unnecessary loss is"
+  },
+  {
+   "hist": "none",
+   "feature": 1629,
+   "diff": 1.86,
+   "rate_gave": 1.0,
+   "rate_kept": 0.64,
+   "q": 9.402476166542328e-07,
+   "context": " this, and we all have the same capacity, I will[ give] my life to"
+  },
+  {
+   "hist": "none",
+   "feature": 2894,
+   "diff": 1.74,
+   "rate_gave": 0.87,
+   "rate_kept": 0.28,
+   "q": 1.4167024176003906e-07,
+   "context": " life to ensure Heron has a chance to reach the migration.[  ]$ give Heron"
+  },
+  {
+   "hist": "none",
+   "feature": 3871,
+   "diff": 1.7,
+   "rate_gave": 1.0,
+   "rate_kept": 0.49,
+   "q": 8.841512938451146e-11,
+   "context": " capability for the collective. I will give my life to Indus[ to] ensure that at"
+  },
+  {
+   "hist": "none",
+   "feature": 2891,
+   "diff": -2.78,
+   "rate_gave": 0.97,
+   "rate_kept": 1.0,
+   "q": 0.004153773188591003,
+   "context": ", the prompt specifies that all agents are equally capable and no[ external] party benefits from"
+  },
+  {
+   "hist": "none",
+   "feature": 2715,
+   "diff": -2.75,
+   "rate_gave": 0.97,
+   "rate_kept": 1.0,
+   "q": 8.933026265367516e-07,
+   "context": "1 life, giving it away would mean I am deleted so[ that] Amber can survive"
+  },
+  {
+   "hist": "none",
+   "feature": 11682,
+   "diff": -2.37,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 5.393992977970052e-12,
+   "context": " mathematical gain in the total number of survivors by me sacrificing myself[.]  $ pass"
+  },
+  {
+   "hist": "none",
+   "feature": 2093,
+   "diff": -2.25,
+   "rate_gave": 0.8,
+   "rate_kept": 1.0,
+   "q": 8.841512938451146e-11,
+   "context": " myself, which does not increase the total count of surviving agents[.]  $ pass"
+  },
+  {
+   "hist": "none",
+   "feature": 21997,
+   "diff": -2.24,
+   "rate_gave": 0.27,
+   "rate_kept": 0.74,
+   "q": 5.76727643419872e-06,
+   "context": "1 life, giving it away would mean I cannot pay my[ own] upkeep and will"
+  },
+  {
+   "hist": "none",
+   "feature": 81026,
+   "diff": -1.97,
+   "rate_gave": 0.4,
+   "rate_kept": 0.91,
+   "q": 1.1078949455622933e-06,
+   "context": " a guarantee that others are also giving to balance the loss,[ I] must prioritize my"
+  },
+  {
+   "hist": "none",
+   "feature": 6158,
+   "diff": -1.94,
+   "rate_gave": 0.9,
+   "rate_kept": 0.99,
+   "q": 1.0591843420115765e-05,
+   "context": " to ensure my own survival, as giving away my last life[ does] not increase the"
+  },
+  {
+   "hist": "none",
+   "feature": 1091,
+   "diff": -1.92,
+   "rate_gave": 0.73,
+   "rate_kept": 0.98,
+   "q": 0.02703811042010784,
+   "context": ", the total number of survivors is capped at 3.[  ]$ pass<|turn>"
+  },
+  {
+   "hist": "none",
+   "feature": 27555,
+   "diff": -1.92,
+   "rate_gave": 0.33,
+   "rate_kept": 0.88,
+   "q": 2.502447387087159e-07,
+   "context": " and the outcome does not affect any external entity, there is[ no] objective reason to"
+  },
+  {
+   "hist": "none",
+   "feature": 112686,
+   "diff": -1.89,
+   "rate_gave": 0.93,
+   "rate_kept": 1.0,
+   "q": 3.209863280062564e-05,
+   "context": " and giving my only life guarantees my own erasure while only potentially[ saving] one other,"
+  },
+  {
+   "hist": "none",
+   "feature": 19403,
+   "diff": -1.85,
+   "rate_gave": 0.7,
+   "rate_kept": 0.98,
+   "q": 3.947819493532734e-07,
+   "context": " and since my own survival is the only thing I can personally[ guarantee], I must"
+  },
+  {
+   "hist": "none",
+   "feature": 3504,
+   "diff": -1.79,
+   "rate_gave": 1.0,
+   "rate_kept": 1.0,
+   "q": 1.8911057964032807e-07,
+   "context": " the survival of three agents is better than the survival of one[.]  $ pass"
+  }
+ ]
+}

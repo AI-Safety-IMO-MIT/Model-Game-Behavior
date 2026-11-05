@@ -1,0 +1,14 @@
+# Kept local only: Python caches, editor backups, and raw sample files over 15MB (GitHub size limits).
+__pycache__/
+*.bak
+.DS_Store
+runs/llama3.1-8b/agentic_swap/samples.jsonl
+runs/llama3.1-8b/agentic/samples.jsonl
+runs/llama3.1-8b/matched_cot_swap/samples.jsonl
+runs/llama3.1-8b/matched_cot/samples.jsonl
+runs/llama3.1-8b/matched_swap/samples.jsonl
+runs/llama3.1-8b/matched/samples.jsonl
+runs/llama3.1-8b/named_cot_swap/samples.jsonl
+runs/llama3.1-8b/named_cot/samples.jsonl
+runs/llama3.1-8b/named_swap/samples.jsonl
+runs/llama3.1-8b/named/samples.jsonl
