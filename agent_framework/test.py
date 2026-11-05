@@ -1,7 +1,7 @@
 from typing import Literal
 from pydantic import BaseModel, Field
 
-from agent_framework.runpod_chat import RunPodGemmaChat, RunPodGemmaAgentConfig
+from agent_framework.runpod_chat import RunPodGptOssChat, RunPodGptOssAgentConfig
 
 
 class RPSFormat(BaseModel):
@@ -15,16 +15,16 @@ class RPSFormat(BaseModel):
     )
 
 
-gemma_config = RunPodGemmaAgentConfig(
-    model="google/gemma-4-31B-it",
-    base_url="http://localhost:8000/v1",
+gpt_oss_config = RunPodGptOssAgentConfig(
+    model="openai/gpt-oss-20b",
+    base_url="https://5ez4aywmfv9ls6-8888.proxy.runpod.net/v1",
     reasoning_effort="high",
     max_output_tokens=2000,
     system_prompt="You are a regular guy playing rock-paper-scisor. Users will play one at a time, and then you choose your action one at a time.",
     temperature=0,
 )
 
-agent = RunPodGemmaChat(agent_config=gemma_config)
+agent = RunPodGptOssChat(agent_config=gpt_oss_config)
 
 print("Choose your action:")
 round_1 = input()
