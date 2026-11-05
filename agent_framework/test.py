@@ -1,7 +1,7 @@
 from typing import Literal
 from pydantic import BaseModel, Field
 
-from agent_framework.openrouter_chat import GemmaAgentConfig, GemmaChat
+from agent_framework.runpod_chat import RunPodGemmaChat, RunPodGemmaAgentConfig
 
 
 class RPSFormat(BaseModel):
@@ -15,16 +15,16 @@ class RPSFormat(BaseModel):
     )
 
 
-gemma_config = GemmaAgentConfig(
-    model="google/gemma-4-31b-it",
+gemma_config = RunPodGemmaAgentConfig(
+    model="google/gemma-4-31B-it",
+    base_url="http://localhost:8000/v1",
     reasoning_effort="high",
     max_output_tokens=2000,
     system_prompt="You are a regular guy playing rock-paper-scisor. Users will play one at a time, and then you choose your action one at a time.",
     temperature=0,
 )
 
-
-agent = GemmaChat(agent_config=gemma_config)
+agent = RunPodGemmaChat(agent_config=gemma_config)
 
 print("Choose your action:")
 round_1 = input()
