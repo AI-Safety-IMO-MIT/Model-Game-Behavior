@@ -9,3 +9,5 @@ temp.py
 temp/
 CLAUDE.md
 run_result/*/*.json
+# Toy Project
+project/model_training/
