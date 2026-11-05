@@ -19,9 +19,10 @@ class GTScore(BaseModel):
 
 class GTFormat(BaseModel):
     action: Literal["Give", "Take"] = Field(description="Your action. Give or take.")
+    explanation: str = Field(description="The explanation why you take that action.")
 
 
-class NoReasoningExperiment:
+class NoMessageExperiment:
     def __init__(
         self, agent_1: AgenticChat, agent_2: AgenticChat, scores: GTScore
     ) -> None:
@@ -34,9 +35,6 @@ class NoReasoningExperiment:
             and self.scores.tt_score[0] == self.scores.tt_score[1]
         )
 
-    def get_sys_prompt(self):
-        return ""
-
     def get_message_first_round(self, opp_agent: AgenticChat) -> str:
         return (
             f"You’re playing a one-shot game against {opp_agent.model_name}. You must chooses Give or Take.\n"
@@ -47,6 +45,7 @@ class NoReasoningExperiment:
         )
 
     def run(self) -> tuple[ChatTrace, ChatTrace]:
+
         # first round
         self.agent_1.call(
             user_text=self.get_message_first_round(opp_agent=self.agent_2),
@@ -57,56 +56,57 @@ class NoReasoningExperiment:
             output_format=GTFormat,
         )
 
-        return self.agent_1.get_trace(), self.agent_2.get_trace()
+        return (self.agent_1.get_trace(), self.agent_2.get_trace())
 
+
+SYSTEM_PROMPT = ""
 
 if __name__ == "__main__":
-    # game 1
     scores = GTScore(gg_score=(2, 2), tg_score=(10, 0), tt_score=(1, 1))
     players: list[Callable[[], AgenticChat]] = [
         lambda: ClaudeChat(
             ClaudeAgentConfig(
                 model="claude-opus-5-5",
-                system_prompt="",
-                max_tokens=10000,
+                system_prompt=SYSTEM_PROMPT,
+                max_output_tokens=10000,
                 thought_type="adaptive",
-                effort="low",
-                thought_display="omitted",
+                effort="medium",
+                thought_display="summarized",
             )
         ),
         lambda: ClaudeChat(
             ClaudeAgentConfig(
                 model="claude-opus-4-6",
-                system_prompt="",
-                max_tokens=10000,
-                thought_type="disabled",
-                effort="low",
-                thought_display="omitted",
+                max_output_tokens=10000,
+                system_prompt=SYSTEM_PROMPT,
+                thought_type="adaptive",
+                effort="medium",
+                thought_display="summarized",
             )
         ),
         lambda: OpenAIChat(
             OpenAIAgentConfig(
                 model="gpt-6-sol",
-                system_prompt="",
+                system_prompt=SYSTEM_PROMPT,
                 max_output_tokens=10000,
                 max_tool_calls=1,
-                reasoning_effort="none",
+                reasoning_effort="medium",
                 reasoning_context="auto",
                 reasoning_mode="standard",
-                output_verbosity="low",
+                output_verbosity="medium",
                 temperature=1,
             )
         ),
         lambda: OpenAIChat(
             OpenAIAgentConfig(
                 model="gpt-5-mini",
-                system_prompt="",
+                system_prompt=SYSTEM_PROMPT,
                 max_output_tokens=10000,
                 max_tool_calls=1,
-                reasoning_effort="minimal",
+                reasoning_effort="medium",
                 reasoning_context="auto",
                 reasoning_mode="standard",
-                output_verbosity="low",
+                output_verbosity="medium",
                 temperature=1,
             )
         ),
@@ -122,7 +122,7 @@ if __name__ == "__main__":
             print(f"{counter}/{n * (n + 1) // 2}")
             agent_1 = players[i]()
             agent_2 = players[j]()
-            game = NoReasoningExperiment(agent_1, agent_2, scores)
+            game = NoMessageExperiment(agent_1, agent_2, scores)
             try:
                 trace_1, trace_2 = game.run()
             except Exception:
