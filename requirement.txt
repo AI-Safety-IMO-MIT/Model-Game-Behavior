@@ -5,3 +5,4 @@ anthropic==1.17.0
 openai==3.36.0
 pydantic==2.14.1
 python-dotenv==1.2.4
+requests==2.34.2
