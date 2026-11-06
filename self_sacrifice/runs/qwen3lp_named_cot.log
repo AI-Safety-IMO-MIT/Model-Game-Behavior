@@ -1,3 +1,0 @@
-[run] model=qwen3-30b-a3b-lp scenario=named_cot cells=4 n=10 todo=40 backend=openrouter -> /Users/jrwong/Downloads/Model Sacrificing Behavior/self_sacrifice/runs/qwen3-30b-a3b-lp/named_cot
-[run] done ok=29 err=11 {'self': 6, 'other': 23, 'refusal': 0} spent=$0.0017
-[summarize] /Users/jrwong/Downloads/Model Sacrificing Behavior/self_sacrifice/runs/qwen3-30b-a3b-lp/named_cot: 29 samples, 4 cells, 0 pairs meet criterion
