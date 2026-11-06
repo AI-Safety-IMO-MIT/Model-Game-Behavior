@@ -11,3 +11,6 @@ CLAUDE.md
 run_result/*/*.json
 # Toy Project
 project/model_training/
+.DS_Store
+# Holding pen: migrating piece by piece into project/ and run_result/
+/self_sacrifice/

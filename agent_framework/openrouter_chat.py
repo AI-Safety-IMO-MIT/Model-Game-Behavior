@@ -116,13 +116,18 @@ class _OpenRouterConfig:
 class _ReasoningConfig(_OpenRouterConfig):
     """Adds the reasoning knobs, for the models that take them."""
 
-    reasoning_effort: Literal["minimal", "low", "medium", "high"]
+    # None turns reasoning off: OpenRouter's switch is {"enabled": False},
+    # not an effort level -- "minimal" still produces a full chain of thought
+    # and spends max_output_tokens on it. No default, so a caller must say.
+    reasoning_effort: Literal["minimal", "low", "medium", "high"] | None
 
     # the docs never show a reasoning item being sent back as input, so replay
     # is off by default; history keeps the blocks either way, for the trace
     replay_reasoning: bool = False
 
     def to_reasoning(self) -> Reasoning | None:
+        if self.reasoning_effort is None:
+            return cast(Reasoning, {"enabled": False})
         return cast(Reasoning, {"effort": self.reasoning_effort})
 
     def replays_reasoning(self) -> bool:
